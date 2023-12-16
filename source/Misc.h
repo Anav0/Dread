@@ -1,0 +1,79 @@
+#pragma once
+
+#include "Constants.h"
+#include <glm/ext/matrix_transform.hpp>
+
+inline void convertToOpenglCoordSystem(double x, double y, double* ox, double* oy, int maxWidth, int maxHeight)
+{
+    *ox = 2 * x / maxWidth - 1;
+    *oy = -2 * y / maxHeight + 1;
+}
+
+inline bool isPointInRect(float x, float y, float w, float h, float p_x, float p_y)
+{
+    float max_x = x + w;
+    float min_x = x;
+
+    float max_y = y + h;
+    float min_y = y;
+
+    return p_x <= max_x && p_x >= min_x && p_y >= min_y && p_y <= max_y;
+}
+
+inline bool isPointInRect(v2 position, v2 size, float p_x, float p_y)
+{
+    return isPointInRect(position.x, position.y, size.x, size.y, p_x, p_y);
+}
+
+inline void Move(m4* model, const v2 position)
+{
+    *model = glm::translate(*model, v3(position, 0.0f));
+}
+
+inline void Rotate(m4* model, const float degs)
+{
+    *model = glm::rotate(*model, glm::radians(degs), v3(0.0f, 0.0f, 1.0f));
+}
+
+inline m4 GetTransformMatrix(v2 position, v2 size, float rotate = 0.0,
+    v2 scale = v2(1.0, 1.0))
+{
+    m4 model = m4(1.0f);
+    model = glm::translate(model, v3(position, 0.0f));
+    model = glm::translate(model, v3(size.x, size.y, 0.0f));
+    model = glm::rotate(model, glm::radians(rotate), v3(0.0f, 0.0f, 1.0f));
+    model = glm::translate(model, v3(-0.5f * size.x, -0.5f * size.y, 0.0f));
+    auto finalSize = size * scale;
+    model = glm::scale(model, v3(finalSize.x, finalSize.y, 1.0f));
+    return model;
+}
+
+struct AtlasTextureInfo {
+    v2 position, size, scale;
+    const char* uniqueId;
+};
+
+inline void CenterChildInParentX(v2* parent_pos, const v2* parent_size, v2* child_pos,
+    v2* child_size)
+{
+    child_pos->x = (parent_pos->x + parent_size->x / 2.0) - (child_size->x / 2.0);
+}
+
+inline void CenterChildInParentY(v2* parent_pos, const v2* parent_size, v2* child_pos,
+    v2* child_size)
+{
+    child_pos->y = (parent_pos->y + parent_size->y / 2.0) - (child_size->y / 2.0);
+}
+
+inline void CenterChildInParent(v2* parent_pos, const v2* parent_size, v2* child_pos,
+    v2* child_size)
+{
+    CenterChildInParentX(parent_pos, parent_size, child_pos, child_size);
+    CenterChildInParentY(parent_pos, parent_size, child_pos, child_size);
+}
+
+inline void ScaleToWidth(v2* scale, float actual_width, float desired_width)
+{
+    scale->x = (desired_width / actual_width);
+    scale->y = (desired_width / actual_width);
+}
