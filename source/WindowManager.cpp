@@ -6,7 +6,7 @@ void WindowManager::onBeginOfTheLoop()
     delta_time = currentFrame - last_frame;
     last_frame = currentFrame;
 
-	frame_start_time = std::chrono::high_resolution_clock::now();
+    frame_start_time = std::chrono::high_resolution_clock::now();
 
     glfwGetCursorPos(window, &mouse_x, &mouse_y);
 
@@ -38,12 +38,15 @@ bool WindowManager::Init()
     screen_size.x = 1920;
     screen_size.y = 1080;
 
+    camera.lastX = screen_size.x / 2.0f;
+    camera.lastY = screen_size.y / 2.0f;
+
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(screen_size.x, screen_size.y, "Gwent", NULL, NULL);
+    window = glfwCreateWindow(screen_size.x, screen_size.y, "Dread", NULL, NULL);
 
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -51,16 +54,29 @@ bool WindowManager::Init()
         return -1;
     }
 
-    glfwSetWindowPos(window, 200, 200);
+    glfwSetWindowPos(window, 400, 200);
     glfwSetWindowUserPointer(window, this);
 
-    auto func = [](GLFWwindow* w, int btn, int action, int mods) {
+    auto mouse_click_lambda = [](GLFWwindow* w, int btn, int action, int mods) {
         static_cast<WindowManager*>(glfwGetWindowUserPointer(w))->onMouseClicked(w, btn, action, mods);
     };
 
-    glfwSetMouseButtonCallback(window, func);
+    auto mouse_move_lambda = [](GLFWwindow* w, double xposIn, double yposIn) {
+        float x = static_cast<float>(xposIn);
+        float y = static_cast<float>(yposIn);
+        static_cast<WindowManager*>(glfwGetWindowUserPointer(w))->camera.ProcessMouseMovement(x, y);
+    };
+
+    auto scroll_lambda = [](GLFWwindow* w, double xoffset, double yoffset) {
+        static_cast<WindowManager*>(glfwGetWindowUserPointer(w))->camera.ProcessMouseScroll(static_cast<float>(yoffset));
+    };
 
     glfwMakeContextCurrent(window);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    glfwSetMouseButtonCallback(window, mouse_click_lambda);
+    glfwSetCursorPosCallback(window, mouse_move_lambda);
+    glfwSetScrollCallback(window, scroll_lambda);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {

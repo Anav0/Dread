@@ -2,10 +2,11 @@
 
 #include <iostream>
 
-//GLWF MUST ALWAYS BE INCLUDED AFTER GLAD
-#include <glad/glad.h>
+// GLWF MUST ALWAYS BE INCLUDED AFTER GLAD
+#include "Constants.h"
 #include <GLFW/glfw3.h>
 
+#include "Camera.h"
 #include "Misc.h"
 #include "TimeManager.h"
 
@@ -29,6 +30,7 @@ enum MouseAction {
 class WindowManager {
 public:
     GLFWwindow* window;
+    Camera camera; //TODO: temporary
     v2 screen_size;
 
     double mouse_x, mouse_y;

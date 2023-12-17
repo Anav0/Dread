@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include <glad/glad.h>
+//#include <glad/glad.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+//#include <glm/glm.hpp>
+//#include <glm/gtc/matrix_transform.hpp>
 
 #include "Constants.h"
 #include "Mesh.h"
@@ -47,7 +47,7 @@ public:
     }
 
     // draws the model, and thus all its meshes
-    void Draw(Shader& shader)
+    void Draw(Shader* shader)
     {
         for (unsigned int i = 0; i < meshes.size(); i++)
             meshes[i].Draw(shader);
@@ -168,7 +168,7 @@ private:
                 vector.z = mesh->mBitangents[i].z;
                 vertex.Bitangent = vector;
             } else
-                vertex.TexCoords = v2(0.0f, 0.0f);
+                vertex.TexCoords = v2(-1.0f, -1.0f);
 
             vertices.push_back(vertex);
         }

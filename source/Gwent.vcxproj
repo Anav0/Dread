@@ -158,6 +158,7 @@
     <ClInclude Include="Atlas.h" />
     <ClInclude Include="Base.h" />
     <ClInclude Include="Buffers.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Entities.h" />
     <ClInclude Include="EntityManager.h" />

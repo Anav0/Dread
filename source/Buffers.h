@@ -1,7 +1,7 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <glm/gtx/transform.hpp>
+//#include <glad/glad.h>
+//#include <glm/gtx/transform.hpp>
 
 #include "Base.h"
 #include "Misc.h"
