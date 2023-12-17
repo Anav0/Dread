@@ -47,6 +47,7 @@ enum EntityType {
 class Entity {
 public:
     Transform transform;
+    virtual bool Update() = 0;
 };
 
 class Rectangle : public Entity {
@@ -60,4 +61,7 @@ public:
         this->color = color;
         this->transform = transform;
     }
+
+    // Inherited via Entity
+    bool Update() override;
 };

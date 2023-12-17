@@ -13,6 +13,9 @@ struct Texture {
     unsigned int Filter_Min;
     unsigned int Filter_Max;
 
+    const char* path;
+    const char* type;
+
     Texture();
 
     void Generate(unsigned int width, unsigned int height, unsigned char* data);

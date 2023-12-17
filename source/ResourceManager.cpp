@@ -4,8 +4,11 @@
 
 #include "ResourceManager.h"
 
-void ResourceManager::LoadAllResources() {
-    for (const auto&entry: std::filesystem::recursive_directory_iterator(ASSETS_PATH)) {
+#include "stb_image.h" 
+
+void ResourceManager::LoadAllResources()
+{
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(ASSETS_PATH)) {
         auto path = entry.path();
         if (entry.is_regular_file()) {
             auto ext = path.extension();
@@ -18,18 +21,21 @@ void ResourceManager::LoadAllResources() {
     }
 }
 
-Texture* ResourceManager::GetTexture(std::string resource_key) {
+Texture* ResourceManager::GetTexture(std::string resource_key)
+{
     if (!loaded_textures.contains(resource_key))
         return nullptr;
 
     return &loaded_textures[resource_key];
 }
 
-Shader* ResourceManager::GetShader(std::string shader_name) {
+Shader* ResourceManager::GetShader(std::string shader_name)
+{
     return &loaded_shaders[shader_name];
 }
 
-Texture* ResourceManager::LoadTexture(std::string file_path, std::string resource_key, bool alpha) {
+Texture* ResourceManager::LoadTexture(std::string file_path, std::string resource_key, bool alpha)
+{
     if (file_path.find(ASSETS_PATH) == std::string::npos) {
         file_path = ASSETS_PATH + file_path;
     }
@@ -37,7 +43,7 @@ Texture* ResourceManager::LoadTexture(std::string file_path, std::string resourc
     Texture texture;
     if (alpha) {
         texture.Internal_Format = GL_RGBA;
-        texture.Image_Format    = GL_RGBA;
+        texture.Image_Format = GL_RGBA;
     }
 
     int width = 0, height = 0, nrChannels = 0;
@@ -61,8 +67,7 @@ Texture* ResourceManager::LoadTexture(std::string file_path, std::string resourc
     stbi_image_free(data);
 
     if (loaded_textures.contains(file_path)) {
-        std::cout << "ERROR::LoadTexture: Failed to save loaded texture, resource with such name already exists" <<
-                std::endl;
+        std::cout << "ERROR::LoadTexture: Failed to save loaded texture, resource with such name already exists" << std::endl;
         abort();
     }
 
@@ -73,7 +78,8 @@ Texture* ResourceManager::LoadTexture(std::string file_path, std::string resourc
     return &loaded_textures[resource_key];
 }
 
-Shader* ResourceManager::LoadShader(std::string vs, std::string fs, const std::string resource_key) {
+Shader* ResourceManager::LoadShader(std::string vs, std::string fs, const std::string resource_key)
+{
     std::string vertexCode;
     std::string fragmentCode;
 

@@ -5,8 +5,6 @@
 #include "Shader.h"
 #include "Texture.h"
 
-#include <stb_image.h>
-
 class ResourceManager {
 private:
     std::string ASSETS_PATH;
