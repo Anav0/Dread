@@ -34,5 +34,6 @@ constexpr v4 RED = v4(0.58f, 0.03f, 0.01f, 1.0f);
 constexpr v4 WHITE = v4(1.0f, 1.0f, 1.0f, 1.0f);
 constexpr v4 BLACK = v4(0.0f, 0.0f, 0.0f, 1.0f);
 constexpr v4 GOLD = v4(0.92f, 0.71f, 0.23f, 1.0f);
+constexpr v4 GREY = v4(0.5f, 0.5, 0.5, 1.0f);
 
 #endif

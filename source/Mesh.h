@@ -26,7 +26,7 @@ struct Vertex {
     v2 TexCoords = { -1, -1 };
     v3 Tangent;
     v3 Bitangent;
-    v4 Color = { 1.0, 0.5, 0.5, 1.0 };
+    v4 Color = GREY;
     int m_BoneIDs[MAX_BONE_INFLUENCE];
     float m_Weights[MAX_BONE_INFLUENCE];
 };

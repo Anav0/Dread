@@ -3,13 +3,13 @@
 
 #pragma once
 
-//#include <glad/glad.h>
+// #include <glad/glad.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-//#include <glm/glm.hpp>
-//#include <glm/gtc/matrix_transform.hpp>
+// #include <glm/glm.hpp>
+// #include <glm/gtc/matrix_transform.hpp>
 
 #include "Constants.h"
 #include "Mesh.h"
@@ -132,7 +132,6 @@ private:
         vector<unsigned int> indices;
         vector<Texture> textures;
 
-        // walk through each of the mesh's vertices
         for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
             Vertex vertex;
             v3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder v3 first.
@@ -181,12 +180,6 @@ private:
         }
         // process materials
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-        // we assume a convention for sampler names in the shaders. Each diffuse texture should be named
-        // as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER.
-        // Same applies to other texture as the following list summarizes:
-        // diffuse: texture_diffuseN
-        // specular: texture_specularN
-        // normal: texture_normalN
 
         // 1. diffuse maps
         vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");

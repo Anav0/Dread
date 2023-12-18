@@ -28,6 +28,16 @@ void processInput(Camera* camera, WindowManager* mgr)
     auto window = mgr->window;
     float delta_time = mgr->delta_time;
 
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+        if (camera->status == Cam::DISABLED) {
+            camera->status = Cam::ENABLED;
+            return;
+        }
+        if (camera->status == Cam::ENABLED) {
+            camera->status = Cam::DISABLED;
+            return;
+        }
+    }
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -56,8 +66,8 @@ int main(int argc, char* argv[])
 
     glViewport(0, 0, window->screen_size.x, window->screen_size.y);
 
-    //glEnable(GL_CULL_FACE);
-    //glCullFace(GL_BACK);
+    // glEnable(GL_CULL_FACE);
+    // glCullFace(GL_BACK);
 
     glEnable(GL_BLEND);
     glEnable(GL_DEBUG_OUTPUT);
@@ -71,10 +81,29 @@ int main(int argc, char* argv[])
     stbi_set_flip_vertically_on_load(true);
 
     // draw in wireframe
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     Model ukraine_map = Model("D:/Projects/Dread/assets/map/map2.obj");
     // Model backpack = Model("D:/Projects/Dread/assets/backpack/backpack.obj");
+
+    /*  v4 color = { 0.5, 0.5, 0.5, 1.0 };
+
+      for (auto& oblast_mesh : ukraine_map.meshes) {
+          for (auto& v : oblast_mesh.vertices) {
+              v.Color = color;
+          }
+
+          color.x += 0.05;
+          color.y += 0.05;
+          color.z += 0.05;
+
+          if (color.x > 1.0)
+              color.x = 0.0;
+          if (color.y > 1.0)
+              color.y = 0.0;
+          if (color.z > 1.0)
+              color.z = 0.0;
+      }*/
 
     while (!STATE.window.IsClosing()) {
         STATE.window.onBeginOfTheLoop();

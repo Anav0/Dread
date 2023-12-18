@@ -25,9 +25,18 @@ const float SPEED = 2.5f * 5;
 const float SENSITIVITY = 0.4f;
 const float ZOOM = 45.0f;
 
+namespace Cam {
+enum CameraStatus {
+    DISABLED = 0,
+    ENABLED = 1,
+};
+}
+
 // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
 class Camera {
 public:
+    Cam::CameraStatus status = Cam::DISABLED;
+
     // camera Attributes
     v3 position = { 0.0, 0.0, 0.0 };
     v3 front = { 0.0, 0.0, 0.0 };
@@ -82,6 +91,9 @@ public:
     // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
     {
+        if (status == Cam::DISABLED)
+            return;
+
         float velocity = speed * deltaTime;
         if (direction == CameraForward)
             position += front * velocity;
@@ -95,6 +107,10 @@ public:
 
     void ProcessMouseMovement(float xpos, float ypos, GLboolean constrainPitch = true)
     {
+
+        if (status == Cam::DISABLED)
+            return;
+
         if (firstMouse) {
             lastX = xpos;
             lastY = ypos;
@@ -130,6 +146,9 @@ public:
     // processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
     void ProcessMouseScroll(float yoffset)
     {
+        if (status == Cam::DISABLED)
+            return;
+
         zoom -= (float)yoffset * zoomSpeed;
         if (zoom < 1.0f)
             zoom = 1.0f;
