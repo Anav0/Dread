@@ -1,3 +1,6 @@
+#ifndef Texture_H
+
+#define Texture_H
 #pragma once
 
 struct Texture {
@@ -22,3 +25,5 @@ struct Texture {
 
     void Bind() const;
 };
+
+#endif

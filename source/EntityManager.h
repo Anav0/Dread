@@ -5,6 +5,7 @@
 
 #include "Constants.h"
 #include "Base.h"
+#include "BoundingBox.h"
 
 constexpr int MAX_ENTITIES = 1024;
 
@@ -16,6 +17,7 @@ struct Entities {
 
     union {
         Rectangle rect;
+        BoundingBox box;
     };
 };
 

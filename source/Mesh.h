@@ -3,33 +3,19 @@
 
 #pragma once
 
-// #include <glad/glad.h>
-
-// #include <glm/glm.hpp>
-// #include <glm/gtc/matrix_transform.hpp>
-
+#include "Base.h"
 #include "Constants.h"
 #include "Shader.h"
 #include "Texture.h"
 
+#include "BoundingBox.h"
+#include "RenderHelpers.h"
+
 #include <string>
 #include <vector>
 
-#define MAX_BONE_INFLUENCE 4
-
 using std::string;
 using std::vector;
-
-struct Vertex {
-    v3 Position;
-    v3 Normal;
-    v2 TexCoords = { -1, -1 };
-    v3 Tangent;
-    v3 Bitangent;
-    v4 Color = GREY;
-    int m_BoneIDs[MAX_BONE_INFLUENCE];
-    float m_Weights[MAX_BONE_INFLUENCE];
-};
 
 class Mesh {
 public:
@@ -37,6 +23,7 @@ public:
     vector<unsigned int> indices;
     vector<Texture> textures;
     unsigned int VAO;
+    ID bounding_box_id; // TODO: take it out since Mesh may be reused
 
     Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures)
     {
@@ -44,7 +31,8 @@ public:
         this->indices = indices;
         this->textures = textures;
 
-        setupMesh();
+        SetupBoundingBox();
+        setup();
     }
 
     void Draw(Shader* shader)
@@ -82,10 +70,18 @@ public:
         glActiveTexture(GL_TEXTURE0);
     }
 
+    void UpdateBuffer()
+    {
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+        glBindVertexArray(0);
+    }
+
 private:
     unsigned int VBO, EBO;
 
-    void setupMesh()
+    void setup()
     {
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
@@ -132,7 +128,35 @@ private:
 
         glBindVertexArray(0);
     }
-};
-#endif
 
-;
+    void SetupBoundingBox()
+    {
+        f32 max_x = 0, max_y = 0, max_z = 0.0;
+        f32 min_x = 0, min_y = 0, min_z = 0;
+
+        for (size_t i = 0; i < vertices.size(); i++) {
+            Vertex* v = &vertices[i];
+
+            if (v->Position.x < min_x)
+                min_x = v->Position.x;
+            if (v->Position.y < min_y)
+                min_y = v->Position.y;
+            if (v->Position.z < min_z)
+                min_z = v->Position.z;
+
+            if (v->Position.x > max_x)
+                max_x = v->Position.x;
+            if (v->Position.y > max_y)
+                max_y = v->Position.y;
+            if (v->Position.z > max_z)
+                max_z = v->Position.z;
+        }
+
+        v3 size = v3(max_x - min_x, max_y - min_y, max_z - min_z);
+        v3 center = v3((min_x + max_x) / 2.0f, (min_y + max_y) / 2.0f, (min_z + max_z) / 2.0f);
+
+        bounding_box_id = AddBoundingBox(BoundingBox(size, center));
+    }
+};
+
+#endif

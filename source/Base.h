@@ -6,6 +6,8 @@
 #include "Misc.h"
 #include "Shader.h"
 
+#define MAX_BONE_INFLUENCE 4
+
 enum AlignX {
     Left,
     Middle,
@@ -16,6 +18,20 @@ enum AlignY {
     Top,
     Center,
     Bottom,
+};
+
+struct Vertex {
+    v3 Position;
+    v3 Normal;
+    v2 TexCoords = { -1, -1 };
+    v3 Tangent;
+    v3 Bitangent;
+    v4 Color = GREY;
+    int m_BoneIDs[MAX_BONE_INFLUENCE];
+    float m_Weights[MAX_BONE_INFLUENCE];
+
+    Vertex() { }
+    Vertex(v3 pos) { Position = pos; };
 };
 
 struct Transform {
@@ -40,8 +56,8 @@ struct UiColor {
 };
 
 enum EntityType {
-    GameCard,
-    Rect
+    Rect,
+    eBoundingBox
 };
 
 class Entity {

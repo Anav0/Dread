@@ -72,7 +72,6 @@ bool WindowManager::Init()
     };
 
     glfwMakeContextCurrent(window);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glfwSetMouseButtonCallback(window, mouse_click_lambda);
     glfwSetCursorPosCallback(window, mouse_move_lambda);

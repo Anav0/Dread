@@ -1,7 +1,7 @@
-#pragma once
+#ifndef Buffers_H
+#define Buffers_H
 
-//#include <glad/glad.h>
-//#include <glm/gtx/transform.hpp>
+#pragma once
 
 #include "Base.h"
 #include "Misc.h"
@@ -222,3 +222,5 @@ public:
         glBindVertexArray(0);
     }
 };
+
+#endif
