@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "Buffers.h"
+#include "Model.h"
 
 void RenderGroup::Draw()
 {
@@ -31,7 +32,9 @@ int Renderer::NumberOfRenderGroups()
     return number_of_render_groups;
 }
 
-Renderer::Renderer() { }
+Renderer::Renderer()
+{
+}
 
 void Renderer::AddRenderGroup(RenderGroup group)
 {
@@ -41,8 +44,13 @@ void Renderer::AddRenderGroup(RenderGroup group)
 
 void Renderer::Draw()
 {
-    for (size_t i = 0; i < number_of_render_groups; i++) {
+    for (u16 i = 0; i < number_of_render_groups; i++) {
         render_groups[i].Draw();
+    }
+
+    for (u16 i = 0; i < models.size(); i++) {
+        auto model = &models.at(i);
+        model->Draw(this->object_shader, &projection);
     }
 }
 

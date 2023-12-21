@@ -5,11 +5,14 @@
 
 #include "Buffers.h"
 #include "Constants.h"
+//#include "Model.h"
 
 class Texture;
 class Shader;
 
 typedef int ID;
+
+class Model;
 
 struct RenderGroup {
     ID id;
@@ -37,6 +40,12 @@ class Renderer {
 public:
     RenderGroup render_groups[MAX_RENDER_GROUP];
     VertexBuffer buffers[MAX_BUFFERS];
+    m4 projection;
+
+    // TODO: for now models are not using render groups
+    Shader* object_shader;
+    std::vector<Model> models;
+
     Renderer();
     int NumberOfRenderGroups();
     void AddRenderGroup(RenderGroup group);

@@ -4,6 +4,7 @@
 #include "EntityManager.h"
 #include "GameState.h"
 #include "Model.h"
+#include "Mesh.h"
 #include "Mouse.h"
 #include "Renderer.h"
 #include "WindowManager.h"
@@ -83,15 +84,15 @@ int main(int argc, char* argv[])
     Shader* objects_shader = RM.LoadShader("object.vert", "object.frag", "object");
     Shader* debug_shader = RM.LoadShader("debug.vert", "debug.frag", "debug");
 
-    stbi_set_flip_vertically_on_load(true);
+    R.object_shader = objects_shader;
 
-    // draw in wireframe
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    stbi_set_flip_vertically_on_load(true);
 
     Model ukraine_map = Model("D:/Projects/Dread/assets/map/map2.obj");
     Model backpack = Model("D:/Projects/Dread/assets/backpack/backpack.obj");
 
     std::vector<Oblast> oblasts;
+
 
     int i = 0;
     for (Mesh& mesh : ukraine_map.meshes) {
@@ -107,10 +108,13 @@ int main(int argc, char* argv[])
     }
 
     m4 projection = glm::perspective(glm::radians(camera->zoom), (float)STATE.window.screen_size.x / (float)STATE.window.screen_size.y, 0.1f, 100.0f);
-    m4 model = glm::translate(m4(1.0), glm::vec3(0.0f, 0.0f, 0.0f));
     m4 backpack_model = glm::translate(m4(1.0), glm::vec3(0.0f, 0.0f, 0.0f));
 
     BoundingBox box = BoundingBox(v3(250, 250, 250), v3(0.0f, 10.0f, 3.0f));
+
+    R.projection = projection;
+
+    R.models.push_back(backpack);
 
     while (!STATE.window.IsClosing()) {
         STATE.window.onBeginOfTheLoop();
@@ -118,53 +122,16 @@ int main(int argc, char* argv[])
 
         processInput(camera, window);
 
-        if (glfwGetKey(window->window, GLFW_KEY_X) == GLFW_PRESS) {
-            //box.center.x += 0.1;
-            //model = glm::translate(m4(1.0), box.center);
-            //model = glm::scale(model, v3(0.5, 0.5, 0.5));
-        }
-        if (glfwGetKey(window->window, GLFW_KEY_Z) == GLFW_PRESS) {
-            //box.center.x -= 0.1;
-            //model = glm::translate(m4(1.0), box.center);
-            //model = glm::scale(model, box.size);
-        }
-
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         E.Update();
         R.Draw();
 
-        objects_shader->Use();
-        objects_shader->setMat4("projection", projection);
-        objects_shader->setMat4("view", camera->GetViewMatrix());
-        objects_shader->setMat4("model", backpack_model);
-        backpack.Draw(objects_shader);
-
-        debug_shader->Use();
-        // model = glm::translate(model, box.center);
-        //  model = glm::scale(model, box.size);
-        debug_shader->setMat4("projection", projection);
-        debug_shader->setMat4("view", camera->GetViewMatrix());
-        debug_shader->setMat4("model", model);
-
-        box.Draw(debug_shader);
-
         printf("Camera: %f %f %f | %f %f\r", camera->position.x, camera->position.y, camera->position.z, camera->yaw, camera->pitch);
 
         if (STATE.window.buttonAction == PRESSED && STATE.window.buttonType == LEFT) {
             auto ray_vector = GetRayFromEyes(&projection);
-            // TODO: Bounding box
-
-            // SetOblastPosition(Luhansk, &ukraine_map, ray_vector);
-            /*   Mesh* oblast = &ukraine_map.meshes.at(Luhansk);
-               model = m4(1.0f);
-               model = glm::translate(model, v3(ray_vector.x, 0.0f, 0.0f));*/
-            // model = glm::translate(model, v3(10.0f, 0.0f, 0.0f));
-            /*  for (auto& v : oblast->vertices) {
-                  v.Color = { 1.0, 0.2, 0.2, 1.0 };
-              }*/
-            // oblast->UpdateBuffer();
         }
 
         glfwSwapBuffers(window->window);

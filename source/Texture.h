@@ -1,6 +1,6 @@
 #ifndef Texture_H
-
 #define Texture_H
+
 #pragma once
 
 struct Texture {

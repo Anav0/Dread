@@ -5,8 +5,7 @@
 
 #include "Base.h"
 #include "Model.h"
-
-class Mesh;
+#include "Mesh.h"
 
 enum OblastCode {
     Zythomyr,

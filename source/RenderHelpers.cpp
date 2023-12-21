@@ -1,9 +1,25 @@
 #include "RenderHelpers.h"
-#include "EntityManager.h"
-#include "Renderer.h"
-#include "BoundingBox.h"
 #include "Base.h"
+#include "BoundingBox.h"
+#include "EntityManager.h"
+#include "Model.h"
+#include "Renderer.h"
 
+//TODO: for now meshes are not part of render group
+
+//Returns ID of entity in entity manager
+//ID AddMap(GameMap map)
+//{
+//    E.entities[E.ROLLING_INDEX].id = E.ROLLING_INDEX;
+//    E.entities[E.ROLLING_INDEX].type = eGameMap;
+//    //E.entities[E.ROLLING_INDEX].map = map;
+//
+//    ID tmp = E.ROLLING_INDEX;
+//    E.ROLLING_INDEX++;
+//    return tmp;
+//}
+
+//Returns ID of entity in entity manager
 ID AddBoundingBox(BoundingBox box, int render_group_index)
 {
     // assert(render_group_index >= 0);
