@@ -42,6 +42,19 @@ void Renderer::AddRenderGroup(RenderGroup group)
     render_groups[group.id] = group;
 }
 
+void Renderer::Update()
+{
+    for (u16 i = 0; i < models.size(); i++) {
+        auto model = &models.at(i);
+        model->Update();
+    }
+
+    for (u16 i = 0; i < boxes.size(); i++) {
+        auto box = &boxes.at(i);
+        box->Update();
+    }
+}
+
 void Renderer::Draw()
 {
     for (u16 i = 0; i < number_of_render_groups; i++) {
@@ -51,6 +64,11 @@ void Renderer::Draw()
     for (u16 i = 0; i < models.size(); i++) {
         auto model = &models.at(i);
         model->Draw(this->object_shader, &projection);
+    }
+
+    for (u16 i = 0; i < boxes.size(); i++) {
+        auto box = &boxes.at(i);
+        box->Draw(this->object_shader, &projection);
     }
 }
 

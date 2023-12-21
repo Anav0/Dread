@@ -2,7 +2,7 @@
 #include "Mesh.h"
 #include "Texture.h"
 
-void Model::Draw(Shader* shader, m4* projection)
+void Model::Draw(Shader *shader, m4 *projection)
 {
     shader->Use();
     for (unsigned int i = 0; i < meshes.size(); i++)
@@ -11,6 +11,10 @@ void Model::Draw(Shader* shader, m4* projection)
 
 unsigned int Model::TextureFromFile(const char* path, const string& directory, bool gamma)
 {
+}
+
+unsigned int Model::TextureFromFile(const char *path, const string &directory, bool gamma)
+{
     string filename = string(path);
     filename = directory + '/' + filename;
 
@@ -18,8 +22,9 @@ unsigned int Model::TextureFromFile(const char* path, const string& directory, b
     glGenTextures(1, &textureID);
 
     int width, height, nrComponents;
-    unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
-    if (data) {
+    unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+    if (data)
+    {
         GLenum format;
         if (nrComponents == 1)
             format = GL_RED;

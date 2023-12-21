@@ -11,6 +11,7 @@
 #include "BoundingBox.h"
 #include "EntityManager.h"
 #include "RenderHelpers.h"
+#include "Renderer.h"
 
 #include <string>
 #include <vector>
@@ -39,7 +40,15 @@ public:
         Setup();
     }
 
-    void Draw(Shader* shader, m4* projection)
+    void Update()
+    {
+        // m4* model = &R.transformations[model_id];
+        // model = glm::translate(model, v3(0.0, 0.05, 0.0));
+        // BoundingBox* box = &R.boxes.at(bounding_box_id);
+        // box->is_dirty = true;
+    }
+
+    void Draw(Shader *shader, m4 *projection)
     {
         unsigned int diffuseNr = 1;
         unsigned int specularNr = 1;
@@ -140,13 +149,14 @@ private:
         glBindVertexArray(0);
     }
 
-    void SetupBoundingBox()
+    void CalculateBoundingBoxSizeAndCenter(v3 *size, v3 *center)
     {
         f32 max_x = 0, max_y = 0, max_z = 0.0;
         f32 min_x = 0, min_y = 0, min_z = 0;
 
-        for (size_t i = 0; i < vertices.size(); i++) {
-            Vertex* v = &vertices[i];
+        for (size_t i = 0; i < vertices.size(); i++)
+        {
+            Vertex *v = &vertices[i];
 
             if (v->Position.x < min_x)
                 min_x = v->Position.x;
@@ -163,10 +173,16 @@ private:
                 max_z = v->Position.z;
         }
 
-        v3 size = v3(max_x - min_x, max_y - min_y, max_z - min_z);
-        v3 center = v3((min_x + max_x) / 2.0f, (min_y + max_y) / 2.0f, (min_z + max_z) / 2.0f);
+        *size = v3(max_x - min_x, max_y - min_y, max_z - min_z);
+        *center = v3((min_x + max_x) / 2.0f, (min_y + max_y) / 2.0f, (min_z + max_z) / 2.0f);
+    }
+    void SetupBoundingBox()
+    {
+        v3 size, center;
+        CalculateBoundingBoxSizeAndCenter(&size, &center);
 
-        bounding_box_id = AddBoundingBox(BoundingBox(size, center));
+        R.boxes.push_back(BoundingBox(size, center));
+        bounding_box_id = R.boxes.size() - 1;
     }
 };
 

@@ -13,6 +13,8 @@ public:
     v3 center;
     unsigned int VAO;
     Shader* shader;
+    m4 model;
+    bool is_dirty;
 
     BoundingBox()
     {
@@ -24,20 +26,39 @@ public:
         this->center = center;
         this->size = size;
 
+        this->model = glm::translate(m4(1.0), center) * glm::scale(m4(1.0), size);
+
         this->shader = RM.GetShader("debug");
 
         setup();
     }
 
-    void Draw()
+    void Update()
+    {
+        if (is_dirty) {
+            this->model = glm::translate(m4(1.0), center) * glm::scale(m4(1.0), size);
+        }
+
+        is_dirty = false;
+    }
+
+    void Draw(m4* projection)
     {
         this->shader->Use();
+        this->shader->setMat4("projection", *projection);
+        this->shader->setMat4("view", STATE.window.camera.GetViewMatrix());
+        this->shader->setMat4("model", model);
+
         DrawInner();
     }
 
-    void Draw(Shader* shader)
+    void Draw(Shader* shader, m4* projection)
     {
         shader->Use();
+        shader->setMat4("projection", *projection);
+        shader->setMat4("view", STATE.window.camera.GetViewMatrix());
+        shader->setMat4("model", model);
+
         DrawInner();
     }
 

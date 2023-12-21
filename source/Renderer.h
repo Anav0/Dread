@@ -5,7 +5,7 @@
 
 #include "Buffers.h"
 #include "Constants.h"
-//#include "Model.h"
+#include "BoundingBox.h"
 
 class Texture;
 class Shader;
@@ -45,11 +45,13 @@ public:
     // TODO: for now models are not using render groups
     Shader* object_shader;
     std::vector<Model> models;
+    std::vector<BoundingBox> boxes;
 
     Renderer();
     int NumberOfRenderGroups();
     void AddRenderGroup(RenderGroup group);
     void Draw();
+    void Update();
     VertexBuffer* CreateBuffer();
 };
 

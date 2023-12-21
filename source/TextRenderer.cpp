@@ -36,7 +36,7 @@ void TextRenderer::Load(std::string font, std::vector<int> font_sizes)
 
     FT_Face face;
 
-    if (FT_New_Face(ft, ("D:\\Projects\\Gwent\\fonts\\" + font).c_str(), 0, &face)) // TODO: to relative path
+    if (FT_New_Face(ft, ("D:\\Projects\\Dread\\fonts\\" + font).c_str(), 0, &face)) // TODO: to relative path
         std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
 
     std::map<char, Character> characters;
