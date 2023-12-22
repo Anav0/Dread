@@ -44,7 +44,7 @@ public:
 
     // TODO: for now models are not using render groups
     Shader* object_shader;
-    std::vector<Model> models;
+    std::vector<Model*> models;
     std::vector<BoundingBox> boxes;
 
     Renderer();

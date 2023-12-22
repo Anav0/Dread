@@ -3,10 +3,11 @@
 #include "Entities.h"
 #include "EntityManager.h"
 #include "GameState.h"
-#include "Model.h"
 #include "Mesh.h"
+#include "Model.h"
 #include "Mouse.h"
 #include "Renderer.h"
+#include "ResourceManager.h"
 #include "WindowManager.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -60,7 +61,6 @@ int main(int argc, char* argv[])
     // STATE = GameState();
     STATE.window = WindowManager();
     STATE.window.camera = Camera(v3(0.22f, 22.0f, 10.0f), -84.0f, -67.0f);
-    STATE.resources = ResourceManager();
 
     if (!STATE.window.Init()) {
         return -1;
@@ -88,13 +88,12 @@ int main(int argc, char* argv[])
 
     stbi_set_flip_vertically_on_load(true);
 
-
-    //Model ukraine_map = Model("D:/Projects/Dread/assets/map/map2.obj");
-    //std::vector<Oblast> oblasts;
-    //int i = 0;
-    //for (Mesh& mesh : ukraine_map.meshes) {
-    //    oblasts.push_back(Oblast(&mesh, static_cast<OblastCode>(i), "Oblast", 1.0));
-    //    if (oblasts[i].code == Luhansk || oblasts[i].code == Donetsk) {
+    // Model ukraine_map = Model("D:/Projects/Dread/assets/map/map2.obj");
+    // std::vector<Oblast> oblasts;
+    // int i = 0;
+    // for (Mesh& mesh : ukraine_map.meshes) {
+    //     oblasts.push_back(Oblast(&mesh, static_cast<OblastCode>(i), "Oblast", 1.0));
+    //     if (oblasts[i].code == Luhansk || oblasts[i].code == Donetsk) {
 
     //        for (auto& v : oblasts[i].mesh->vertices) {
     //            v.Color = { 1.0, 0.2, 0.2, 1.0 };
@@ -104,8 +103,11 @@ int main(int argc, char* argv[])
     //    i++;
     //}
 
-    //Model backpack = Model("D:/Projects/Dread/assets/backpack/backpack.obj");
-    Model sphere = Model("D:/Projects/Dread/assets/sphere/sphere.obj");
+    Model* back = RM.LoadModel("backpack/backpack.obj", "backpack");
+    R.models.push_back(back);
+
+    // Model backpack = Model("D:/Projects/Dread/assets/backpack/backpack.obj");
+    // Model sphere = Model("D:/Projects/Dread/assets/sphere/sphere.obj");
 
     m4 projection = glm::perspective(glm::radians(camera->zoom), (float)STATE.window.screen_size.x / (float)STATE.window.screen_size.y, 0.1f, 100.0f);
     m4 backpack_model = glm::translate(m4(1.0), glm::vec3(0.0f, 0.0f, 0.0f));
@@ -113,8 +115,6 @@ int main(int argc, char* argv[])
     BoundingBox box = BoundingBox(v3(250, 250, 250), v3(0.0f, 10.0f, 3.0f));
 
     R.projection = projection;
-
-    R.models.push_back(sphere);
 
     while (!STATE.window.IsClosing()) {
         STATE.window.onBeginOfTheLoop();
@@ -126,8 +126,8 @@ int main(int argc, char* argv[])
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         E.Update();
-        R.Update();
 
+        R.Update();
         R.Draw();
 
         printf("Camera: %f %f %f | %f %f\r", camera->position.x, camera->position.y, camera->position.z, camera->yaw, camera->pitch);

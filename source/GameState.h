@@ -4,7 +4,6 @@
 #define GameState_H
 
 #include "Camera.h"
-#include "ResourceManager.h"
 #include "WindowManager.h"
 
 namespace RenderMode {
@@ -16,7 +15,6 @@ enum RenderMode {
 
 struct GameState {
     WindowManager window;
-    ResourceManager resources;
     RenderMode::RenderMode mode = RenderMode::NORMAL;
 
     bool show_collisions = true;

@@ -29,6 +29,8 @@ typedef glm::mat4 m4;
 typedef glm::mat3 m3;
 typedef glm::mat2 m2;
 
+//typedef std::vector vec;
+
 constexpr v4 YELLOW = v4(0.96f, 0.76f, 0.47f, 1.0f);
 constexpr v4 RED = v4(0.58f, 0.03f, 0.01f, 1.0f);
 constexpr v4 WHITE = v4(1.0f, 1.0f, 1.0f, 1.0f);

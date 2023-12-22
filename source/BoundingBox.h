@@ -6,6 +6,8 @@
 #include "Base.h"
 #include "Constants.h"
 #include "Shader.h"
+#include "ResourceManager.h"
+#include "GameState.h"
 
 class BoundingBox {
 public:

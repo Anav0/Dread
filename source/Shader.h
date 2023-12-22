@@ -1,12 +1,10 @@
-#pragma once
-
 #ifndef SHADER_H
 #define SHADER_H
 
-#include "Constants.h"
+#pragma once
 
-//#include <glad/glad.h>
-//#include <glm/glm.hpp>
+
+#include "Constants.h"
 
 #include <fstream>
 #include <iostream>

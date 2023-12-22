@@ -32,22 +32,19 @@ enum CameraStatus {
 };
 }
 
-// An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
 class Camera {
 public:
     Cam::CameraStatus status = Cam::DISABLED;
 
-    // camera Attributes
     v3 position = { 0.0, 0.0, 0.0 };
-    v3 front = { 0.0, 0.0, 0.0 };
-    v3 up = { 0.0, 0.0, 0.0 };
-    v3 right = { 0.0, 0.0, 0.0 };
+    v3 front    = { 0.0, 0.0, 0.0 };
+    v3 up       = { 0.0, 0.0, 0.0 };
+    v3 right    = { 0.0, 0.0, 0.0 };
     v3 world_up = { 0.0, 0.0, 0.0 };
 
-    // euler Angles
     float yaw = YAW;
     float pitch = PITCH;
-    // camera options
+
     float speed = SPEED;
     float sensitivity = SENSITIVITY;
     float zoom = ZOOM;
@@ -67,7 +64,7 @@ public:
         this->world_up = up;
         this->yaw = yaw;
         this->pitch = pitch;
-        updateCameraVectors();
+        UpdateCameraVectors();
     }
     Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
         : front(v3(0.0f, 0.0f, -1.0f))
@@ -79,22 +76,21 @@ public:
         this->world_up = v3(upX, upY, upZ);
         this->yaw = yaw;
         this->pitch = pitch;
-        updateCameraVectors();
+        UpdateCameraVectors();
     }
 
-    // returns the view matrix calculated using Euler Angles and the LookAt Matrix
-    glm::mat4 GetViewMatrix()
+    glm::mat4 GetViewMatrix() const
     {
         return glm::lookAt(position, position + front, up);
     }
 
-    // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
     {
         if (status == Cam::DISABLED)
             return;
 
         float velocity = speed * deltaTime;
+
         if (direction == CameraForward)
             position += front * velocity;
         if (direction == CameraBackward)
@@ -107,7 +103,6 @@ public:
 
     void ProcessMouseMovement(float xpos, float ypos, GLboolean constrainPitch = true)
     {
-
         if (status == Cam::DISABLED)
             return;
 
@@ -131,7 +126,6 @@ public:
 
         printf("%f %f\r", pitch, yaw);
 
-        // make sure that when pitch is out of bounds, screen doesn't get flipped
         if (constrainPitch) {
             if (pitch > 89.0f)
                 pitch = 89.0f;
@@ -139,11 +133,9 @@ public:
                 pitch = -89.0f;
         }
 
-        // update Front, Right and Up Vectors using the updated Euler angles
-        updateCameraVectors();
+        UpdateCameraVectors();
     }
 
-    // processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
     void ProcessMouseScroll(float yoffset)
     {
         if (status == Cam::DISABLED)
@@ -157,17 +149,14 @@ public:
     }
 
 private:
-    // calculates the front vector from the Camera's (updated) Euler Angles
-    void updateCameraVectors()
+    void UpdateCameraVectors()
     {
-        // calculate the new Front vector
         v3 f;
         f.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
         f.y = sin(glm::radians(pitch));
         f.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
         front = glm::normalize(f);
-        // also re-calculate the Right and Up vector
-        right = glm::normalize(glm::cross(front, world_up)); // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+        right = glm::normalize(glm::cross(front, world_up));
         up = glm::normalize(glm::cross(right, front));
     }
 };

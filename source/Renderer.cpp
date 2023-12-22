@@ -44,10 +44,10 @@ void Renderer::AddRenderGroup(RenderGroup group)
 
 void Renderer::Update()
 {
-    for (u16 i = 0; i < models.size(); i++) {
+   /* for (u16 i = 0; i < models.size(); i++) {
         auto model = &models.at(i);
         model->Update();
-    }
+    }*/
 
     for (u16 i = 0; i < boxes.size(); i++) {
         auto box = &boxes.at(i);
@@ -62,7 +62,7 @@ void Renderer::Draw()
     }
 
     for (u16 i = 0; i < models.size(); i++) {
-        auto model = &models.at(i);
+        auto model = models.at(i);
         model->Draw(this->object_shader, &projection);
     }
 

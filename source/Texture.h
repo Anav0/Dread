@@ -1,6 +1,8 @@
 #ifndef Texture_H
 #define Texture_H
 
+#include <string>
+
 #pragma once
 
 struct Texture {
@@ -16,8 +18,8 @@ struct Texture {
     unsigned int Filter_Min;
     unsigned int Filter_Max;
 
-    const char* path;
-    const char* type;
+    std::string type;
+    std::string path;
 
     Texture();
 

@@ -24,31 +24,26 @@ using std::string;
 using std::vector;
 
 class Shader;
+class Model;
+
+namespace Models {
+Mesh TransformMesh(aiMesh* mesh, const aiScene* scene, const string& directory);
+void LoadMeshesFromScene(vector<Mesh>* meshes, aiNode* node, const aiScene* scene, const string& directory);
+}
 
 class Model {
 public:
-    // TODO: use resource manager
-    vector<Texture> textures_loaded;
-    vector<Mesh> meshes;
-    string directory;
-    bool gammaCorrection;
+    vector<Mesh*> meshes;
+    bool gamma_correction;
 
     Model() { }
 
-    Model(string const& path, bool gamma = false)
-        : gammaCorrection(gamma)
+    Model(bool gamma)
+        : gamma_correction(gamma)
     {
-        LoadModel(path);
     }
 
     void Draw(Shader* shader, m4* projection);
-
-private:
-    unsigned int TextureFromFile(const char* path, const string& directory, bool gamma = false);
-    void LoadModel(string const& path);
-    Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
-    void ProcessNode(aiNode* node, const aiScene* scene);
-    vector<Texture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName);
 };
 
 #endif

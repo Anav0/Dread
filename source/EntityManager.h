@@ -27,17 +27,7 @@ public:
     int ROLLING_INDEX = 0;
 
     void Update();
-
-    Entities* GetEntityById(ID id)
-    {
-        for (size_t i = 0; i < ROLLING_INDEX; i++) {
-            Entities* e = &entities[i];
-            if (e->id == id)
-                return e;
-        }
-
-        return nullptr;
-    }
+    Entities* GetEntityById(ID id);
 };
 
 extern EntityManager E;

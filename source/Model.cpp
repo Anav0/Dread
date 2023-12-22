@@ -1,73 +1,20 @@
 #include "Model.h"
 #include "Mesh.h"
-#include "Texture.h"
+#include "ResourceManager.h"
+#include "Shader.h"
 
-void Model::Draw(Shader *shader, m4 *projection)
+void Model::Draw(Shader* shader, m4* projection)
 {
     shader->Use();
     for (unsigned int i = 0; i < meshes.size(); i++)
-        meshes[i].Draw(shader, projection);
+        meshes[i]->Draw(shader, projection);
 }
 
-unsigned int Model::TextureFromFile(const char* path, const string& directory, bool gamma)
-{
-}
-
-unsigned int Model::TextureFromFile(const char *path, const string &directory, bool gamma)
-{
-    string filename = string(path);
-    filename = directory + '/' + filename;
-
-    unsigned int textureID;
-    glGenTextures(1, &textureID);
-
-    int width, height, nrComponents;
-    unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
-    if (data)
-    {
-        GLenum format;
-        if (nrComponents == 1)
-            format = GL_RED;
-        else if (nrComponents == 3)
-            format = GL_RGB;
-        else if (nrComponents == 4)
-            format = GL_RGBA;
-
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        stbi_image_free(data);
-    } else {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
-        stbi_image_free(data);
-    }
-
-    return textureID;
-}
-
-void Model::LoadModel(string const& path)
-{
-    Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-        printf("ERROR::ASSIMP:: $s\n", importer.GetErrorString());
-        return;
-    }
-    directory = path.substr(0, path.find_last_of('/'));
-    ProcessNode(scene->mRootNode, scene);
-}
-
-Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+Mesh Models::TransformMesh(aiMesh* mesh, const aiScene* scene, const string& directory)
 {
     vector<Vertex> vertices;
     vector<unsigned int> indices;
-    vector<Texture> textures;
+    vector<std::string>  texture_keys;
 
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
@@ -113,54 +60,30 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 
     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-    vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-    textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+    auto diffuseMaps = RM.LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse", directory);
+    texture_keys.insert(texture_keys.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-    vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-    textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+    auto specularMaps = RM.LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular", directory);
+    texture_keys.insert(texture_keys.end(), specularMaps.begin(), specularMaps.end());
 
-    vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
-    textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+    auto normalMaps = RM.LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal", directory);
+    texture_keys.insert(texture_keys.end(), normalMaps.begin(), normalMaps.end());
 
-    vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-    textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+    auto heightMaps = RM.LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height", directory);
+    texture_keys.insert(texture_keys.end(), heightMaps.begin(), heightMaps.end());
 
-    return Mesh(vertices, indices, textures);
+    return Mesh(vertices, indices, texture_keys);
 }
 
-void Model::ProcessNode(aiNode* node, const aiScene* scene)
+void Models::LoadMeshesFromScene(vector<Mesh>* meshes, aiNode* node, const aiScene* scene, const string& directory)
 {
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        meshes.push_back(ProcessMesh(mesh, scene));
+        Mesh m = TransformMesh(mesh, scene, directory);
+        meshes->push_back(m);
     }
-    for (unsigned int i = 0; i < node->mNumChildren; i++) {
-        ProcessNode(node->mChildren[i], scene);
-    }
-}
 
-vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName)
-{
-    vector<Texture> textures;
-    for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
-        aiString str;
-        mat->GetTexture(type, i, &str);
-        bool skip = false;
-        for (unsigned int j = 0; j < textures_loaded.size(); j++) {
-            if (std::strcmp(textures_loaded[j].path, str.C_Str()) == 0) {
-                textures.push_back(textures_loaded[j]);
-                skip = true;
-                break;
-            }
-        }
-        if (!skip) {
-            Texture texture;
-            texture.ID = TextureFromFile(str.C_Str(), this->directory);
-            texture.type = typeName.c_str();
-            texture.path = str.C_Str();
-            textures.push_back(texture);
-            textures_loaded.push_back(texture);
-        }
+    for (unsigned int i = 0; i < node->mNumChildren; i++) {
+        LoadMeshesFromScene(meshes, node->mChildren[i], scene, directory);
     }
-    return textures;
 }
