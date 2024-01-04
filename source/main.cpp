@@ -27,35 +27,6 @@ MessageCallback(GLenum source,
         type, severity, message);
 }
 
-void processInput(Camera* camera, WindowManager* mgr)
-{
-    auto window = mgr->window;
-    float delta_time = mgr->delta_time;
-
-    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
-        if (camera->status == Cam::DISABLED) {
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            camera->status = Cam::ENABLED;
-            return;
-        }
-        if (camera->status == Cam::ENABLED) {
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            camera->status = Cam::DISABLED;
-            return;
-        }
-    }
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera->ProcessKeyboard(CameraForward, delta_time);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera->ProcessKeyboard(CameraBackward, delta_time);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera->ProcessKeyboard(CameraLeft, delta_time);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera->ProcessKeyboard(CameraRight, delta_time);
-}
-
 int main(int argc, char* argv[])
 {
     // STATE = GameState();
@@ -126,8 +97,6 @@ int main(int argc, char* argv[])
     while (!STATE.window.IsClosing()) {
         STATE.window.onBeginOfTheLoop();
         glfwPollEvents();
-
-        processInput(camera, window);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

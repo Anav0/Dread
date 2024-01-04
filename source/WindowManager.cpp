@@ -1,4 +1,5 @@
 #include "WindowManager.h"
+#include "GameState.h"
 
 void WindowManager::onBeginOfTheLoop()
 {
@@ -71,12 +72,17 @@ bool WindowManager::Init()
         static_cast<WindowManager*>(glfwGetWindowUserPointer(w))->camera.ProcessMouseScroll(static_cast<float>(yoffset));
     };
 
+    auto keypress_lambda = [](GLFWwindow* w, int key, int scancode, int action, int mods) {
+        static_cast<WindowManager*>(glfwGetWindowUserPointer(w))->ProcessInput();
+    };
+
     glfwMakeContextCurrent(window);
 
     glfwSetMouseButtonCallback(window, mouse_click_lambda);
     glfwSetCursorPosCallback(window, mouse_move_lambda);
     glfwSetScrollCallback(window, scroll_lambda);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetKeyCallback(window, keypress_lambda);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -89,4 +95,41 @@ bool WindowManager::Init()
 bool WindowManager::IsClosing()
 {
     return glfwWindowShouldClose(window);
+}
+
+void WindowManager::ProcessInput()
+{
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+        if (camera.status == Cam::DISABLED) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            camera.status = Cam::ENABLED;
+            return;
+        }
+        if (camera.status == Cam::ENABLED) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            camera.status = Cam::DISABLED;
+            return;
+        }
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+        STATE.mode = RenderMode::NORMAL;
+    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+        STATE.mode = RenderMode::WIREFRAME;
+    if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
+        STATE.bounding_draw_mode = BoundingDrawMode::ALL;
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.ProcessKeyboard(CameraForward, delta_time);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.ProcessKeyboard(CameraBackward, delta_time);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.ProcessKeyboard(CameraLeft, delta_time);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.ProcessKeyboard(CameraRight, delta_time);
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        camera.ProcessKeyboard(CameraDown, delta_time);
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        camera.ProcessKeyboard(CameraUp, delta_time);
 }

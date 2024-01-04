@@ -15,13 +15,15 @@ enum Camera_Movement {
     CameraForward,
     CameraBackward,
     CameraLeft,
-    CameraRight
+    CameraRight,
+    CameraUp,
+    CameraDown,
 };
 
 // Default camera values
 const float YAW = -90.0f;
 const float PITCH = 0.0f;
-const float SPEED = 2.5f * 5;
+const float SPEED = 2.5f * 20;
 const float SENSITIVITY = 0.4f;
 const float ZOOM = 45.0f;
 
@@ -37,9 +39,9 @@ public:
     Cam::CameraStatus status = Cam::DISABLED;
 
     v3 position = { 0.0, 0.0, 0.0 };
-    v3 front    = { 0.0, 0.0, 0.0 };
-    v3 up       = { 0.0, 0.0, 0.0 };
-    v3 right    = { 0.0, 0.0, 0.0 };
+    v3 front = { 0.0, 0.0, 0.0 };
+    v3 up = { 0.0, 0.0, 0.0 };
+    v3 right = { 0.0, 0.0, 0.0 };
     v3 world_up = { 0.0, 0.0, 0.0 };
 
     float yaw = YAW;
@@ -99,6 +101,10 @@ public:
             position -= right * velocity;
         if (direction == CameraRight)
             position += right * velocity;
+        if (direction == CameraUp)
+            position += up * velocity;
+        if (direction == CameraDown)
+            position -= up * velocity;
     }
 
     void ProcessMouseMovement(float xpos, float ypos, GLboolean constrainPitch = true)

@@ -46,4 +46,5 @@ public:
     bool IsClosing();
     void onMouseClicked(GLFWwindow* window, int button, int action, int mods);
     void onBeginOfTheLoop();
+    void ProcessInput();
 };
