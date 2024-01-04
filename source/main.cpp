@@ -10,6 +10,8 @@
 #include "ResourceManager.h"
 #include "WindowManager.h"
 
+#include <set>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -42,8 +44,8 @@ int main(int argc, char* argv[])
 
     glViewport(0, 0, window->screen_size.x, window->screen_size.y);
 
-    // glEnable(GL_CULL_FACE);
-    // glCullFace(GL_BACK);
+     glEnable(GL_CULL_FACE);
+     glCullFace(GL_BACK);
 
     glEnable(GL_BLEND);
     glEnable(GL_DEBUG_OUTPUT);
@@ -59,33 +61,36 @@ int main(int argc, char* argv[])
 
     stbi_set_flip_vertically_on_load(true);
 
-    // Model ukraine_map = Model("D:/Projects/Dread/assets/map/map2.obj");
-    // std::vector<Oblast> oblasts;
-    // int i = 0;
-    // for (Mesh& mesh : ukraine_map.meshes) {
-    //     oblasts.push_back(Oblast(&mesh, static_cast<OblastCode>(i), "Oblast", 1.0));
-    //     if (oblasts[i].code == Luhansk || oblasts[i].code == Donetsk) {
+    Model* ukraine_map = RM.LoadModel("map/map4.obj", "map");
+    R.models.push_back(ukraine_map);
+    std::vector<Oblast> oblasts;
+    int i = 0;
+    v4 color = { 0, 0, 0, 0 };
+    std::set<OblastCode> to_show = {
+        Lviv,
+        Donetsk,
+        Crimea
+    };
+    for (Mesh* mesh : ukraine_map->meshes) {
+        oblasts.push_back(Oblast(mesh, static_cast<OblastCode>(i), "Oblast", 1.0));
+        if (to_show.contains(oblasts[i].code)) {
+            STATE.bounding_boxes_to_draw.insert(i);
 
-    //        for (auto& v : oblasts[i].mesh->vertices) {
-    //            v.Color = { 1.0, 0.2, 0.2, 1.0 };
-    //        }
-    //        oblasts[i].mesh->UpdateBuffer();
-    //    }
-    //    i++;
-    //}
-
-    /*Model* back = RM.LoadModel("backpack/backpack.obj", "backpack");
-    R.models.push_back(back);*/
-
-    //Model* couch = RM.LoadModel("couch/couch.obj", "couch");
-    //R.models.push_back(couch);
-
-    Model* map = RM.LoadModel("map/map2.obj", "map");
-    R.models.push_back(map);
-
-
-    // Model backpack = Model("D:/Projects/Dread/assets/backpack/backpack.obj");
-    // Model sphere = Model("D:/Projects/Dread/assets/sphere/sphere.obj");
+            for (auto& v : oblasts[i].mesh->vertices) {
+                v.Color = { 1.0, 0.2, 0.2, 1.0 };
+            }
+            oblasts[i].mesh->UpdateBuffer();
+        } else {
+            for (auto& v : oblasts[i].mesh->vertices) {
+                v.Color = color;
+            }
+            oblasts[i].mesh->UpdateBuffer();
+            color.r += 0.025;
+            color.b += 0.025;
+            color.a = 0.0;
+        }
+        i++;
+    }
 
     m4 projection = glm::perspective(glm::radians(camera->zoom), (float)STATE.window.screen_size.x / (float)STATE.window.screen_size.y, 0.1f, 100.0f);
     m4 backpack_model = glm::translate(m4(1.0), glm::vec3(0.0f, 0.0f, 0.0f));

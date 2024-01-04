@@ -44,9 +44,8 @@ private:
     // TODO: make Mesh just be a holder of data, and
     // use render groups to render any number of meshes
     void Setup();
-    void CalculateBoundingBoxSizeAndCenter(v3 *size, v3 *center);
     void SetupBoundingBox();
-    
+    void CalculateBoundingBoxSizeAndCenter(v3 *size, v3 *center);
 };
 
 #endif

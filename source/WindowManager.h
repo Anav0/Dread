@@ -30,7 +30,7 @@ enum MouseAction {
 class WindowManager {
 public:
     GLFWwindow* window;
-    Camera camera; //TODO: temporary
+    Camera camera; // TODO: temporary
     v2 screen_size;
 
     double mouse_x, mouse_y;

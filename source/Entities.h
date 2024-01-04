@@ -33,8 +33,8 @@ enum OblastCode {
     Chernihiv,
     Chernivtsi,
     Cherkasy,
-    Capitol,
-    Sevastopol,
+  /*  Capitol,
+    Sevastopol,*/
 
 };
 
