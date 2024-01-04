@@ -103,8 +103,15 @@ int main(int argc, char* argv[])
     //    i++;
     //}
 
-    Model* back = RM.LoadModel("backpack/backpack.obj", "backpack");
-    R.models.push_back(back);
+    /*Model* back = RM.LoadModel("backpack/backpack.obj", "backpack");
+    R.models.push_back(back);*/
+
+    //Model* couch = RM.LoadModel("couch/couch.obj", "couch");
+    //R.models.push_back(couch);
+
+    Model* map = RM.LoadModel("map/map2.obj", "map");
+    R.models.push_back(map);
+
 
     // Model backpack = Model("D:/Projects/Dread/assets/backpack/backpack.obj");
     // Model sphere = Model("D:/Projects/Dread/assets/sphere/sphere.obj");
