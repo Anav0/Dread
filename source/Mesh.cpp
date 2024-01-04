@@ -114,8 +114,13 @@ void Mesh::Setup()
 
 void Mesh::CalculateBoundingBoxSizeAndCenter(v3* size, v3* center)
 {
-    f32 max_x = 0, max_y = 0, max_z = 0.0;
-    f32 min_x = 0, min_y = 0, min_z = 0;
+    f32 max_x = vertices[0].Position.x;
+    f32 max_y = vertices[0].Position.y;
+    f32 max_z = vertices[0].Position.z;
+
+    f32 min_x = vertices[0].Position.x;
+    f32 min_y = vertices[0].Position.y;
+    f32 min_z = vertices[0].Position.z;
 
     for (size_t i = 0; i < vertices.size(); i++) {
         Vertex* v = &vertices[i];
