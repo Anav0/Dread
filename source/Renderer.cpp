@@ -49,9 +49,11 @@ void Renderer::Update()
          model->Update();
      }*/
 
-    for (u16 i = 0; i < boxes.size(); i++) {
-        auto box = &boxes.at(i);
-        box->Update();
+    for (auto& [key, boxes] : R.boxes) {
+        for (u16 i = 0; i < boxes.size(); i++) {
+            auto box = &boxes.at(i);
+            box->Update();
+        }
     }
 }
 
@@ -66,15 +68,10 @@ void Renderer::Draw()
         model->Draw(this->object_shader, &projection);
     }
 
-    if (STATE.bounding_draw_mode == BoundingDrawMode::SET) {
-        for (auto index : STATE.bounding_boxes_to_draw) {
-            auto box = &boxes[index];
-            box->Draw(this->object_shader, &projection);
-        }
-    } else {
+    for (auto& [key, boxes] : R.boxes) {
         for (u16 i = 0; i < boxes.size(); i++) {
             auto box = &boxes.at(i);
-            box->Draw(this->object_shader, &projection);
+            box->Draw(&projection);
         }
     }
 }

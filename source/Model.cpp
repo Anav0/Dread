@@ -1,5 +1,6 @@
 #include "Model.h"
 #include "Mesh.h"
+#include "Renderer.h"
 #include "ResourceManager.h"
 #include "Shader.h"
 
@@ -14,7 +15,7 @@ Mesh Models::TransformMesh(aiMesh* mesh, const aiScene* scene, const string& dir
 {
     vector<Vertex> vertices;
     vector<unsigned int> indices;
-    vector<std::string>  texture_keys;
+    vector<std::string> texture_keys;
 
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
@@ -72,7 +73,7 @@ Mesh Models::TransformMesh(aiMesh* mesh, const aiScene* scene, const string& dir
     auto heightMaps = RM.LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height", directory);
     texture_keys.insert(texture_keys.end(), heightMaps.begin(), heightMaps.end());
 
-    return Mesh(vertices, indices, texture_keys);
+    return Mesh(mesh->mNumVertices / 3, vertices, indices, texture_keys);
 }
 
 void Models::LoadMeshesFromScene(vector<Mesh>* meshes, aiNode* node, const aiScene* scene, const string& directory)
@@ -85,5 +86,18 @@ void Models::LoadMeshesFromScene(vector<Mesh>* meshes, aiNode* node, const aiSce
 
     for (unsigned int i = 0; i < node->mNumChildren; i++) {
         LoadMeshesFromScene(meshes, node->mChildren[i], scene, directory);
+    }
+}
+
+Model* GetModelFromBoundingBoxIndex(int box_index)
+{
+    return R.models[box_index];
+}
+
+void Model::SetMatrixTransform(m4 model)
+{
+    for (auto& mesh : meshes) {
+        mesh->model = model;
+        //mesh->UpdateBuffer();
     }
 }

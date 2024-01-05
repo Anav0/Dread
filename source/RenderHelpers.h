@@ -7,6 +7,7 @@
 
 class BoundingBox;
 class Rectangle;
+class Ray;
 
 enum AddOption {
     DoNotRender,
@@ -15,5 +16,6 @@ enum AddOption {
 
 ID AddBoundingBox(BoundingBox box, int render_group_index = 2);
 void AddRect(Rectangle rect, int render_group_index = 0);
+void RenderSphere(v3 position, v3 size);
 
 #endif

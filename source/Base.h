@@ -28,7 +28,7 @@ struct Vertex {
     v3 Bitangent;
     v4 Color = GREY;
     int m_BoneIDs[MAX_BONE_INFLUENCE];
-    float m_Weights[MAX_BONE_INFLUENCE];
+    f32 m_Weights[MAX_BONE_INFLUENCE];
 
     Vertex() { }
     Vertex(v3 pos) { Position = pos; };

@@ -3,16 +3,19 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include "Base.h"
 #include "Constants.h"
-#include "Shader.h"
-#include "ResourceManager.h"
 #include "GameState.h"
+#include "ResourceManager.h"
+#include "Shader.h"
+
+inline v3 Vector3Lerp(v3 v1, v3 v2, float amount);
 
 class BoundingBox {
 public:
-    v3 size;
-    v3 center;
+    v3 min, max;
     unsigned int VAO;
     Shader* shader;
     m4 model;
@@ -23,13 +26,19 @@ public:
         this->shader = RM.GetShader("debug");
     }
 
-    BoundingBox(v3 size, v3 center)
+    BoundingBox(v3 min, v3 max)
     {
-        this->center = center;
-        this->size = size;
+        this->max = max;
+        this->min = min;
+
+        v3 size;
+        size.x = fabsf(max.x - min.x);
+        size.y = fabsf(max.y - min.y);
+        size.z = fabsf(max.z - min.z);
+
+        v3 center = { min.x + size.x / 2.0f, min.y + size.y / 2.0f, min.z + size.z / 2.0f };
 
         this->model = glm::translate(m4(1.0), center) * glm::scale(m4(1.0), size);
-
         this->shader = RM.GetShader("debug");
 
         setup();
@@ -38,6 +47,13 @@ public:
     void Update()
     {
         if (is_dirty) {
+            v3 size;
+            size.x = fabsf(max.x - min.x);
+            size.y = fabsf(max.y - min.y);
+            size.z = fabsf(max.z - min.z);
+
+            v3 center = { min.x + size.x / 2.0f, min.y + size.y / 2.0f, min.z + size.z / 2.0f };
+
             this->model = glm::translate(m4(1.0), center) * glm::scale(m4(1.0), size);
         }
 

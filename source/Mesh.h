@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "Base.h"
+#include "Constants.h"
 #include "Texture.h"
 
 using std::string;
@@ -20,32 +21,30 @@ public:
     vector<Vertex>       vertices;
     vector<unsigned int> indices;
     vector<std::string>  textures;
-    m4 model = glm::translate(m4(1.0), glm::vec3(0.0f, 0.0f, 0.0f));
+    u64 triangle_count;
 
     Mesh() { }
 
-    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<std::string> textures)
+    Mesh(u64 triangle_count, vector<Vertex> vertices, vector<unsigned int> indices, vector<std::string> textures)
     {
         this->vertices = vertices;
         this->indices = indices;
         this->textures = textures;
+        this->triangle_count = triangle_count;
 
-        SetupBoundingBox();
         Setup();
     }
 
     void Update();
-    void Draw(Shader *shader, m4 *projection);
+    void Draw(Shader* shader, m4* projection, m4 model);
     void UpdateBuffer();
-    
+
 private:
     unsigned int VBO, EBO;
 
     // TODO: make Mesh just be a holder of data, and
     // use render groups to render any number of meshes
     void Setup();
-    void SetupBoundingBox();
-    void CalculateBoundingBoxSizeAndCenter(v3 *size, v3 *center);
 };
 
 #endif

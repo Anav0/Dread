@@ -44,6 +44,9 @@ public:
     }
 
     void Draw(Shader* shader, m4* projection);
+    void SetMatrixTransform(m4 model);
 };
+
+Model* GetModelFromBoundingBoxIndex(int);
 
 #endif

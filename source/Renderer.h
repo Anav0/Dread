@@ -45,7 +45,9 @@ public:
     // TODO: for now models are not using render groups
     Shader* object_shader;
     std::vector<Model*> models;
-    std::vector<BoundingBox> boxes;
+
+    //Model index by bounding boxes
+    std::map<u32, std::vector<BoundingBox>> boxes;
 
     Renderer();
     int NumberOfRenderGroups();

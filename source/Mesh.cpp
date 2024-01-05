@@ -14,7 +14,7 @@ void Mesh::Update()
     // box->is_dirty = true;
 }
 
-void Mesh::Draw(Shader* shader, m4* projection)
+void Mesh::Draw(Shader* shader, m4* projection, m4 model)
 {
     unsigned int diffuseNr = 1;
     unsigned int specularNr = 1;
@@ -62,8 +62,6 @@ void Mesh::UpdateBuffer()
     glBindVertexArray(0);
 }
 
-// TODO: make Mesh just be a holder of data, and
-// use render groups to render any number of meshes
 void Mesh::Setup()
 {
     glGenVertexArrays(1, &VAO);
@@ -110,44 +108,4 @@ void Mesh::Setup()
     glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Color));
 
     glBindVertexArray(0);
-}
-
-void Mesh::CalculateBoundingBoxSizeAndCenter(v3* size, v3* center)
-{
-    f32 max_x = vertices[0].Position.x;
-    f32 max_y = vertices[0].Position.y;
-    f32 max_z = vertices[0].Position.z;
-
-    f32 min_x = vertices[0].Position.x;
-    f32 min_y = vertices[0].Position.y;
-    f32 min_z = vertices[0].Position.z;
-
-    for (size_t i = 0; i < vertices.size(); i++) {
-        Vertex* v = &vertices[i];
-
-        if (v->Position.x < min_x)
-            min_x = v->Position.x;
-        if (v->Position.y < min_y)
-            min_y = v->Position.y;
-        if (v->Position.z < min_z)
-            min_z = v->Position.z;
-
-        if (v->Position.x > max_x)
-            max_x = v->Position.x;
-        if (v->Position.y > max_y)
-            max_y = v->Position.y;
-        if (v->Position.z > max_z)
-            max_z = v->Position.z;
-    }
-
-    *size = v3(max_x - min_x, max_y - min_y, max_z - min_z);
-    *center = v3((min_x + max_x) / 2.0f, (min_y + max_y) / 2.0f, (min_z + max_z) / 2.0f);
-}
-
-void Mesh::SetupBoundingBox()
-{
-    v3 size, center;
-    CalculateBoundingBoxSizeAndCenter(&size, &center);
-
-    R.boxes.push_back(BoundingBox(size, center));
 }
