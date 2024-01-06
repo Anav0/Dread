@@ -4,18 +4,12 @@
 #pragma once
 
 #include "Base.h"
+#include "Constants.h"
 
-class BoundingBox;
-class Rectangle;
-class Ray;
+class Model;
+class ModelInBuffer;
 
-enum AddOption {
-    DoNotRender,
-    Render
-};
-
-ID AddBoundingBox(BoundingBox box, int render_group_index = 2);
-void AddRect(Rectangle rect, int render_group_index = 0);
-void RenderSphere(v3 position, v3 size);
+ModelInBuffer AddModel(Model* model, v3 position, v3 size, u32 buffer_index = 0);
+ModelInBuffer RenderSphere(v3 position, v3 size, u32 buffer_index = 0);
 
 #endif

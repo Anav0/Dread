@@ -41,6 +41,7 @@ public:
     Shader*             GetShader(std::string shader_name);
     Mesh*               LoadMesh(std::string file_path, std::string resource_key, bool gamma = false);
     Model*              LoadModel(std::string file_path, std::string resource_key, bool gamma = false);
+    Model*              GetModel(std::string resource_key);
     vector<std::string> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, const string typeName, const string& directory);
     Texture*            LoadTexture(std::string file_path, std::string resource_key, bool alpha = false);
     Shader*             LoadShader(std::string vs, std::string fs, const std::string resource_key);

@@ -15,12 +15,27 @@ using std::vector;
 
 class Shader;
 
+class MeshInBuffer {
+public:
+    u32 mesh_data_index; // Index under which this mesh instance is present in MeshBuffer
+    u32 color_data_index; // Index under which this mesh's color  is present in MeshBuffer
+
+    void ChangeColor(v4 color);
+    void ChangePosition(v3 position);
+    void ChangeSize(v3 size);
+};
+
+struct ModelInBuffer {
+    std::vector<MeshInBuffer> meshes;
+};
+
 class Mesh {
 public:
+    std::string id;
     unsigned int VAO;
-    vector<Vertex>       vertices;
+    vector<Vertex> vertices;
     vector<unsigned int> indices;
-    vector<std::string>  textures;
+    vector<std::string> textures;
     u64 triangle_count;
 
     Mesh() { }

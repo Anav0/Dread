@@ -3,9 +3,11 @@
 
 #pragma once
 
+#include "BoundingBox.h"
 #include "Buffers.h"
 #include "Constants.h"
-#include "BoundingBox.h"
+
+#include <array>
 
 class Texture;
 class Shader;
@@ -16,14 +18,14 @@ class Model;
 
 struct RenderGroup {
     ID id;
-    VertexBuffer* buffer; // NOTE: buffer can be shared across several render groups
+    MeshBuffer* buffer; // NOTE: buffer can be shared across several render groups
     Shader* shader;
     Texture* atlas;
     m4* projection;
 
     RenderGroup() { }
 
-    RenderGroup(Shader* shader, m4* projection, VertexBuffer* buffer, Texture* atlas = nullptr);
+    RenderGroup(Shader* shader, m4* projection, MeshBuffer* buffer, Texture* atlas = nullptr);
 
     void Draw();
     void UpdateBufferSection(const int index, v2 size, v3 pos, float rotation = 0.0f);
@@ -31,7 +33,6 @@ struct RenderGroup {
 };
 
 static constexpr int MAX_RENDER_GROUP = 4;
-static constexpr int MAX_BUFFERS = MAX_RENDER_GROUP * 2; // Maybe use vector
 
 class Renderer {
     ID number_of_render_groups = 0;
@@ -39,14 +40,13 @@ class Renderer {
 
 public:
     RenderGroup render_groups[MAX_RENDER_GROUP];
-    VertexBuffer buffers[MAX_BUFFERS];
+    std::vector<MeshBuffer> buffers;
+
     m4 projection;
 
-    // TODO: for now models are not using render groups
     Shader* object_shader;
-    std::vector<Model*> models;
 
-    //Model index by bounding boxes
+    // Model index by bounding boxes
     std::map<u32, std::vector<BoundingBox>> boxes;
 
     Renderer();
@@ -54,7 +54,7 @@ public:
     void AddRenderGroup(RenderGroup group);
     void Draw();
     void Update();
-    VertexBuffer* CreateBuffer();
+    MeshBuffer* CreateMeshBuffer();
 };
 
 extern Renderer R;

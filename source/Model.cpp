@@ -7,8 +7,8 @@
 void Model::Draw(Shader* shader, m4* projection)
 {
     shader->Use();
-    for (unsigned int i = 0; i < meshes.size(); i++)
-        meshes[i]->Draw(shader, projection);
+    for (unsigned int i = 0; i < meshes.size(); i++) { }
+        //meshes[i]->Draw(shader, projection);
 }
 
 Mesh Models::TransformMesh(aiMesh* mesh, const aiScene* scene, const string& directory)
@@ -91,13 +91,6 @@ void Models::LoadMeshesFromScene(vector<Mesh>* meshes, aiNode* node, const aiSce
 
 Model* GetModelFromBoundingBoxIndex(int box_index)
 {
-    return R.models[box_index];
-}
-
-void Model::SetMatrixTransform(m4 model)
-{
-    for (auto& mesh : meshes) {
-        mesh->model = model;
-        //mesh->UpdateBuffer();
-    }
+    //return R.models[box_index];
+    return nullptr;
 }

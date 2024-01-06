@@ -157,6 +157,14 @@ vector<std::string> ResourceManager::LoadMaterialTextures(aiMaterial* mat, aiTex
     return keys;
 }
 
+Model* ResourceManager::GetModel(std::string resource_key) {
+
+    if (loaded_models.contains(resource_key))
+        return &loaded_models[resource_key];
+
+    return nullptr;
+}
+
 Model* ResourceManager::LoadModel(std::string file_path, std::string resource_key, bool gamma)
 {
     if (loaded_models.contains(resource_key))
@@ -176,6 +184,7 @@ Model* ResourceManager::LoadModel(std::string file_path, std::string resource_ke
     const string directory = path.substr(0, path.find_last_of('/'));
 
     Model model;
+    model.name = resource_key;
 
     vector<Mesh> meshes;
     Models::LoadMeshesFromScene(&meshes, scene->mRootNode, scene, directory);

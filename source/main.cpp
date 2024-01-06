@@ -57,19 +57,16 @@ int main(int argc, char* argv[])
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDebugMessageCallback(MessageCallback, 0);
 
+    stbi_set_flip_vertically_on_load(true);
+
     Shader* texture_shader = RM.LoadShader("texture.vert", "texture.frag", "texture");
     Shader* objects_shader = RM.LoadShader("object.vert", "object.frag", "object");
     Shader* debug_shader = RM.LoadShader("debug.vert", "debug.frag", "debug");
 
     R.object_shader = objects_shader;
+    MeshBuffer* buffer = R.CreateMeshBuffer();
 
-    stbi_set_flip_vertically_on_load(true);
-
-    // Model* sphere = RM.LoadModel("sphere/sphere.obj", "sphere");
-    // R.models.push_back(sphere);
-
-    RenderSphere({ 0, 0, 0 }, { 150, 150, 150 });
-    RenderSphere({ 10, 0, 0 }, { 100, 100, 100 });
+    ModelInBuffer sphere = RenderSphere({ 0, 0, 0 }, { 150, 150, 150 });
 
     // Model* ukraine_map = RM.LoadModel("map/map4.obj", "map");
     //  TODO: move to nice fn

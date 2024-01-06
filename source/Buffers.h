@@ -7,12 +7,9 @@
 #include "Misc.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Constants.h"
 
-enum BufferType {
-    None,
-    Textured,
-    Colored,
-};
+#include <string> 
 
 class Buffer {
 protected:
@@ -22,36 +19,29 @@ protected:
 
 static constexpr int MAX_CAPACITY = 50;
 
-class VertexBuffer : Buffer {
-    m4 matrices[MAX_CAPACITY];
-    v2 textures_coords[MAX_CAPACITY * 4];
-    v4 colors[MAX_CAPACITY];
+class Mesh;
+class Model;
 
-    u16 rolling_index = 0;
+class MeshBuffer : public Buffer {
+    // Static
+    std::vector<Vertex> vertices;
+    std::vector<u32> indices;
+
+    // Dynamic
+    std::vector<m4> matrices;
+    std::vector<v4> colors;
+
+    u16 rolling_index;
+
+    std::map<std::string, u32> mesh_id_by_vertices_index;
 
 public:
-    VertexBuffer()
-    {
-    }
+    MeshBuffer() { }
 
-    VertexBuffer(ID id)
+    MeshBuffer(ID id)
     {
         this->id = id;
 
-        constexpr float vertices[] = {
-            0.5f, 0.5f, 0.0f, // top right
-            0.5f, -0.5f, 0.0f, // bottom right
-            -0.5f, -0.5f, 0.0f, // bottom left
-            -0.5f, 0.5f, 0.0f // top left
-        };
-
-        constexpr unsigned int indices[] = {
-            // note that we start from 0!
-            0, 1, 3, // first triangle
-            1, 2, 3 // second triangle
-        };
-
-        // Gen
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
         glGenBuffers(1, &EBO);
@@ -60,17 +50,46 @@ public:
         // Bind
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+        // position
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+
+        // normals
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+
+        // texture coords
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+
+        // tangent
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+
+        // bitangent
+        glEnableVertexAttribArray(4);
+        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+
+        // ids
+        glEnableVertexAttribArray(5);
+        glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, m_BoneIDs));
+
+        // weights
+        glEnableVertexAttribArray(6);
+        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_Weights));
+
+        //----------------------
+        // Instanced buffer data
+        //----------------------
 
         glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(matrices) + sizeof(textures_coords) + sizeof(colors), NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(matrices) + sizeof(colors), NULL, GL_DYNAMIC_DRAW);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(matrices), &matrices[0]);
-        glBufferSubData(GL_ARRAY_BUFFER, sizeof(matrices), sizeof(textures_coords), &textures_coords[0]);
-        glBufferSubData(GL_ARRAY_BUFFER, sizeof(matrices) + sizeof(textures_coords), sizeof(colors), &colors[0]);
+        glBufferSubData(GL_ARRAY_BUFFER, sizeof(matrices), sizeof(colors), &colors[0]);
 
         // vec3 position
         std::size_t vec4Size = sizeof(v4);
@@ -86,74 +105,13 @@ public:
         glEnableVertexAttribArray(6);
         glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * vec4Size));
         glEnableVertexAttribArray(7);
-        glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)sizeof(matrices));
-        glEnableVertexAttribArray(8);
-        glVertexAttribPointer(8, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(sizeof(matrices) + 2 * sizeof(float)));
-        glEnableVertexAttribArray(9);
-        glVertexAttribPointer(9, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(sizeof(matrices) + 4 * sizeof(float)));
-        glEnableVertexAttribArray(10);
-        glVertexAttribPointer(10, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(sizeof(matrices) + 6 * sizeof(float)));
-        glEnableVertexAttribArray(11);
-        glVertexAttribPointer(11, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(sizeof(matrices) + sizeof(textures_coords)));
+        glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(v4), (void*)sizeof(matrices));
 
-        glVertexAttribDivisor(3, 1);
+        glVertexAttribDivisor(3, 1); // Matrix transform
         glVertexAttribDivisor(4, 1);
         glVertexAttribDivisor(5, 1);
         glVertexAttribDivisor(6, 1);
-
-        glVertexAttribDivisor(7, 1); // Tex coords
-        glVertexAttribDivisor(8, 1); // Tex coords
-        glVertexAttribDivisor(9, 1); // Tex coords
-        glVertexAttribDivisor(10, 1); // Tex coords
-        glVertexAttribDivisor(11, 1); // color
-    }
-
-    int AddTexturedRect(const AtlasTextureInfo* texture_info, const Texture* atlas, const v2 pos, const v2 size = { 0, 0 },
-        const float rotation = 0)
-    {
-        assert(rolling_index >= 0);
-        assert(rolling_index <= MAX_CAPACITY);
-
-        v2 size_to_use = size;
-
-        if (size.x == 0 && size.y == 0)
-            size_to_use = texture_info->size;
-
-        this->colors[rolling_index] = { 1.0, 1.0, 1.0, 1.0 }; // TODO: maybe extract to card
-        this->matrices[rolling_index] = GetTransformMatrix(pos, size_to_use, rotation);
-
-        float subtex_w = texture_info->size.x / atlas->Width;
-        float subtex_h = texture_info->size.y / atlas->Height;
-        float subtex_x = texture_info->position.x / atlas->Width;
-        float subtex_y = texture_info->position.y / atlas->Height;
-
-        int coords_index = rolling_index * 4;
-
-        textures_coords[coords_index] = { subtex_x + subtex_w, subtex_y + subtex_h }; // TR
-        textures_coords[coords_index + 1] = { subtex_x + subtex_w, subtex_y }; // BR
-        textures_coords[coords_index + 2] = { subtex_x, subtex_y }; // BL
-        textures_coords[coords_index + 3] = { subtex_x, subtex_y + subtex_h }; // TL
-
-        UpdateBufferSection(rolling_index);
-
-        const int tmp = rolling_index;
-        rolling_index += 1;
-        return tmp;
-    }
-
-    int AddRect(const Rectangle* rect)
-    {
-        assert(rolling_index >= 0);
-        assert(rolling_index <= MAX_CAPACITY);
-
-        this->colors[rolling_index] = rect->color;
-        this->matrices[rolling_index] = GetTransformMatrix(rect->transform.position, rect->transform.size, rect->transform.rotation);
-
-        UpdateBufferSection(rolling_index);
-
-        const int tmp = rolling_index;
-        rolling_index += 1;
-        return tmp;
+        glVertexAttribDivisor(7, 1); // Color
     }
 
     void UpdateMatrix(const int index, v2 size, v3 pos, float rotation = 0.0f)
@@ -178,17 +136,8 @@ public:
         auto offset = size * index;
         glBufferSubData(GL_ARRAY_BUFFER, offset, size, &matrices[index]);
 
-        size = 4 * sizeof(textures_coords[0]);
-        offset = sizeof(matrices) + (size * index);
-        auto coord_index = index * 4;
-        glBufferSubData(
-            GL_ARRAY_BUFFER,
-            offset,
-            size,
-            &textures_coords[coord_index]);
-
         size = sizeof(colors[0]);
-        offset = (sizeof(matrices) + sizeof(textures_coords)) + (size * index);
+        offset = sizeof(matrices) + (size * index);
         glBufferSubData(
             GL_ARRAY_BUFFER,
             offset,
@@ -221,6 +170,8 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }
+
+    //ModelInBuffer RenderModel(std::string model_index, v3 position, v3 size, f32 rotation = 0.0f);
 };
 
 #endif

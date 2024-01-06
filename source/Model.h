@@ -33,6 +33,7 @@ void LoadMeshesFromScene(vector<Mesh>* meshes, aiNode* node, const aiScene* scen
 
 class Model {
 public:
+    std::string name;
     vector<Mesh*> meshes;
     bool gamma_correction;
 
@@ -44,7 +45,6 @@ public:
     }
 
     void Draw(Shader* shader, m4* projection);
-    void SetMatrixTransform(m4 model);
 };
 
 Model* GetModelFromBoundingBoxIndex(int);

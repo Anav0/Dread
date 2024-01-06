@@ -86,9 +86,9 @@ Collision CheckRayCollision(Ray ray, m4 projection)
     if (!collision.hit_something)
         return collision;
 
-    Model* model = R.models[model_index_in_renderer];
+    //Model* model = R.models[model_index_in_renderer];
 
-    for (size_t i = 0; i < model->meshes.size(); i++) {
+    /*for (size_t i = 0; i < model->meshes.size(); i++) {
         Mesh* mesh = model->meshes[i];
         Collision c = CheckMeshCollision(&ray, mesh, projection);
         if (c.hit_something) {
@@ -96,7 +96,7 @@ Collision CheckRayCollision(Ray ray, m4 projection)
             c.mesh_index = i;
             return c;
         }
-    }
+    }*/
 
     return collision;
 }
@@ -106,14 +106,14 @@ Collision CheckRayCollisionWithModels(Ray ray, m4 projection)
     Collision collision;
     collision.hit_something = false;
 
-    for (auto model : R.models) {
+   /* for (auto model : R.models) {
         for (auto mesh : model->meshes) {
             Collision c = CheckMeshCollision(&ray, mesh, projection);
             if (c.hit_something) {
                 return c;
             }
         }
-    }
+    }*/
     return collision;
 }
 
