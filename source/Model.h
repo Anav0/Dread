@@ -28,13 +28,13 @@ class Model;
 
 namespace Models {
 Mesh TransformMesh(aiMesh* mesh, const aiScene* scene, const string& directory);
-void LoadMeshesFromScene(vector<Mesh>* meshes, aiNode* node, const aiScene* scene, const string& directory);
+void LoadMeshesFromScene(vector<Mesh>& meshes, aiNode* node, const aiScene* scene, const string& directory);
 }
 
 class Model {
 public:
     std::string name;
-    vector<Mesh*> meshes;
+    vector<Mesh> meshes;
     bool gamma_correction;
 
     Model() { }

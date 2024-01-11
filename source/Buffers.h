@@ -39,10 +39,7 @@ class MeshBuffer : public Buffer {
 public:
     MeshBuffer() { }
 
-    MeshBuffer(ID id)
-    {
-        this->id = id;
-    }
+    MeshBuffer(std::vector<std::string>&, ID id);
 
     void AllocateBufferData() {
         glBindVertexArray(VAO);

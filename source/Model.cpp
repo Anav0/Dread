@@ -76,12 +76,12 @@ Mesh Models::TransformMesh(aiMesh* mesh, const aiScene* scene, const string& dir
     return Mesh(mesh->mNumVertices / 3, vertices, indices, texture_keys);
 }
 
-void Models::LoadMeshesFromScene(vector<Mesh>* meshes, aiNode* node, const aiScene* scene, const string& directory)
+void Models::LoadMeshesFromScene(vector<Mesh>& meshes, aiNode* node, const aiScene* scene, const string& directory)
 {
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
         Mesh m = TransformMesh(mesh, scene, directory);
-        meshes->push_back(m);
+        meshes.push_back(m);
     }
 
     for (unsigned int i = 0; i < node->mNumChildren; i++) {

@@ -64,7 +64,15 @@ int main(int argc, char* argv[])
     Shader* debug_shader = RM.LoadShader("debug.vert", "debug.frag", "debug");
 
     R.object_shader = objects_shader;
-    MeshBuffer* buffer = R.CreateMeshBuffer();
+
+    RM.LoadModel("map/map4.obj", "map");
+    RM.LoadModel("sphere/sphere.obj", "sphere");
+
+    std::vector<std::string> models;
+    models.push_back("map");
+    models.push_back("sphere");
+
+    MeshBuffer* buffer = R.CreateMeshBuffer(models);
 
     ModelInBuffer sphere = RenderSphere({ 0, 0, 0 }, { 150, 150, 150 });
 

@@ -36,9 +36,9 @@ void Renderer::Draw()
     }
 }
 
-MeshBuffer* Renderer::CreateMeshBuffer()
+MeshBuffer* Renderer::CreateMeshBuffer(std::vector<std::string>& model_keys)
 {
-    buffers[rolling_buffer_index] = MeshBuffer(rolling_buffer_index);
+    buffers[rolling_buffer_index] = MeshBuffer(model_keys, rolling_buffer_index);
 
     rolling_buffer_index++;
 

@@ -30,10 +30,9 @@ public:
     std::map<u32, std::vector<BoundingBox>> boxes;
 
     Renderer();
-    int NumberOfRenderGroups();
     void Draw();
     void Update();
-    MeshBuffer* CreateMeshBuffer();
+    MeshBuffer* CreateMeshBuffer(std::vector<std::string>& models);
 };
 
 extern Renderer R;

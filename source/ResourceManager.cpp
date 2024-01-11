@@ -165,10 +165,10 @@ Model* ResourceManager::GetModel(std::string resource_key) {
     return nullptr;
 }
 
-Model* ResourceManager::LoadModel(std::string file_path, std::string resource_key, bool gamma)
+void ResourceManager::LoadModel(std::string file_path, std::string resource_key, bool gamma)
 {
     if (loaded_models.contains(resource_key))
-        return &loaded_models[resource_key];
+        return;
 
     auto path = ASSETS_PATH + file_path;
 
@@ -178,7 +178,7 @@ Model* ResourceManager::LoadModel(std::string file_path, std::string resource_ke
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         printf("ERROR::ASSIMP:: $s\n", importer.GetErrorString());
         assert(false);
-        return NULL;
+        return; 
     }
 
     const string directory = path.substr(0, path.find_last_of('/'));
@@ -186,17 +186,10 @@ Model* ResourceManager::LoadModel(std::string file_path, std::string resource_ke
     Model model;
     model.name = resource_key;
 
-    vector<Mesh> meshes;
-    Models::LoadMeshesFromScene(&meshes, scene->mRootNode, scene, directory);
-    loaded_meshes.insert(loaded_meshes.end(), meshes.begin(), meshes.end());
-
-    for (u32 i = loaded_meshes.size() - meshes.size(); i < meshes.size(); i++) {
-        Mesh* m_ref = &loaded_meshes.at(i);
-        model.meshes.push_back(m_ref);
-    }
+    Models::LoadMeshesFromScene(model.meshes, scene->mRootNode, scene, directory);
 
     loaded_models.insert(std::pair(resource_key, model));
-    return &loaded_models[resource_key];
+    return;
 }
 
 Shader* ResourceManager::LoadShader(std::string vs, std::string fs, const std::string resource_key)
