@@ -9,12 +9,18 @@ MeshBuffer::MeshBuffer(std::vector<std::string>& models, ID id)
 
     for (auto& name : models) {
         auto model = RM.GetModel(name);
-        for (auto &mesh : model->meshes) {
+        for (auto& mesh : model->meshes) {
             assert(mesh.vertices.size() > 0);
 
+            u32 index = vertices.size();
             vertices.insert(vertices.end(), mesh.vertices.begin(), mesh.vertices.end());
-            auto index = vertices.size() - mesh.vertices.size();
+            assert(!mesh_id_by_vertices_index.contains(mesh.id));
             mesh_id_by_vertices_index.insert(std::pair(mesh.id, index));
+
+            index = indices.size();
+            indices.insert(indices.end(), mesh.indices.begin(), mesh.indices.end());
+            assert(!mesh_id_by_indices_index.contains(mesh.id));
+            mesh_id_by_indices_index.insert(std::pair(mesh.id, index));
         }
     }
 

@@ -188,6 +188,12 @@ void ResourceManager::LoadModel(std::string file_path, std::string resource_key,
 
     Models::LoadMeshesFromScene(model.meshes, scene->mRootNode, scene, directory);
 
+    int i = 0;
+    for (auto& mesh : model.meshes) {
+        mesh.id = directory + "_" + std::to_string(i);
+        i++;
+    }
+
     loaded_models.insert(std::pair(resource_key, model));
     return;
 }

@@ -35,6 +35,7 @@ class MeshBuffer : public Buffer {
     u16 rolling_index;
 
     std::map<std::string, u32> mesh_id_by_vertices_index;
+    std::map<std::string, u32> mesh_id_by_indices_index;
 
 public:
     MeshBuffer() { }
@@ -42,6 +43,8 @@ public:
     MeshBuffer(std::vector<std::string>&, ID id);
 
     void AllocateBufferData() {
+        //TODO: Nie wiadomo o ile trzeba "skoczyc"
+        //
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
