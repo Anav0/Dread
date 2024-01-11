@@ -141,6 +141,7 @@
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="Base.cpp" />
     <ClCompile Include="BoundingBox.cpp" />
+    <ClCompile Include="Buffers.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Entities.cpp" />
     <ClCompile Include="EntityManager.cpp" />

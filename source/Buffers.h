@@ -4,12 +4,12 @@
 #pragma once
 
 #include "Base.h"
+#include "Constants.h"
 #include "Misc.h"
 #include "Shader.h"
 #include "Texture.h"
-#include "Constants.h"
 
-#include <string> 
+#include <string>
 
 class Buffer {
 protected:
@@ -21,6 +21,7 @@ static constexpr int MAX_CAPACITY = 50;
 
 class Mesh;
 class Model;
+class ModelInBuffer;
 
 class MeshBuffer : public Buffer {
     // Static
@@ -41,7 +42,22 @@ public:
     MeshBuffer(ID id)
     {
         this->id = id;
+    }
 
+    void AllocateBufferData() {
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(matrices) + sizeof(colors), NULL, GL_DYNAMIC_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(matrices), &matrices[0]);
+        glBufferSubData(GL_ARRAY_BUFFER, sizeof(matrices), sizeof(colors), &colors[0]);
+    }
+
+    void Initialize() {
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
         glGenBuffers(1, &EBO);
@@ -50,9 +66,7 @@ public:
         // Bind
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
         // position
         glEnableVertexAttribArray(0);
@@ -87,9 +101,6 @@ public:
         //----------------------
 
         glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(matrices) + sizeof(colors), NULL, GL_DYNAMIC_DRAW);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(matrices), &matrices[0]);
-        glBufferSubData(GL_ARRAY_BUFFER, sizeof(matrices), sizeof(colors), &colors[0]);
 
         // vec3 position
         std::size_t vec4Size = sizeof(v4);
@@ -114,30 +125,47 @@ public:
         glVertexAttribDivisor(7, 1); // Color
     }
 
-    void UpdateMatrix(const int index, v2 size, v3 pos, float rotation = 0.0f)
-    {
-        this->matrices[index] = GetTransformMatrix(pos, size, rotation);
-    }
-
-    void UpdateColor(const int index, v4 color)
-    {
-        this->colors[index] = color;
-    }
-
-    void UpdateBufferSection(const int index)
+    void UpdateMatrix(const u32 index, v3 size, v3 pos, float rotation = 0.0f) 
     {
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
 
         assert(index >= 0);
-        assert(index <= MAX_CAPACITY);
+        this->matrices[index] = GetTransformMatrix(pos, size, rotation);
 
-        auto size = sizeof(matrices[0]);
+        auto offset = sizeof(m4) * index;
+        glBufferSubData(GL_ARRAY_BUFFER, offset, sizeof(m4), &matrices[index]);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
+
+    void UpdateMatrix(const u32 index, m4 matrix) 
+    {
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
+
+        assert(index >= 0);
+        matrices[index] = matrix;
+
+        auto size = sizeof(m4);
         auto offset = size * index;
         glBufferSubData(GL_ARRAY_BUFFER, offset, size, &matrices[index]);
 
-        size = sizeof(colors[0]);
-        offset = sizeof(matrices) + (size * index);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
+
+    void UpdateColor(const int index, v4 color)
+    {
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
+
+        assert(index >= 0);
+        this->colors[index] = color;
+
+        auto size = sizeof(v4);
+        auto offset = sizeof(matrices) + (size * index);
         glBufferSubData(
             GL_ARRAY_BUFFER,
             offset,
@@ -171,7 +199,7 @@ public:
         glBindVertexArray(0);
     }
 
-    //ModelInBuffer RenderModel(std::string model_index, v3 position, v3 size, f32 rotation = 0.0f);
+    ModelInBuffer RenderModel(std::string model_index, v3 position, v3 size, f32 rotation = 0.0f);
 };
 
 #endif

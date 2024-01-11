@@ -11,7 +11,7 @@ ModelInBuffer AddModel(Model* model, v3 position, v3 size, u32 buffer_index)
     m4 matrix = glm::translate(m4(1.0), position);
     auto buffer = &R.buffers[buffer_index];
 
-    //return buffer->RenderModel(model->name, position, size);
+    return buffer->RenderModel(model->name, position, size);
     return ModelInBuffer();
 }
 
