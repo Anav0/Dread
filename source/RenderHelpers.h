@@ -7,9 +7,8 @@
 #include "Constants.h"
 
 class Model;
-class ModelInBuffer;
+class MeshInBuffer;
 
-ModelInBuffer AddModel(Model& model, v3 position, v3 size, u32 buffer_index = 0);
-ModelInBuffer RenderSphere(v3 position, v3 size, u32 buffer_index = 0);
+std::vector<MeshInBuffer> AddModel(v3 position, v3 size, std::string model_name, v4 color, f32 rotation, f32 scale);
 
 #endif

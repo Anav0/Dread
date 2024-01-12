@@ -3,45 +3,79 @@
 #include "Model.h"
 #include "ResourceManager.h"
 
-MeshBuffer::MeshBuffer(std::vector<std::string>& models, ID id)
+InstancedBuffer::InstancedBuffer(Mesh mesh)
 {
-    rolling_index = 0;
-
-    for (auto& name : models) {
-        auto model = RM.GetModel(name);
-        for (auto& mesh : model->meshes) {
-            assert(mesh.vertices.size() > 0);
-
-            u32 index = vertices.size();
-            vertices.insert(vertices.end(), mesh.vertices.begin(), mesh.vertices.end());
-            assert(!mesh_id_by_vertices_index.contains(mesh.id));
-            mesh_id_by_vertices_index.insert(std::pair(mesh.id, index));
-
-            index = indices.size();
-            indices.insert(indices.end(), mesh.indices.begin(), mesh.indices.end());
-            assert(!mesh_id_by_indices_index.contains(mesh.id));
-            mesh_id_by_indices_index.insert(std::pair(mesh.id, index));
-        }
-    }
-
-    AllocateBufferData();
-    Initialize();
+    this->mesh = mesh;
+    glGenBuffers(1, &VBO);
 }
 
-ModelInBuffer MeshBuffer::RenderModel(std::string model_index, v3 position, v3 size, f32 rotation)
+void InstancedBuffer::Allocate()
 {
-    ModelInBuffer model_in_buffer;
-    this->matrices[rolling_index] = GetTransformMatrix(position, size, rotation);
-    Model* model = RM.GetModel(model_index);
+    glBindVertexArray(mesh.VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    for (auto mesh : model->meshes) {
-        auto mesh_in_buffer = MeshInBuffer();
-        mesh_in_buffer.mesh_data_index = this->mesh_id_by_vertices_index[mesh.id];
-        this->colors[rolling_index] = v4(1.0, 1.0, 1.0, 1.0);
-        this->rolling_index++;
-        mesh_in_buffer.color_data_index = this->rolling_index - 1;
-        model_in_buffer.meshes.push_back(mesh_in_buffer);
+    auto matrices_size = sizeof(m4) * matrices.size();
+    auto colors_size   = sizeof(v4) * colors.size();
+
+    std::size_t vec4Size = sizeof(v4);
+
+    auto stride = 4 * sizeof(v4);
+
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, stride, (void*)(1 * vec4Size));
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, stride, (void*)(2 * vec4Size));
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * vec4Size));
+    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(v4), (void*)matrices_size);
+
+    glVertexAttribDivisor(3, 1); // Matrix transform
+    glVertexAttribDivisor(4, 1);
+    glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(6, 1);
+    glVertexAttribDivisor(7, 1); // Color
+
+    glBufferData(GL_ARRAY_BUFFER, matrices_size+colors_size, NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, matrices_size, &matrices[0]);
+    glBufferSubData(GL_ARRAY_BUFFER, matrices_size, colors_size, &colors[0]);
+
+    glBindVertexArray(0);
+}
+
+void InstancedBuffer::Draw(Shader* shader, m4* projection, Texture* atlas)
+{
+    if (colors.size() == 0)
+        return;
+
+    if (atlas != nullptr) {
+        glActiveTexture(GL_TEXTURE0);
+        atlas->Bind();
     }
 
-    return model_in_buffer;
+    shader->Use();
+    shader->setInt("imageSampler", 0);
+    shader->setMat4("projection", *projection);
+    shader->setMat4("view", STATE.window.camera.GetViewMatrix());
+
+    glBindVertexArray(mesh.VAO);
+    glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(mesh.indices.size()), GL_UNSIGNED_INT, 0, matrices.size());
+    glBindVertexArray(0);
+}
+
+MeshInBuffer InstancedBuffer::AddMesh(v3 position, v3 size, v4 color, f32 rotation, f32 scale)
+{
+    auto mesh_in_buffer = MeshInBuffer();
+
+    this->colors.push_back(color);
+    this->matrices.push_back(GetTransformMatrix(position, size, rotation, v3(scale)));
+
+    mesh_in_buffer.pos_in_buffer = this->colors.size() - 1;
+
+    // Speed: slow and not ideal
+    Allocate();
+
+    return mesh_in_buffer;
 }

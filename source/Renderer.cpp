@@ -23,26 +23,40 @@ void Renderer::Update()
 
 void Renderer::Draw()
 {
-    /* for (u16 i = 0; i < models.size(); i++) {
-         auto model = models.at(i);
-         model->Draw(this->object_shader, &projection);
-     }*/
-
-    for (auto& [key, boxes] : R.boxes) {
+    //TODO: temp
+    auto shader = RM.GetShader("object");
+    for (auto& buffer : buffers) {
+        buffer.Draw(shader, &projection, nullptr);
+    }
+  
+    /*for (auto& [key, boxes] : R.boxes) {
         for (u16 i = 0; i < boxes.size(); i++) {
             auto box = &boxes.at(i);
             box->Draw(&projection);
         }
-    }
+    }*/
 }
 
-MeshBuffer* Renderer::CreateMeshBuffer(std::vector<std::string>& model_keys)
+InstancedBuffer* Renderer::CreateBuffer(Mesh mesh)
 {
-    buffers[rolling_buffer_index] = MeshBuffer(model_keys, rolling_buffer_index);
+    buffers.push_back(InstancedBuffer(mesh));
+    u32 index = buffers.size() - 1;
+    mesh_by_buffor_index.insert(std::pair(mesh.id, index));
+    return &buffers[buffers.size()-1];
+}
 
-    rolling_buffer_index++;
+InstancedBuffer* Renderer::GetBuffer(std::string mesh_name)
+{
+    if (mesh_by_buffor_index.contains(mesh_name)) {
+        u32 index = mesh_by_buffor_index[mesh_name];
+        return &buffers[index];
+    }
+    return nullptr;
+}
 
-    return &buffers[rolling_buffer_index - 1];
+InstancedBuffer* Renderer::GetBufferByIndex(u32 index)
+{
+    return &buffers[index];
 }
 
 Renderer R;

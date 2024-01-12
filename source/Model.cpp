@@ -7,8 +7,8 @@
 void Model::Draw(Shader* shader, m4* projection)
 {
     shader->Use();
-    for (unsigned int i = 0; i < meshes.size(); i++) { }
-        //meshes[i]->Draw(shader, projection);
+    for (unsigned int i = 0; i < meshes.size(); i++)
+        meshes[i].Draw(shader, projection, GetTransformMatrix({ 0, 0, 0 }, { 10, 10, 10 }));
 }
 
 Mesh Models::TransformMesh(aiMesh* mesh, const aiScene* scene, const string& directory)
@@ -39,15 +39,15 @@ Mesh Models::TransformMesh(aiMesh* mesh, const aiScene* scene, const string& dir
             vec.y = mesh->mTextureCoords[0][i].y;
             vertex.TexCoords = vec;
 
-            vector.x = mesh->mTangents[i].x;
-            vector.y = mesh->mTangents[i].y;
-            vector.z = mesh->mTangents[i].z;
-            vertex.Tangent = vector;
+            //vector.x = mesh->mTangents[i].x;
+            //vector.y = mesh->mTangents[i].y;
+            //vector.z = mesh->mTangents[i].z;
+            //vertex.Tangent = vector;
 
-            vector.x = mesh->mBitangents[i].x;
-            vector.y = mesh->mBitangents[i].y;
-            vector.z = mesh->mBitangents[i].z;
-            vertex.Bitangent = vector;
+            //vector.x = mesh->mBitangents[i].x;
+            //vector.y = mesh->mBitangents[i].y;
+            //vector.z = mesh->mBitangents[i].z;
+            //vertex.Bitangent = vector;
         } else
             vertex.TexCoords = v2(-1.0f, -1.0f);
 
@@ -91,6 +91,6 @@ void Models::LoadMeshesFromScene(vector<Mesh>& meshes, aiNode* node, const aiSce
 
 Model* GetModelFromBoundingBoxIndex(int box_index)
 {
-    //return R.models[box_index];
+    // return R.models[box_index];
     return nullptr;
 }

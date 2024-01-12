@@ -17,16 +17,12 @@ class Shader;
 
 class MeshInBuffer {
 public:
-    u32 mesh_data_index; // Index under which this mesh instance is present in MeshBuffer
-    u32 color_data_index; // Index under which this mesh's color  is present in MeshBuffer
+    u32 pos_in_buffer;
+    u32 buffer_index;
 
     void ChangeColor(v4 color);
     void ChangePosition(v3 position);
     void ChangeSize(v3 size);
-};
-
-struct ModelInBuffer {
-    std::vector<MeshInBuffer> meshes;
 };
 
 class Mesh {

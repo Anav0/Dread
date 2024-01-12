@@ -6,16 +6,24 @@
 #include "Model.h"
 #include "Renderer.h"
 
-ModelInBuffer AddModel(std::string model, v3 position, v3 size, u32 buffer_index)
+std::vector<MeshInBuffer> AddModel(v3 position, v3 size, std::string model_name, v4 color = { 0.0f, 0.0f, 0.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f)
 {
-    m4 matrix = glm::translate(m4(1.0), position);
-    auto buffer = &R.buffers[buffer_index];
+    Model* model = RM.GetModel(model_name);
 
-    return buffer->RenderModel(model, position, size);
-    return ModelInBuffer();
-}
+    std::vector<MeshInBuffer> meshes;
 
-ModelInBuffer RenderSphere(v3 position, v3 size, u32 buffer_index)
-{
-    return AddModel("sphere", position, size, buffer_index);
+    for (auto& mesh : model->meshes) {
+        InstancedBuffer* buffer;
+        buffer = R.GetBuffer(mesh.id);
+        if (buffer == nullptr)
+            buffer = R.CreateBuffer(mesh);
+
+        auto mesh_in_buffer = buffer->AddMesh(position, size, color, rotation, scale);
+        mesh_in_buffer.buffer_index = R.buffers.size() - 1;
+        meshes.push_back(mesh_in_buffer);
+    }
+
+    assert(meshes.size() > 0);
+
+    return meshes;
 }

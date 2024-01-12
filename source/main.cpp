@@ -62,54 +62,37 @@ int main(int argc, char* argv[])
     Shader* texture_shader = RM.LoadShader("texture.vert", "texture.frag", "texture");
     Shader* objects_shader = RM.LoadShader("object.vert", "object.frag", "object");
     Shader* debug_shader = RM.LoadShader("debug.vert", "debug.frag", "debug");
+    Shader* mesh_shader = RM.LoadShader("mesh.vert", "mesh.frag", "mesh");
 
     R.object_shader = objects_shader;
 
     RM.LoadModel("map/map4.obj", "map");
     RM.LoadModel("sphere/sphere.obj", "sphere");
+    RM.LoadModel("cube/cube.obj", "cube");
 
-    std::vector<std::string> models;
-    models.push_back("map");
-    models.push_back("sphere");
+    auto map_buffer_data = AddModel({ 0, 0, 0 }, { 10, 10, 10 }, "map", GREY, 0.0f, 1.0f);
 
-    MeshBuffer* buffer = R.CreateMeshBuffer(models);
-
-    ModelInBuffer sphere = RenderSphere({ 0, 0, 0 }, { 150, 150, 150 });
-
-    // Model* ukraine_map = RM.LoadModel("map/map4.obj", "map");
-    //  TODO: move to nice fn
-    // R.models.push_back(ukraine_map);
-    // u32 ukraine_map_model_index = R.models.size() - 1;
-    //  ---
     std::vector<Oblast> oblasts;
     int i = 0;
-    v4 color = { 0, 0, 0, 0 };
     std::set<OblastCode> to_show = {
         Lviv,
         Donetsk,
         Crimea
     };
     STATE.bounding_draw_mode = BoundingDrawMode::ALL;
-    /*   for (Mesh* mesh : ukraine_map->meshes) {
-           SetupBoundingBox(mesh, ukraine_map_model_index);
-           oblasts.push_back(Oblast(mesh, static_cast<OblastCode>(i), "Oblast", 1.0));
-           if (to_show.contains(oblasts[i].code)) {
-               STATE.bounding_boxes_to_draw.insert(i);
-               for (auto& v : oblasts[i].mesh->vertices) {
-                   v.Color = { 1.0, 0.2, 0.2, 1.0 };
-               }
-               oblasts[i].mesh->UpdateBuffer();
-           } else {
-               for (auto& v : oblasts[i].mesh->vertices) {
-                   v.Color = color;
-               }
-               oblasts[i].mesh->UpdateBuffer();
-               color.r += 0.025;
-               color.b += 0.025;
-               color.a = 1.0;
-           }
-           i++;
-       }*/
+
+    std::vector<v4> pallette;
+    pallette.push_back(RED);
+    pallette.push_back(GOLD);
+    pallette.push_back(YELLOW);
+
+    for (auto& mesh : map_buffer_data) {
+        //oblasts.push_back(Oblast(mesh, static_cast<OblastCode>(i), "Oblast", 1.0));
+
+        auto color = pallette[i % pallette.size()];
+        mesh.ChangeColor(color);
+        i++;
+    }
 
     m4 projection = glm::perspective(glm::radians(camera->zoom), (float)STATE.window.screen_size.x / (float)STATE.window.screen_size.y, 0.1f, 100.0f);
 

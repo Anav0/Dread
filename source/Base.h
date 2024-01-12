@@ -24,10 +24,6 @@ struct Vertex {
     v3 Position;
     v3 Normal;
     v2 TexCoords = { -1, -1 };
-    v3 Tangent;
-    v3 Bitangent;
-    int m_BoneIDs[MAX_BONE_INFLUENCE];
-    f32 m_Weights[MAX_BONE_INFLUENCE];
 
     Vertex() { }
     Vertex(v3 pos) { Position = pos; };
