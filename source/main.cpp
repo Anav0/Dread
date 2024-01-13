@@ -70,7 +70,14 @@ int main(int argc, char* argv[])
     RM.LoadModel("sphere/sphere.obj", "sphere");
     RM.LoadModel("cube/cube.obj", "cube");
 
-    auto map_buffer_data = AddModel({ 0, 0, 0 }, "map", GREY, 0, 1);
+    // auto map_buffer_data = AddModel({ 0, 0, 0 }, "map", GREY, 0, 1);
+    v3 pos = { 0, 0, 0 };
+    std::vector<MeshInBuffer> meshes;
+    for (size_t i = 0; i < 10; i++) {
+        auto mesh = AddModel(pos, "sphere", GREY, 0, 1)[0];
+        SetupBoundingBox(mesh);
+        pos.x += 5;
+    }
 
     std::vector<Oblast> oblasts;
     int i = 0;
@@ -86,10 +93,10 @@ int main(int argc, char* argv[])
     pallette.push_back(GOLD);
     pallette.push_back(YELLOW);
 
-    for (auto& mesh : map_buffer_data) {
+ /*   for (auto& mesh : map_buffer_data) {
         SetupBoundingBox(mesh);
         oblasts.push_back(Oblast(mesh, static_cast<OblastCode>(i), "Oblast", 1.0));
-    }
+    }*/
 
     m4 projection = glm::perspective(glm::radians(camera->zoom), (float)STATE.window.screen_size.x / (float)STATE.window.screen_size.y, 0.1f, 100.0f);
 
@@ -104,6 +111,8 @@ int main(int argc, char* argv[])
 
         if (STATE.window.buttonAction == PRESSED && STATE.window.buttonType == LEFT) {
             Ray ray = GetRayFromEyes(&projection);
+            // AddModel(STATE.window.camera.position, "sphere", YELLOW, 0, 0.1);
+            // AddModel(ray.position, "sphere", BLUE, 0, 0.1);
             Collision c = CheckRayCollision(ray, projection);
             if (c.hit_something) {
                 switch (c.what_was_hit) {

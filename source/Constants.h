@@ -32,10 +32,11 @@ typedef glm::mat2 m2;
 //typedef std::vector vec;
 
 constexpr v4 YELLOW = v4(0.96f, 0.76f, 0.47f, 1.0f);
-constexpr v4 RED = v4(0.58f, 0.03f, 0.01f, 1.0f);
-constexpr v4 WHITE = v4(1.0f, 1.0f, 1.0f, 1.0f);
-constexpr v4 BLACK = v4(0.0f, 0.0f, 0.0f, 1.0f);
-constexpr v4 GOLD = v4(0.92f, 0.71f, 0.23f, 1.0f);
-constexpr v4 GREY = v4(0.5f, 0.5, 0.5, 1.0f);
+constexpr v4 BLUE   = v4(0.34f, 0.61f, 0.78f, 1.0f);
+constexpr v4 RED    = v4(0.58f, 0.03f, 0.01f, 1.0f);
+constexpr v4 WHITE  = v4(1.0f, 1.0f, 1.0f, 1.0f);
+constexpr v4 BLACK  = v4(0.0f, 0.0f, 0.0f, 1.0f);
+constexpr v4 GOLD   = v4(0.92f, 0.71f, 0.23f, 1.0f);
+constexpr v4 GREY   = v4(0.5f, 0.5, 0.5, 1.0f);
 
 #endif

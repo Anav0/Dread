@@ -5,23 +5,13 @@
 
 inline v3 TransformV3(v3 v, m4 mat)
 {
-    float x = v.x;
-    float y = v.y;
-    float z = v.z;
-
-    v3 result;
-    result.x = mat[0][0] * x + mat[0][1] * y + mat[0][2] * z + mat[0][3];
-    result.y = mat[1][0] * x + mat[1][1] * y + mat[1][2] * z + mat[1][3];
-    result.z = mat[2][0] * x + mat[2][1] * y + mat[2][2] * z + mat[2][3];
-
-    return result;
+    return mat * v4(v, 1.0);
 }
 
 inline v3 Vector3Subtract(v3 v1, v3 v2)
 {
     return { v1.x - v2.x, v1.y - v2.y, v1.z - v2.z };
 }
-
 inline v3 Vector3CrossProduct(v3 v1, v3 v2)
 {
     return { v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x };
@@ -295,8 +285,8 @@ void SetupBoundingBox(MeshInBuffer mesh)
             max_z = v->Position.z;
     }
 
-    v3 min = { min_x, min_y, min_z };
-    v3 max = { max_x, max_y, max_z };
+    v3 min = TransformV3({ min_x, min_y, min_z }, mesh.GetMatrix());
+    v3 max = TransformV3({ max_x, max_y, max_z }, mesh.GetMatrix());
 
     auto box = BoundingBox(min, max, mesh);
     auto key = mesh.DeriveKeyFromIndexes();

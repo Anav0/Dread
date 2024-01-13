@@ -88,6 +88,7 @@ public:
     }
 
     void Draw(Shader* shader, m4* projection, Texture* atlas);
+    m4 GetMatrix(u32 index);
 
     MeshInBuffer AddMesh(v3 position, v3 size, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f);
     MeshInBuffer AddMesh(v3 position, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f);

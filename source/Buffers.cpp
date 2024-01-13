@@ -70,6 +70,11 @@ void InstancedBuffer::Draw(Shader* shader, m4* projection, Texture* atlas)
     glBindVertexArray(0);
 }
 
+m4 InstancedBuffer::GetMatrix(u32 index)
+{
+    return matrices[index];
+}
+
 MeshInBuffer InstancedBuffer::AddMesh(v3 position, v3 size, v4 color, f32 rotation, f32 scale)
 {
     auto mesh_in_buffer = MeshInBuffer();

@@ -21,6 +21,7 @@ public:
     u32 buffer_index;
 
     std::string DeriveKeyFromIndexes();
+    m4 GetMatrix();
     void ChangeColor(v4 color);
     void ChangePosition(v3 position);
     void ChangeSize(v3 size);
