@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 {
     // STATE = GameState();
     STATE.window = WindowManager();
-    STATE.window.camera = Camera(v3(0.22f, 22.0f, 10.0f), -84.0f, -67.0f);
+    STATE.window.camera = Camera(v3(4.8f, 31.0f, 17.0f), -84.0f, -76.0f);
 
     if (!STATE.window.Init()) {
         return -1;
@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
         R.Update();
         R.Draw();
 
-        // printf("Camera: %f %f %f | %f %f\r", camera->position.x, camera->position.y, camera->position.z, camera->yaw, camera->pitch);
+        printf("Camera: %f %f %f | %f %f\r", camera->position.x, camera->position.y, camera->position.z, camera->yaw, camera->pitch);
 
         glfwSwapBuffers(window->window);
     }
