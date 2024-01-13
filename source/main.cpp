@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 {
     // STATE = GameState();
     STATE.window = WindowManager();
-    STATE.window.camera = Camera(v3(4.8f, 31.0f, 17.0f), -84.0f, -76.0f);
+    STATE.window.camera = Camera(v3(0.22f, 22.0f, 10.0f), -84.0f, -67.0f);
 
     if (!STATE.window.Init()) {
         return -1;
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
     RM.LoadModel("sphere/sphere.obj", "sphere");
     RM.LoadModel("cube/cube.obj", "cube");
 
-    auto map_buffer_data = AddModel({ 0, 0, 0 }, { 10, 10, 10 }, "map", GREY, 0.0f, 1.0f);
+    auto map_buffer_data = AddModel({ 0, 0, 0 }, "map", GREY, 0, 1);
 
     std::vector<Oblast> oblasts;
     int i = 0;
@@ -87,11 +87,8 @@ int main(int argc, char* argv[])
     pallette.push_back(YELLOW);
 
     for (auto& mesh : map_buffer_data) {
-        //oblasts.push_back(Oblast(mesh, static_cast<OblastCode>(i), "Oblast", 1.0));
-
-        auto color = pallette[i % pallette.size()];
-        mesh.ChangeColor(color);
-        i++;
+        SetupBoundingBox(mesh);
+        oblasts.push_back(Oblast(mesh, static_cast<OblastCode>(i), "Oblast", 1.0));
     }
 
     m4 projection = glm::perspective(glm::radians(camera->zoom), (float)STATE.window.screen_size.x / (float)STATE.window.screen_size.y, 0.1f, 100.0f);
@@ -114,7 +111,7 @@ int main(int argc, char* argv[])
                     printf("Hit bounding box\n");
                     break;
                 case eModel:
-                    printf("Hit model, mesh index: %i\n", c.mesh_index);
+                    printf("Hit model\n");
                     break;
                 }
             } else {

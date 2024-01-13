@@ -47,6 +47,16 @@ inline m4 GetTransformMatrix(v3 position, v3 size, float rotate = 0.0, v3 scale 
     return model;
 }
 
+inline m4 GetTransformMatrix(v3 position, float rotate = 0.0, v3 scale = v3(1.0, 1.0, 1.0))
+{
+    m4 model = m4(1.0f);
+    model = glm::translate(model, position);
+    model = glm::rotate(model, glm::radians(rotate), v3(0.0f, 0.0f, 1.0f));
+    model = glm::scale(model, scale);
+
+    return model;
+}
+
 struct AtlasTextureInfo {
     v2 position, size, scale;
     const char* uniqueId;

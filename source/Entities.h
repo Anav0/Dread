@@ -39,7 +39,7 @@ enum OblastCode {
 };
 
 struct Oblast : public Entity {
-    Oblast(Mesh* mesh, OblastCode code, const char* name, float ukrainian_control)
+    Oblast(MeshInBuffer mesh, OblastCode code, const char* name, float ukrainian_control)
     {
         this->mesh = mesh;
         this->code = code;
@@ -47,7 +47,7 @@ struct Oblast : public Entity {
         this->ukrainian_control = ukrainian_control;
     }
 
-    Mesh* mesh;
+    MeshInBuffer mesh;
     OblastCode code;
     const char* name;
     float ukrainian_control;

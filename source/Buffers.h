@@ -23,14 +23,13 @@ class InstancedBuffer {
 
     unsigned int VBO = 0;
 
-    // Static
-    Mesh mesh;
-
     // Dynamic
     std::vector<m4> matrices;
     std::vector<v4> colors;
 
 public:
+    Mesh mesh;
+
     InstancedBuffer(Mesh mesh);
 
     void Allocate();
@@ -91,6 +90,7 @@ public:
     void Draw(Shader* shader, m4* projection, Texture* atlas);
 
     MeshInBuffer AddMesh(v3 position, v3 size, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f);
+    MeshInBuffer AddMesh(v3 position, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f);
 };
 
 #endif

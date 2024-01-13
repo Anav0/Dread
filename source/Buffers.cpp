@@ -15,7 +15,7 @@ void InstancedBuffer::Allocate()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
     auto matrices_size = sizeof(m4) * matrices.size();
-    auto colors_size   = sizeof(v4) * colors.size();
+    auto colors_size = sizeof(v4) * colors.size();
 
     std::size_t vec4Size = sizeof(v4);
 
@@ -38,7 +38,7 @@ void InstancedBuffer::Allocate()
     glVertexAttribDivisor(6, 1);
     glVertexAttribDivisor(7, 1); // Color
 
-    glBufferData(GL_ARRAY_BUFFER, matrices_size+colors_size, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, matrices_size + colors_size, NULL, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, matrices_size, &matrices[0]);
     glBufferSubData(GL_ARRAY_BUFFER, matrices_size, colors_size, &colors[0]);
 
@@ -54,6 +54,11 @@ void InstancedBuffer::Draw(Shader* shader, m4* projection, Texture* atlas)
         glActiveTexture(GL_TEXTURE0);
         atlas->Bind();
     }
+
+    if (STATE.mode == RenderMode::WIREFRAME)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    else
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     shader->Use();
     shader->setInt("imageSampler", 0);
@@ -71,6 +76,20 @@ MeshInBuffer InstancedBuffer::AddMesh(v3 position, v3 size, v4 color, f32 rotati
 
     this->colors.push_back(color);
     this->matrices.push_back(GetTransformMatrix(position, size, rotation, v3(scale)));
+
+    mesh_in_buffer.pos_in_buffer = this->colors.size() - 1;
+
+    // Speed: slow and not ideal
+    Allocate();
+
+    return mesh_in_buffer;
+}
+MeshInBuffer InstancedBuffer::AddMesh(v3 position, v4 color, f32 rotation, f32 scale)
+{
+    auto mesh_in_buffer = MeshInBuffer();
+
+    this->colors.push_back(color);
+    this->matrices.push_back(GetTransformMatrix(position, rotation, v3(scale)));
 
     mesh_in_buffer.pos_in_buffer = this->colors.size() - 1;
 

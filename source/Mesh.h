@@ -20,6 +20,7 @@ public:
     u32 pos_in_buffer;
     u32 buffer_index;
 
+    std::string DeriveKeyFromIndexes();
     void ChangeColor(v4 color);
     void ChangePosition(v3 position);
     void ChangeSize(v3 size);

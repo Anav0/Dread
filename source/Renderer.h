@@ -15,18 +15,19 @@ class Shader;
 typedef int ID;
 
 class Model;
+class MeshInBuffer;
 
 class Renderer {
 
 public:
     std::vector<InstancedBuffer> buffers;
+    std::vector<BoundingBox> boxes;
 
     m4 projection;
 
     Shader* object_shader;
 
     // Model index by bounding boxes
-    std::map<u32, std::vector<BoundingBox>> boxes;
     std::map<std::string, u32> mesh_by_buffor_index;
 
     Renderer();

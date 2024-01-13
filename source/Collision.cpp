@@ -80,24 +80,13 @@ inline v3 Vector3Negate(v3 v)
 
 Collision CheckRayCollision(Ray ray, m4 projection)
 {
-    u32 model_index_in_renderer = -1;
-    Collision collision = CheckRayCollisionWithBoundingBoxes(ray, projection, &model_index_in_renderer);
+    Collision collision = CheckRayCollisionWithBoundingBoxes(ray, projection);
 
     if (!collision.hit_something)
         return collision;
 
-    //Model* model = R.models[model_index_in_renderer];
-
-    /*for (size_t i = 0; i < model->meshes.size(); i++) {
-        Mesh* mesh = model->meshes[i];
-        Collision c = CheckMeshCollision(&ray, mesh, projection);
-        if (c.hit_something) {
-            c.what_was_hit = eModel;
-            c.mesh_index = i;
-            return c;
-        }
-    }*/
-
+    auto mesh_in_buffer = collision.box.mesh_info;
+    mesh_in_buffer.ChangeColor(RED);
     return collision;
 }
 
@@ -106,33 +95,31 @@ Collision CheckRayCollisionWithModels(Ray ray, m4 projection)
     Collision collision;
     collision.hit_something = false;
 
-   /* for (auto model : R.models) {
-        for (auto mesh : model->meshes) {
-            Collision c = CheckMeshCollision(&ray, mesh, projection);
-            if (c.hit_something) {
-                return c;
-            }
-        }
-    }*/
+    /* for (auto model : R.models) {
+         for (auto mesh : model->meshes) {
+             Collision c = CheckMeshCollision(&ray, mesh, projection);
+             if (c.hit_something) {
+                 return c;
+             }
+         }
+     }*/
     return collision;
 }
 
-Collision CheckRayCollisionWithBoundingBoxes(Ray ray, m4 projection, u32* model_index_in_renderer)
+Collision CheckRayCollisionWithBoundingBoxes(Ray ray, m4 projection)
 {
     Collision collision;
     collision.hit_something = false;
 
     u32 i = 0;
-    for (auto const& [key, boxes] : R.boxes) {
-        for (auto const& box : boxes) {
-            Collision c = CheckBoundingBoxCollision(ray, box);
-            if (c.hit_something) {
-                printf("Bounding box hit! ID: %i\n", i);
-                *model_index_in_renderer = key;
-                return c;
-            }
-            i++;
+    for (auto const& box : R.boxes) {
+        Collision c = CheckBoundingBoxCollision(ray, box);
+        if (c.hit_something) {
+            printf("Bounding box hit! ID: %i\n", i);
+            c.box = box;
+            return c;
         }
+        i++;
     }
     return collision;
 }
@@ -277,16 +264,11 @@ Collision CheckTriangleCollision(Ray* ray, v3 p1, v3 p2, v3 p3)
     return collision;
 }
 
-void SetupBoundingBox(Mesh* mesh, u32 parent_model_index_in_renderer)
+void SetupBoundingBox(MeshInBuffer mesh)
 {
-    v3 min, max;
-    CalculateBoundingBoxMinAndMaxPoints(mesh, &min, &max);
-    R.boxes[parent_model_index_in_renderer].push_back(BoundingBox(min, max));
-}
+    auto buffer = R.GetBufferByIndex(mesh.buffer_index);
 
-void CalculateBoundingBoxMinAndMaxPoints(Mesh* mesh, v3* min, v3* max)
-{
-    auto& vertices = mesh->vertices;
+    auto& vertices = buffer->mesh.vertices;
     f32 max_x = vertices[0].Position.x;
     f32 max_y = vertices[0].Position.y;
     f32 max_z = vertices[0].Position.z;
@@ -313,6 +295,10 @@ void CalculateBoundingBoxMinAndMaxPoints(Mesh* mesh, v3* min, v3* max)
             max_z = v->Position.z;
     }
 
-    *min = { min_x, min_y, min_z };
-    *max = { max_x, max_y, max_z };
+    v3 min = { min_x, min_y, min_z };
+    v3 max = { max_x, max_y, max_z };
+
+    auto box = BoundingBox(min, max, mesh);
+    auto key = mesh.DeriveKeyFromIndexes();
+    R.boxes.push_back(box);
 }

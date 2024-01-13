@@ -20,16 +20,18 @@ public:
     Shader* shader;
     m4 model;
     bool is_dirty;
+    MeshInBuffer mesh_info;
 
     BoundingBox()
     {
         this->shader = RM.GetShader("debug");
     }
 
-    BoundingBox(v3 min, v3 max)
+    BoundingBox(v3 min, v3 max, MeshInBuffer mesh_info)
     {
         this->max = max;
         this->min = min;
+        this->mesh_info = mesh_info;
 
         v3 size;
         size.x = fabsf(max.x - min.x);

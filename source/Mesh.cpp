@@ -48,7 +48,6 @@ void Mesh::Draw(Shader* shader, m4* projection, m4 model)
     }
 
     glBindVertexArray(VAO);
-    //glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
     glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0, 10);
     glBindVertexArray(0);
 
@@ -89,6 +88,11 @@ void Mesh::Setup()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
 
     glBindVertexArray(0);
+}
+
+std::string MeshInBuffer::DeriveKeyFromIndexes()
+{
+    return std::string(buffer_index + "_" + pos_in_buffer);
 }
 
 void MeshInBuffer::ChangeColor(v4 color)
