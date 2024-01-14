@@ -2,6 +2,7 @@
 #include "Mesh.h"
 #include "Model.h"
 #include "ResourceManager.h"
+#include "GameState.h"
 
 InstancedBuffer::InstancedBuffer(Mesh mesh)
 {

@@ -88,7 +88,6 @@ int main(int argc, char* argv[])
         OblastCode::Donetsk,
         OblastCode::Crimea
     };
-    STATE.bounding_draw_mode = BoundingDrawMode::ALL;
 
     std::vector<v4> pallette;
     pallette.push_back(RED);
@@ -97,7 +96,8 @@ int main(int argc, char* argv[])
 
        for (auto& mesh : map_buffer_data) {
            SetupBoundingBox(mesh);
-           oblasts.push_back(Oblast(mesh, static_cast<OblastCode>(i), "Oblast", 1.0));
+           auto code = static_cast<OblastCode>(i);
+           oblasts.push_back(Oblast(mesh, static_cast<OblastCode>(i), OBLAST_NAMES.at(code)));
        }
 
     m4 projection = glm::perspective(glm::radians(camera->zoom), (f32)STATE.window.screen_size.x / (f32)STATE.window.screen_size.y, 0.1f, 1000.0f);

@@ -19,7 +19,6 @@ class MeshInBuffer {
 public:
     u32 pos_in_buffer;
     u32 buffer_index;
-
     std::string DeriveKeyFromIndexes();
     m4 GetMatrix();
     void ChangeColor(v4 color);

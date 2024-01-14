@@ -2,7 +2,6 @@
 
 #include <vector>
 
-#include "GameState.h"
 #include "Misc.h"
 #include "Shader.h"
 

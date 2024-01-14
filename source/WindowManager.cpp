@@ -116,8 +116,6 @@ void WindowManager::ProcessInput()
         STATE.mode = RenderMode::NORMAL;
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
         STATE.mode = RenderMode::WIREFRAME;
-    if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
-        STATE.bounding_draw_mode = BoundingDrawMode::ALL;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)

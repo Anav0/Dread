@@ -5,26 +5,30 @@
 
 #include "Camera.h"
 #include "WindowManager.h"
+#include "Constants.h"
+#include "Entities.h"
+
 #include <set>
+#include <array>
 
 enum class RenderMode {
     WIREFRAME,
     NORMAL,
 };
 
-enum class BoundingDrawMode {
-    SET,
-    ALL
-};
+constexpr static u8 NUMBER_OF_OBLASTS    = 26;
+constexpr static u8 NUMBER_OF_SUPPORTERS = 10;
 
 struct GameState {
+    // Other
     WindowManager window;
     RenderMode mode = RenderMode::NORMAL;
-
-    std::set<u32> bounding_boxes_to_draw = {};
-    BoundingDrawMode bounding_draw_mode = BoundingDrawMode::SET;
-
     bool show_collisions = true;
+
+    // Game state
+    std::array<Oblast, NUMBER_OF_OBLASTS>    oblasts;
+    std::array<Oblast, NUMBER_OF_SUPPORTERS> supporters;
+    
 };
 
 extern GameState STATE;
