@@ -98,6 +98,19 @@ enum class CountryCode {
     FI,
 };
 
+const std::map<CountryCode, const char*> COUNTRY_NAMES = {
+    { CountryCode::USA, "United States" },
+    { CountryCode::DE, "Germany" },
+    { CountryCode::UK, "Britain" },
+    { CountryCode::PL, "Poland" },
+    { CountryCode::FR, "France" },
+    { CountryCode::SP, "Spain" },
+    { CountryCode::SE, "Sweden" },
+    { CountryCode::CZ, "Czechia" },
+    { CountryCode::HU, "Hungry" },
+    { CountryCode::FI, "Finland" },
+};
+
 struct Country {
     CountryCode code = CountryCode::UK;
     const char* name = "";
