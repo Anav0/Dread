@@ -20,6 +20,7 @@ Ray GetRayFromEyes(m4* projection)
     v2 mouse = v2(STATE.window.mouse_x, STATE.window.mouse_y);
     v2 screen = STATE.window.screen_size;
 
+    // To normalized device space
     f32 mouseX = mouse.x  / (screen.x * 0.5f) - 1.0f;
     f32 mouseY = mouse.y / (screen.y * 0.5f) - 1.0f;
 
