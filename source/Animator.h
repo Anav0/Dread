@@ -42,7 +42,7 @@ class Animator {
     std::map<std::string, v4> base_vec4;
     std::map<std::string, v3> remembered_vec3;
     std::map<std::string, v2> base_vec2;
-    std::map<std::string, float> base_float;
+    std::map<std::string, f32> base_float;
     std::map<std::string, int> prev_index;
     std::map<std::string, int> animation_counter;
     std::map<std::string, bool> remembered_bool;
@@ -61,9 +61,9 @@ public:
     template <typename T>
     bool SetupForRepeat(std::string& key, std::vector<KeyFrame<T>>& keyframes, int& current_keyframe_index, KeyFrame<T>*& current_keyframe);
     void AdjustRepeatCounter(std::string& key);
-    void AnimateFloat(std::string key, WindowManager* mgr, float* base, std::vector<KeyFrame<float>>& keyframes);
+    void AnimateFloat(std::string key, WindowManager* mgr, f32* base, std::vector<KeyFrame<f32>>& keyframes);
     template <typename T>
-    double GetElapsedTime(steady_clock::time_point now, KeyFrame<T>* current_keyframe);
+    f64 GetElapsedTime(steady_clock::time_point now, KeyFrame<T>* current_keyframe);
     void Repeat(RepetitionMode mode, int n = 0);
     void Direction(RepetitionDirection direction);
 

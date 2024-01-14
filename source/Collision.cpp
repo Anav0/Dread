@@ -17,12 +17,12 @@ inline v3 Vector3CrossProduct(v3 v1, v3 v2)
     return { v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x };
 }
 
-inline float Vector3DotProduct(v3 v1, v3 v2)
+inline f32 Vector3DotProduct(v3 v1, v3 v2)
 {
     return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
 }
 
-inline v3 Vector3Lerp(v3 v1, v3 v2, float amount)
+inline v3 Vector3Lerp(v3 v1, v3 v2, f32 amount)
 {
     v3 result;
 
@@ -36,9 +36,9 @@ inline v3 Vector3Normalize(v3 v)
 {
     v3 result = v;
 
-    float length = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+    f32 length = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
     if (length != 0.0f) {
-        float ilength = 1.0f / length;
+        f32 ilength = 1.0f / length;
 
         result.x *= ilength;
         result.y *= ilength;
@@ -53,7 +53,7 @@ inline v3 Vector3Add(v3 v1, v3 v2)
     return { v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
 }
 
-inline v3 Vector3Scale(v3 v, float scalar)
+inline v3 Vector3Scale(v3 v, f32 scalar)
 {
     return { v.x * scalar, v.y * scalar, v.z * scalar };
 }
@@ -125,7 +125,7 @@ Collision CheckBoundingBoxCollision(Ray ray, BoundingBox box)
     if (insideBox)
         ray.direction = Vector3Negate(ray.direction);
 
-    float t[11] = { 0 };
+    f32 t[11] = { 0 };
 
     t[8] = 1.0f / ray.direction.x;
     t[9] = 1.0f / ray.direction.y;
@@ -137,8 +137,8 @@ Collision CheckBoundingBoxCollision(Ray ray, BoundingBox box)
     t[3] = (box.max.y - ray.position.y) * t[9];
     t[4] = (box.min.z - ray.position.z) * t[10];
     t[5] = (box.max.z - ray.position.z) * t[10];
-    t[6] = (float)fmax(fmax(fmin(t[0], t[1]), fmin(t[2], t[3])), fmin(t[4], t[5]));
-    t[7] = (float)fmin(fmin(fmax(t[0], t[1]), fmax(t[2], t[3])), fmax(t[4], t[5]));
+    t[6] = (f32)fmax(fmax(fmin(t[0], t[1]), fmin(t[2], t[3])), fmin(t[4], t[5]));
+    t[7] = (f32)fmin(fmin(fmax(t[0], t[1]), fmax(t[2], t[3])), fmax(t[4], t[5]));
 
     collision.hit_something = !((t[7] < 0) || (t[6] > t[7]));
     collision.distance = t[6];
@@ -155,9 +155,9 @@ Collision CheckBoundingBoxCollision(Ray ray, BoundingBox box)
     collision.normal = Vector3Divide(collision.normal, Vector3Subtract(box.max, box.min));
     // The relevant elements of the vector are now slightly larger than 1.0f (or smaller than -1.0f)
     // and the others are somewhere between -1.0 and 1.0 casting to int is exactly our wanted normal!
-    collision.normal.x = (float)((int)collision.normal.x);
-    collision.normal.y = (float)((int)collision.normal.y);
-    collision.normal.z = (float)((int)collision.normal.z);
+    collision.normal.x = (f32)((int)collision.normal.x);
+    collision.normal.y = (f32)((int)collision.normal.y);
+    collision.normal.z = (f32)((int)collision.normal.z);
 
     collision.normal = Vector3Normalize(collision.normal);
 
@@ -203,7 +203,7 @@ Collision CheckTriangleCollision(Ray* ray, v3 p1, v3 p2, v3 p3)
     v3 edge1;
     v3 edge2;
     v3 p, q, tv;
-    float det, invDet, u, v, t;
+    f32 det, invDet, u, v, t;
 
     // Find vectors for two edges sharing V1
     edge1 = Vector3Subtract(p2, p1);

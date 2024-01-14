@@ -32,17 +32,17 @@ struct Vertex {
 struct Transform {
     v3 position, size, scale;
 
-    float rotation;
+    f32 rotation;
 };
 
 struct UiTransform {
     v2 size, position;
     m4* projection;
-    float rotation = 0.0f;
+    f32 rotation = 0.0f;
     AlignX align_x;
     AlignY align_y;
 
-    float padding[4] = { 0.0, 0.0, 0.0, 0.0 };
+    f32 padding[4] = { 0.0, 0.0, 0.0, 0.0 };
     v3 scale = v3(1.0f);
 };
 

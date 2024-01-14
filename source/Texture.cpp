@@ -8,7 +8,7 @@ Texture::Texture()
 	glGenTextures(1, &this->ID);
 }
 
-void Texture::Generate(unsigned int width, unsigned int height, unsigned char* data)
+void Texture::Generate(u32 width, u32 height, unsigned char* data)
 {
 	this->Width = width;
 	this->Height = height;

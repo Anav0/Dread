@@ -13,7 +13,7 @@
 
 class Shader {
 public:
-    unsigned int ID;
+    u32 ID;
 
     Shader() { }
 
@@ -57,7 +57,7 @@ public:
         const char* fShaderCode = fragmentCode.c_str();
 
         // 2. compile shaders
-        unsigned int vertex, fragment;
+        u32 vertex, fragment;
 
         // vertex shader
         vertex = glCreateShader(GL_VERTEX_SHADER);
@@ -72,7 +72,7 @@ public:
         checkCompileErrors(fragment, "FRAGMENT");
 
         // if geometry shader is given, compile geometry shader
-        unsigned int geometry;
+        u32 geometry;
         if (!geometryPath.empty()) {
             const char* gShaderCode = geometryCode.c_str();
             geometry = glCreateShader(GL_GEOMETRY_SHADER);
@@ -113,7 +113,7 @@ public:
         glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
     }
     // ------------------------------------------------------------------------
-    void setFloat(const std::string& name, float value) const
+    void setFloat(const std::string& name, f32 value) const
     {
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
     }
@@ -122,7 +122,7 @@ public:
     {
         glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
     }
-    void setVec2(const std::string& name, float x, float y) const
+    void setVec2(const std::string& name, f32 x, f32 y) const
     {
         glUniform2f(glGetUniformLocation(ID, name.c_str()), x, y);
     }
@@ -131,7 +131,7 @@ public:
     {
         glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
     }
-    void setVec3(const std::string& name, float x, float y, float z) const
+    void setVec3(const std::string& name, f32 x, f32 y, f32 z) const
     {
         glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
     }
@@ -140,7 +140,7 @@ public:
     {
         glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
     }
-    void setVec4(const std::string& name, float x, float y, float z, float w)
+    void setVec4(const std::string& name, f32 x, f32 y, f32 z, f32 w)
     {
         glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
     }

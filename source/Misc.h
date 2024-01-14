@@ -3,24 +3,24 @@
 #include "Constants.h"
 #include <glm/ext/matrix_transform.hpp>
 
-inline void convertToOpenglCoordSystem(double x, double y, double* ox, double* oy, int maxWidth, int maxHeight)
+inline void convertToOpenglCoordSystem(f64 x, f64 y, f64* ox, f64* oy, int maxWidth, int maxHeight)
 {
     *ox = 2 * x / maxWidth - 1;
     *oy = -2 * y / maxHeight + 1;
 }
 
-inline bool isPointInRect(float x, float y, float w, float h, float p_x, float p_y)
+inline bool isPointInRect(f32 x, f32 y, f32 w, f32 h, f32 p_x, f32 p_y)
 {
-    float max_x = x + w;
-    float min_x = x;
+    f32 max_x = x + w;
+    f32 min_x = x;
 
-    float max_y = y + h;
-    float min_y = y;
+    f32 max_y = y + h;
+    f32 min_y = y;
 
     return p_x <= max_x && p_x >= min_x && p_y >= min_y && p_y <= max_y;
 }
 
-inline bool isPointInRect(v2 position, v2 size, float p_x, float p_y)
+inline bool isPointInRect(v2 position, v2 size, f32 p_x, f32 p_y)
 {
     return isPointInRect(position.x, position.y, size.x, size.y, p_x, p_y);
 }
@@ -30,12 +30,12 @@ inline void Move(m4* model, const v2 position)
     *model = glm::translate(*model, v3(position, 0.0f));
 }
 
-inline void Rotate(m4* model, const float degs)
+inline void Rotate(m4* model, const f32 degs)
 {
     *model = glm::rotate(*model, glm::radians(degs), v3(0.0f, 0.0f, 1.0f));
 }
 
-inline m4 GetTransformMatrix(v3 position, v3 size, float rotate = 0.0, v3 scale = v3(1.0, 1.0, 1.0))
+inline m4 GetTransformMatrix(v3 position, v3 size, f32 rotate = 0.0, v3 scale = v3(1.0, 1.0, 1.0))
 {
     m4 model = m4(1.0f);
     model = glm::translate(model, position);
@@ -47,7 +47,7 @@ inline m4 GetTransformMatrix(v3 position, v3 size, float rotate = 0.0, v3 scale 
     return model;
 }
 
-inline m4 GetTransformMatrix(v3 position, float rotate = 0.0, v3 scale = v3(1.0, 1.0, 1.0))
+inline m4 GetTransformMatrix(v3 position, f32 rotate = 0.0, v3 scale = v3(1.0, 1.0, 1.0))
 {
     m4 model = m4(1.0f);
     model = glm::translate(model, position);
@@ -81,7 +81,7 @@ inline void CenterChildInParent(v2* parent_pos, const v2* parent_size, v2* child
     CenterChildInParentY(parent_pos, parent_size, child_pos, child_size);
 }
 
-inline void ScaleToWidth(v2* scale, float actual_width, float desired_width)
+inline void ScaleToWidth(v2* scale, f32 actual_width, f32 desired_width)
 {
     scale->x = (desired_width / actual_width);
     scale->y = (desired_width / actual_width);

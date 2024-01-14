@@ -13,7 +13,7 @@ class Model;
 
 struct Collision {
     bool hit_something;
-    float distance;
+    f32 distance;
     v3 point;
     v3 normal;
     EntityType what_was_hit;

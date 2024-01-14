@@ -67,7 +67,7 @@ void Animator::RecalculateKeyframesStartAndEnd(std::string key, std::vector<KeyF
 }
 
 template <typename T>
-double Animator::GetElapsedTime(steady_clock::time_point now, KeyFrame<T>* current_keyframe)
+f64 Animator::GetElapsedTime(steady_clock::time_point now, KeyFrame<T>* current_keyframe)
 {
     auto end_time = current_keyframe->startpoint + current_keyframe->duration;
 
@@ -75,9 +75,9 @@ double Animator::GetElapsedTime(steady_clock::time_point now, KeyFrame<T>* curre
     auto now_time_ms = now.time_since_epoch().count();
     auto keyframe_start_time_ms = current_keyframe->startpoint.time_since_epoch().count();
 
-    double end_time_ms_double = (double)end_time_ms;
-    double now_time_ms_double = (double)now_time_ms;
-    double keyframe_start_time_ms_double = (double)keyframe_start_time_ms;
+    f64 end_time_ms_double = (f64)end_time_ms;
+    f64 now_time_ms_double = (f64)now_time_ms;
+    f64 keyframe_start_time_ms_double = (f64)keyframe_start_time_ms;
 
     auto elapsed = (now_time_ms_double - keyframe_start_time_ms_double) / (end_time_ms_double - keyframe_start_time_ms_double);
 
@@ -124,7 +124,7 @@ bool Animator::AnimateVec3(std::string key, v3* from, v3 to, milliseconds durati
     auto now = STATE.window.frame_start_time;
     auto diff = duration_cast<milliseconds>(now - *started);
 
-    double progress = (static_cast<double>(diff.count()) / duration_ms.count());
+    f64 progress = (static_cast<f64>(diff.count()) / duration_ms.count());
 
     if (progress > 1.0 || progress < 0.0)
         return false;
@@ -238,7 +238,7 @@ void Animator::AnimateVec4(std::string key, WindowManager* mgr, v4* final, std::
     prev_index[key] = current_keyframe_index;
 }
 
-void Animator::AnimateFloat(std::string key, WindowManager* mgr, float* final, std::vector<KeyFrame<float>>& keyframes)
+void Animator::AnimateFloat(std::string key, WindowManager* mgr, f32* final, std::vector<KeyFrame<f32>>& keyframes)
 {
     AdjustRepeatCounter(key);
 

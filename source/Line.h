@@ -7,8 +7,8 @@
 class Shader;
 
 class Line {
-    unsigned int VAO;
-    unsigned int VBO;
+    u32 VAO;
+    u32 VBO;
     std::vector<v3> points;
     m4 model;
 

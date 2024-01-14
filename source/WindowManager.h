@@ -33,13 +33,13 @@ public:
     Camera camera; // TODO: temporary
     v2 screen_size;
 
-    double mouse_x, mouse_y;
+    f64 mouse_x, mouse_y;
     MouseButton buttonType;
     MouseAction buttonAction;
 
     TimeManager time_manager;
 
-    float delta_time, last_frame;
+    f32 delta_time, last_frame;
     high_resolution_clock::time_point frame_start_time;
 
     bool Init();

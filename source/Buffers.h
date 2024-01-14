@@ -21,7 +21,7 @@ class MeshInBuffer;
 
 class InstancedBuffer {
 
-    unsigned int VBO = 0;
+    u32 VBO = 0;
 
     // Dynamic
     std::vector<m4> matrices;
@@ -34,7 +34,7 @@ public:
 
     void Allocate();
 
-    void UpdateMatrix(const u32 index, v3 size, v3 pos, float rotation = 0.0f) 
+    void UpdateMatrix(const u32 index, v3 size, v3 pos, f32 rotation = 0.0f) 
     {
         glBindVertexArray(mesh.VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);

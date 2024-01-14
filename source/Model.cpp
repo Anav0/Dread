@@ -7,17 +7,17 @@
 void Model::Draw(Shader* shader, m4* projection)
 {
     shader->Use();
-    for (unsigned int i = 0; i < meshes.size(); i++)
+    for (u32 i = 0; i < meshes.size(); i++)
         meshes[i].Draw(shader, projection, GetTransformMatrix({ 0, 0, 0 }, { 10, 10, 10 }));
 }
 
 Mesh Models::TransformMesh(aiMesh* mesh, const aiScene* scene, const string& directory)
 {
     vector<Vertex> vertices;
-    vector<unsigned int> indices;
+    vector<u32> indices;
     vector<std::string> texture_keys;
 
-    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+    for (u32 i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
         v3 vector;
         vector.x = mesh->mVertices[i].x;
@@ -53,9 +53,9 @@ Mesh Models::TransformMesh(aiMesh* mesh, const aiScene* scene, const string& dir
 
         vertices.push_back(vertex);
     }
-    for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+    for (u32 i = 0; i < mesh->mNumFaces; i++) {
         aiFace face = mesh->mFaces[i];
-        for (unsigned int j = 0; j < face.mNumIndices; j++)
+        for (u32 j = 0; j < face.mNumIndices; j++)
             indices.push_back(face.mIndices[j]);
     }
 
@@ -78,13 +78,13 @@ Mesh Models::TransformMesh(aiMesh* mesh, const aiScene* scene, const string& dir
 
 void Models::LoadMeshesFromScene(vector<Mesh>& meshes, aiNode* node, const aiScene* scene, const string& directory)
 {
-    for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+    for (u32 i = 0; i < node->mNumMeshes; i++) {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
         Mesh m = TransformMesh(mesh, scene, directory);
         meshes.push_back(m);
     }
 
-    for (unsigned int i = 0; i < node->mNumChildren; i++) {
+    for (u32 i = 0; i < node->mNumChildren; i++) {
         LoadMeshesFromScene(meshes, node->mChildren[i], scene, directory);
     }
 }

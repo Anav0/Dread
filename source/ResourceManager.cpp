@@ -86,12 +86,12 @@ Texture* ResourceManager::LoadTexture(std::string file_path, std::string resourc
     return &loaded_textures[resource_key];
 }
 
-unsigned int ResourceManager::TextureFromFile(const char* path, const string& directory, bool gamma)
+u32 ResourceManager::TextureFromFile(const char* path, const string& directory, bool gamma)
 {
     string filename = string(path);
     filename = directory + '/' + filename;
 
-    unsigned int textureID;
+    u32 textureID;
     glGenTextures(1, &textureID);
 
     int width, height, nrComponents;

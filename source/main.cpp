@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
            oblasts.push_back(Oblast(mesh, static_cast<OblastCode>(i), "Oblast", 1.0));
        }*/
 
-    m4 projection = glm::perspective(glm::radians(camera->zoom), (float)STATE.window.screen_size.x / (float)STATE.window.screen_size.y, 0.1f, 100.0f);
+    m4 projection = glm::perspective(glm::radians(camera->zoom), (f32)STATE.window.screen_size.x / (f32)STATE.window.screen_size.y, 0.1f, 100.0f);
 
     R.projection = projection;
 

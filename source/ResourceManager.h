@@ -23,7 +23,7 @@ private:
     std::map<std::string, Texture>       loaded_textures;
     std::map<std::string, Model>         loaded_models;
 
-    unsigned int TextureFromFile(const char *path, const string &directory, bool gamma);
+    u32 TextureFromFile(const char *path, const string &directory, bool gamma);
 
 public:
 

@@ -66,7 +66,7 @@ void InstancedBuffer::Draw(Shader* shader, m4* projection, Texture* atlas)
     shader->setMat4("view", STATE.window.camera.GetViewMatrix());
 
     glBindVertexArray(mesh.VAO);
-    glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(mesh.indices.size()), GL_UNSIGNED_INT, 0, matrices.size());
+    glDrawElementsInstanced(GL_TRIANGLES, static_cast<u32>(mesh.indices.size()), GL_UNSIGNED_INT, 0, matrices.size());
     glBindVertexArray(0);
 }
 

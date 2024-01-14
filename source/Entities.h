@@ -39,7 +39,7 @@ enum OblastCode {
 };
 
 struct Oblast : public Entity {
-    Oblast(MeshInBuffer mesh, OblastCode code, const char* name, float ukrainian_control)
+    Oblast(MeshInBuffer mesh, OblastCode code, const char* name, f32 ukrainian_control)
     {
         this->mesh = mesh;
         this->code = code;
@@ -50,7 +50,7 @@ struct Oblast : public Entity {
     MeshInBuffer mesh;
     OblastCode code;
     const char* name;
-    float ukrainian_control;
+    f32 ukrainian_control;
 
     // Inherited via Entity
     bool Update() override;
@@ -80,7 +80,7 @@ enum CountryCode {
 };
 
 struct Country : public Entity {
-    Country(CountryCode code, char* name, float support)
+    Country(CountryCode code, char* name, f32 support)
     {
         this->code = code;
         this->name = name;
@@ -89,7 +89,7 @@ struct Country : public Entity {
 
     CountryCode code;
     char* name;
-    float support;
+    f32 support;
 
     // Inherited via Entity
     bool Update() override;

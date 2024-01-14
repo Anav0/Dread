@@ -11,12 +11,12 @@
 #include "ResourceManager.h"
 #include "Shader.h"
 
-inline v3 Vector3Lerp(v3 v1, v3 v2, float amount);
+inline v3 Vector3Lerp(v3 v1, v3 v2, f32 amount);
 
 class BoundingBox {
 public:
     v3 min, max;
-    unsigned int VAO;
+    u32 VAO;
     Shader* shader;
     m4 model;
     bool is_dirty;
@@ -83,7 +83,7 @@ public:
     }
 
 private:
-    unsigned int VBO;
+    u32 VBO;
 
     void setup()
     {

@@ -3,7 +3,7 @@
 
 void WindowManager::onBeginOfTheLoop()
 {
-    float currentFrame = static_cast<float>(glfwGetTime());
+    f32 currentFrame = static_cast<f32>(glfwGetTime());
     delta_time = currentFrame - last_frame;
     last_frame = currentFrame;
 
@@ -62,14 +62,14 @@ bool WindowManager::Init()
         static_cast<WindowManager*>(glfwGetWindowUserPointer(w))->onMouseClicked(w, btn, action, mods);
     };
 
-    auto mouse_move_lambda = [](GLFWwindow* w, double xposIn, double yposIn) {
-        float x = static_cast<float>(xposIn);
-        float y = static_cast<float>(yposIn);
+    auto mouse_move_lambda = [](GLFWwindow* w, f64 xposIn, f64 yposIn) {
+        f32 x = static_cast<f32>(xposIn);
+        f32 y = static_cast<f32>(yposIn);
         static_cast<WindowManager*>(glfwGetWindowUserPointer(w))->camera.ProcessMouseMovement(x, y);
     };
 
-    auto scroll_lambda = [](GLFWwindow* w, double xoffset, double yoffset) {
-        static_cast<WindowManager*>(glfwGetWindowUserPointer(w))->camera.ProcessMouseScroll(static_cast<float>(yoffset));
+    auto scroll_lambda = [](GLFWwindow* w, f64 xoffset, f64 yoffset) {
+        static_cast<WindowManager*>(glfwGetWindowUserPointer(w))->camera.ProcessMouseScroll(static_cast<f32>(yoffset));
     };
 
     auto keypress_lambda = [](GLFWwindow* w, int key, int scancode, int action, int mods) {

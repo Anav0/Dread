@@ -2,28 +2,29 @@
 #define Texture_H
 
 #include <string>
+#include "Constants.h" 
 
 #pragma once
 
 struct Texture {
-    unsigned int ID;
+    u32 ID;
 
-    unsigned int Width, Height;
+    u32 Width, Height;
 
-    unsigned int Internal_Format;
-    unsigned int Image_Format;
+    u32 Internal_Format;
+    u32 Image_Format;
 
-    unsigned int Wrap_S;
-    unsigned int Wrap_T;
-    unsigned int Filter_Min;
-    unsigned int Filter_Max;
+    u32 Wrap_S;
+    u32 Wrap_T;
+    u32 Filter_Min;
+    u32 Filter_Max;
 
     std::string type;
     std::string path;
 
     Texture();
 
-    void Generate(unsigned int width, unsigned int height, unsigned char* data);
+    void Generate(u32 width, u32 height, unsigned char* data);
 
     void Bind() const;
 };

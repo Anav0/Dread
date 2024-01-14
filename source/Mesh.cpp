@@ -16,10 +16,10 @@ void Mesh::Update()
 
 void Mesh::Draw(Shader* shader, m4* projection, m4 model)
 {
-    unsigned int diffuseNr = 1;
-    unsigned int specularNr = 1;
-    unsigned int normalNr = 1;
-    unsigned int heightNr = 1;
+    u32 diffuseNr = 1;
+    u32 specularNr = 1;
+    u32 normalNr = 1;
+    u32 heightNr = 1;
 
     if (STATE.mode == RenderMode::WIREFRAME)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -30,7 +30,7 @@ void Mesh::Draw(Shader* shader, m4* projection, m4 model)
     shader->setMat4("view", STATE.window.camera.GetViewMatrix());
     shader->setMat4("model", model);
 
-    for (unsigned int i = 0; i < textures.size(); i++) {
+    for (u32 i = 0; i < textures.size(); i++) {
         glActiveTexture(GL_TEXTURE0 + i);
         string number;
         Texture* t = RM.GetTextureByKey(textures[i]);
@@ -48,7 +48,7 @@ void Mesh::Draw(Shader* shader, m4* projection, m4 model)
     }
 
     glBindVertexArray(VAO);
-    glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0, 10);
+    glDrawElementsInstanced(GL_TRIANGLES, static_cast<u32>(indices.size()), GL_UNSIGNED_INT, 0, 10);
     glBindVertexArray(0);
 
     glActiveTexture(GL_TEXTURE0);
@@ -73,7 +73,7 @@ void Mesh::Setup()
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(u32), &indices[0], GL_STATIC_DRAW);
 
     // positions
     glEnableVertexAttribArray(0);

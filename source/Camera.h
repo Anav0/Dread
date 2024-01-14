@@ -21,12 +21,12 @@ enum Camera_Movement {
 };
 
 // Default camera values
-const float YAW = -90.0f;
-const float PITCH = 0.0f;
-//const float SPEED = 2.5f * 20;
-const float SPEED = 2.5f;
-const float SENSITIVITY = 0.4f;
-const float ZOOM = 45.0f;
+const f32 YAW = -90.0f;
+const f32 PITCH = 0.0f;
+//const f32 SPEED = 2.5f * 20;
+const f32 SPEED = 2.5f;
+const f32 SENSITIVITY = 0.4f;
+const f32 ZOOM = 45.0f;
 
 namespace Cam {
 enum CameraStatus {
@@ -45,19 +45,19 @@ public:
     v3 right = { 0.0, 0.0, 0.0 };
     v3 world_up = { 0.0, 0.0, 0.0 };
 
-    float yaw = YAW;
-    float pitch = PITCH;
+    f32 yaw = YAW;
+    f32 pitch = PITCH;
 
-    float speed = SPEED;
-    float sensitivity = SENSITIVITY;
-    float zoom = ZOOM;
-    float zoomSpeed = 1.2f;
+    f32 speed = SPEED;
+    f32 sensitivity = SENSITIVITY;
+    f32 zoom = ZOOM;
+    f32 zoomSpeed = 1.2f;
 
-    float lastX;
-    float lastY;
+    f32 lastX;
+    f32 lastY;
     bool firstMouse = true;
 
-    Camera(v3 position = v3(0.0f, 0.0f, 0.0f), float yaw = YAW, float pitch = PITCH, v3 up = v3(0.0f, 1.0f, 0.0f))
+    Camera(v3 position = v3(0.0f, 0.0f, 0.0f), f32 yaw = YAW, f32 pitch = PITCH, v3 up = v3(0.0f, 1.0f, 0.0f))
         : front(v3(0.0f, 0.0f, -1.0f))
         , speed(SPEED)
         , sensitivity(SENSITIVITY)
@@ -69,7 +69,7 @@ public:
         this->pitch = pitch;
         UpdateCameraVectors();
     }
-    Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
+    Camera(f32 posX, f32 posY, f32 posZ, f32 upX, f32 upY, f32 upZ, f32 yaw, f32 pitch)
         : front(v3(0.0f, 0.0f, -1.0f))
         , speed(SPEED)
         , sensitivity(SENSITIVITY)
@@ -87,12 +87,12 @@ public:
         return glm::lookAt(position, position + front, up);
     }
 
-    void ProcessKeyboard(Camera_Movement direction, float deltaTime)
+    void ProcessKeyboard(Camera_Movement direction, f32 deltaTime)
     {
         if (status == Cam::DISABLED)
             return;
 
-        float velocity = speed * deltaTime;
+        f32 velocity = speed * deltaTime;
 
         if (direction == CameraForward)
             position += front * velocity;
@@ -111,7 +111,7 @@ public:
         UpdateCameraVectors();
     }
 
-    void ProcessMouseMovement(float xpos, float ypos, GLboolean constrainPitch = true)
+    void ProcessMouseMovement(f32 xpos, f32 ypos, GLboolean constrainPitch = true)
     {
         if (status == Cam::DISABLED)
             return;
@@ -122,8 +122,8 @@ public:
             firstMouse = false;
         }
 
-        float xoffset = xpos - lastX;
-        float yoffset = lastY - ypos;
+        f32 xoffset = xpos - lastX;
+        f32 yoffset = lastY - ypos;
 
         lastX = xpos;
         lastY = ypos;
@@ -144,12 +144,12 @@ public:
         UpdateCameraVectors();
     }
 
-    void ProcessMouseScroll(float yoffset)
+    void ProcessMouseScroll(f32 yoffset)
     {
         if (status == Cam::DISABLED)
             return;
 
-        zoom -= (float)yoffset * zoomSpeed;
+        zoom -= (f32)yoffset * zoomSpeed;
         if (zoom < 1.0f)
             zoom = 1.0f;
         if (zoom > 45.0f)

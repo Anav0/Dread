@@ -30,15 +30,15 @@ public:
 class Mesh {
 public:
     std::string id;
-    unsigned int VAO;
+    u32 VAO;
     vector<Vertex> vertices;
-    vector<unsigned int> indices;
+    vector<u32> indices;
     vector<std::string> textures;
     u64 triangle_count;
 
     Mesh() { }
 
-    Mesh(u64 triangle_count, vector<Vertex> vertices, vector<unsigned int> indices, vector<std::string> textures)
+    Mesh(u64 triangle_count, vector<Vertex> vertices, vector<u32> indices, vector<std::string> textures)
     {
         this->vertices = vertices;
         this->indices = indices;
@@ -53,7 +53,7 @@ public:
     void UpdateBuffer();
 
 private:
-    unsigned int VBO, EBO;
+    u32 VBO, EBO;
 
     // TODO: make Mesh just be a holder of data, and
     // use render groups to render any number of meshes
