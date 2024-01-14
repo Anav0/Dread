@@ -7,7 +7,7 @@
 #include "Model.h"
 #include "Mesh.h"
 
-enum OblastCode {
+enum class OblastCode {
     Zythomyr,
     Zaporizhia,
     Zakarpatia,
@@ -66,7 +66,7 @@ struct Oblast : public Entity {
 //    oblast->UpdateBuffer();
 //}
 
-enum CountryCode {
+enum class CountryCode {
     USA,
     DE,
     UK,

@@ -14,24 +14,24 @@ void WindowManager::onBeginOfTheLoop()
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    buttonType = NONE;
-    buttonAction = NEITHER;
+    buttonType = MouseButton::NONE;
+    buttonAction = MouseAction::NEITHER;
 }
 
 void WindowManager::onMouseClicked(GLFWwindow* window, int button, int action, int mods)
 {
 
     if (button == GLFW_MOUSE_BUTTON_RIGHT)
-        buttonType = RIGHT;
+        buttonType = MouseButton::RIGHT;
 
     if (button == GLFW_MOUSE_BUTTON_LEFT)
-        buttonType = LEFT;
+        buttonType = MouseButton::LEFT;
 
     if (action == GLFW_PRESS)
-        buttonAction = PRESSED;
+        buttonAction = MouseAction::PRESSED;
 
     if (action == GLFW_RELEASE)
-        buttonAction = RELEASED;
+        buttonAction = MouseAction::RELEASED;
 }
 
 bool WindowManager::Init()
@@ -100,14 +100,14 @@ bool WindowManager::IsClosing()
 void WindowManager::ProcessInput()
 {
     if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
-        if (camera.status == Cam::DISABLED) {
+        if (camera.status == CameraStatus::DISABLED) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            camera.status = Cam::ENABLED;
+            camera.status = CameraStatus::ENABLED;
             return;
         }
-        if (camera.status == Cam::ENABLED) {
+        if (camera.status == CameraStatus::ENABLED) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            camera.status = Cam::DISABLED;
+            camera.status = CameraStatus::DISABLED;
             return;
         }
     }
@@ -121,15 +121,15 @@ void WindowManager::ProcessInput()
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(CameraForward, delta_time);
+        camera.ProcessKeyboard(CameraDir::Forward, delta_time);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(CameraBackward, delta_time);
+        camera.ProcessKeyboard(CameraDir::Backward, delta_time);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(CameraLeft, delta_time);
+        camera.ProcessKeyboard(CameraDir::Left, delta_time);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(CameraRight, delta_time);
+        camera.ProcessKeyboard(CameraDir::Right, delta_time);
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-        camera.ProcessKeyboard(CameraDown, delta_time);
+        camera.ProcessKeyboard(CameraDir::Down, delta_time);
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-        camera.ProcessKeyboard(CameraUp, delta_time);
+        camera.ProcessKeyboard(CameraDir::Up, delta_time);
 }

@@ -17,13 +17,13 @@ class WindowManager;
 
 using namespace std::chrono;
 
-enum RepetitionMode {
+enum class RepetitionMode {
     Once,
     Infinite,
     nTimes,
 };
 
-enum RepetitionDirection {
+enum class RepetitionDirection {
     StartOver,
     LoopBack,
 };

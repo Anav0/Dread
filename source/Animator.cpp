@@ -315,8 +315,8 @@ bool Animator::SetupForRepeat(std::string& key, std::vector<KeyFrame<T>>& keyfra
 
 void Animator::AdjustRepeatCounter(std::string& key)
 {
-    if (mode == nTimes && !animation_counter.contains(key)) {
-        if (mode == LoopBack) {
+    if (mode == RepetitionMode::nTimes && !animation_counter.contains(key)) {
+        if (mode == RepetitionMode::nTimes) {
             animation_counter[key] = repeat * 2;
         } else {
             animation_counter[key] = repeat;

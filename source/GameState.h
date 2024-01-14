@@ -7,26 +7,22 @@
 #include "WindowManager.h"
 #include <set>
 
-namespace RenderMode {
-enum RenderMode {
+enum class RenderMode {
     WIREFRAME,
     NORMAL,
 };
-}
 
-namespace BoundingDrawMode {
-enum BoundingDrawMode {
+enum class BoundingDrawMode {
     SET,
     ALL
 };
-}
 
 struct GameState {
     WindowManager window;
-    RenderMode::RenderMode mode = RenderMode::NORMAL;
+    RenderMode mode = RenderMode::NORMAL;
 
     std::set<u32> bounding_boxes_to_draw = {};
-    BoundingDrawMode::BoundingDrawMode bounding_draw_mode = BoundingDrawMode::SET;
+    BoundingDrawMode bounding_draw_mode = BoundingDrawMode::SET;
 
     bool show_collisions = true;
 };

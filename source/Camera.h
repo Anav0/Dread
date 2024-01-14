@@ -11,33 +11,31 @@
 #include <vector>
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
-enum Camera_Movement {
-    CameraForward,
-    CameraBackward,
-    CameraLeft,
-    CameraRight,
-    CameraUp,
-    CameraDown,
+enum class CameraDir {
+    Forward,
+    Backward,
+    Left,
+    Right,
+    Up,
+    Down,
 };
 
 // Default camera values
 const f32 YAW = -90.0f;
 const f32 PITCH = 0.0f;
-//const f32 SPEED = 2.5f * 20;
-const f32 SPEED = 2.5f;
+const f32 SPEED = 2.5f * 20;
+//const f32 SPEED = 2.5f;
 const f32 SENSITIVITY = 0.4f;
 const f32 ZOOM = 45.0f;
 
-namespace Cam {
-enum CameraStatus {
+enum class CameraStatus {
     DISABLED = 0,
     ENABLED = 1,
 };
-}
 
 class Camera {
 public:
-    Cam::CameraStatus status = Cam::DISABLED;
+    CameraStatus status = CameraStatus::DISABLED;
 
     v3 position = { 0.0, 0.0, 0.0 };
     v3 front = { 0.0, 0.0, 0.0 };
@@ -87,24 +85,24 @@ public:
         return glm::lookAt(position, position + front, up);
     }
 
-    void ProcessKeyboard(Camera_Movement direction, f32 deltaTime)
+    void ProcessKeyboard(CameraDir direction, f32 deltaTime)
     {
-        if (status == Cam::DISABLED)
+        if (status == CameraStatus::DISABLED)
             return;
 
         f32 velocity = speed * deltaTime;
 
-        if (direction == CameraForward)
+        if (direction == CameraDir::Forward)
             position += front * velocity;
-        if (direction == CameraBackward)
+        if (direction == CameraDir::Backward)
             position -= front * velocity;
-        if (direction == CameraLeft)
+        if (direction == CameraDir::Left)
             position -= right * velocity;
-        if (direction == CameraRight)
+        if (direction == CameraDir::Right)
             position += right * velocity;
-        if (direction == CameraUp)
+        if (direction == CameraDir::Up)
             position += up * velocity;
-        if (direction == CameraDown)
+        if (direction == CameraDir::Down)
             position -= up * velocity;
 
 
@@ -113,7 +111,7 @@ public:
 
     void ProcessMouseMovement(f32 xpos, f32 ypos, GLboolean constrainPitch = true)
     {
-        if (status == Cam::DISABLED)
+        if (status == CameraStatus::DISABLED)
             return;
 
         if (firstMouse) {
@@ -146,7 +144,7 @@ public:
 
     void ProcessMouseScroll(f32 yoffset)
     {
-        if (status == Cam::DISABLED)
+        if (status == CameraStatus::DISABLED)
             return;
 
         zoom -= (f32)yoffset * zoomSpeed;

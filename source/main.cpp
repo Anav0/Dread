@@ -68,25 +68,25 @@ int main(int argc, char* argv[])
 
     R.object_shader = objects_shader;
 
-    RM.LoadModel("map/map4.obj", "map");
+    RM.LoadModel("map/map.obj", "map");
     RM.LoadModel("sphere/sphere.obj", "sphere");
     RM.LoadModel("cube/cube.obj", "cube");
 
-    // auto map_buffer_data = AddModel({ 0, 0, 0 }, "map", GREY, 0, 1);
+    auto map_buffer_data = AddModel({ 0, 0, 0 }, "map", GREY, 0, 1);
     v3 pos = { 0, 0, 0 };
     std::vector<MeshInBuffer> meshes;
-    for (size_t i = 0; i < 10; i++) {
+    /*for (size_t i = 0; i < 10; i++) {
         auto mesh = AddModel(pos, "sphere", GREY, 0, 1)[0];
         SetupBoundingBox(mesh);
         pos.x += 5;
-    }
+    }*/
 
     std::vector<Oblast> oblasts;
     int i = 0;
     std::set<OblastCode> to_show = {
-        Lviv,
-        Donetsk,
-        Crimea
+        OblastCode::Lviv,
+        OblastCode::Donetsk,
+        OblastCode::Crimea
     };
     STATE.bounding_draw_mode = BoundingDrawMode::ALL;
 
@@ -95,10 +95,10 @@ int main(int argc, char* argv[])
     pallette.push_back(GOLD);
     pallette.push_back(YELLOW);
 
-    /*   for (auto& mesh : map_buffer_data) {
+       for (auto& mesh : map_buffer_data) {
            SetupBoundingBox(mesh);
            oblasts.push_back(Oblast(mesh, static_cast<OblastCode>(i), "Oblast", 1.0));
-       }*/
+       }
 
     m4 projection = glm::perspective(glm::radians(camera->zoom), (f32)STATE.window.screen_size.x / (f32)STATE.window.screen_size.y, 0.1f, 1000.0f);
 
@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
         E.Update();
         R.Update();
 
-        if (STATE.window.buttonAction == PRESSED && STATE.window.buttonType == LEFT) {
+        if (STATE.window.buttonAction == MouseAction::PRESSED && STATE.window.buttonType == MouseButton::LEFT) {
             Ray ray = GetRayFromEyes(&projection);
             // AddModel(STATE.window.camera.position, "sphere", YELLOW, 0, 0.1);
             // AddModel(ray.position, "sphere", BLUE, 0, 0.1);
@@ -123,10 +123,10 @@ int main(int argc, char* argv[])
             Collision c = CheckRayCollision(ray, projection);
             if (c.hit_something) {
                 switch (c.what_was_hit) {
-                case eBoundingBox:
+                case EntityType::eBoundingBox:
                     printf("Hit bounding box\n");
                     break;
-                case eModel:
+                case EntityType::eModel:
                     printf("Hit model\n");
                     break;
                 }

@@ -15,13 +15,13 @@ inline void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-enum MouseButton {
+enum class MouseButton {
     NONE,
     LEFT,
     RIGHT
 };
 
-enum MouseAction {
+enum class MouseAction {
     NEITHER,
     PRESSED,
     RELEASED

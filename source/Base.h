@@ -8,13 +8,13 @@
 
 #define MAX_BONE_INFLUENCE 4
 
-enum AlignX {
+enum class AlignX {
     Left,
     Middle,
     Right,
 };
 
-enum AlignY {
+enum class AlignY {
     Top,
     Center,
     Bottom,
@@ -50,7 +50,7 @@ struct UiColor {
     v4 fg_color, fg_hover, bg_color, bg_hover;
 };
 
-enum EntityType {
+enum class EntityType {
     Rect,
     eBoundingBox,
     eModel,
