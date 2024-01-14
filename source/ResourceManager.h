@@ -43,7 +43,7 @@ public:
     Model*              GetModel(std::string resource_key);
     vector<std::string> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, const string typeName, const string& directory);
     Texture*            LoadTexture(std::string file_path, std::string resource_key, bool alpha = false);
-    Shader*             LoadShader(std::string vs, std::string fs, const std::string resource_key);
+    Shader*             LoadShader(std::string vs, std::string fs, const std::string resource_key, std::string gs = "");
     Texture*            GetTextureByKey(std::string);
                     
 };

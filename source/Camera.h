@@ -105,6 +105,9 @@ public:
             position += up * velocity;
         if (direction == CameraDown)
             position -= up * velocity;
+
+
+        UpdateCameraVectors();
     }
 
     void ProcessMouseMovement(float xpos, float ypos, GLboolean constrainPitch = true)
@@ -130,8 +133,6 @@ public:
         yaw += xoffset;
         pitch += yoffset;
 
-        printf("%f %f\r", pitch, yaw);
-
         if (constrainPitch) {
             if (pitch > 89.0f)
                 pitch = 89.0f;
@@ -152,6 +153,8 @@ public:
             zoom = 1.0f;
         if (zoom > 45.0f)
             zoom = 45.0f;
+
+        UpdateCameraVectors();
     }
 
 private:

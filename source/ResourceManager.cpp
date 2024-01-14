@@ -198,7 +198,7 @@ void ResourceManager::LoadModel(std::string file_path, std::string resource_key,
     return;
 }
 
-Shader* ResourceManager::LoadShader(std::string vs, std::string fs, const std::string resource_key)
+Shader* ResourceManager::LoadShader(std::string vs, std::string fs, const std::string resource_key, std::string gs)
 {
     std::string vertexCode;
     std::string fragmentCode;
@@ -206,11 +206,17 @@ Shader* ResourceManager::LoadShader(std::string vs, std::string fs, const std::s
     std::string vs_path = ResourceManager::SHADERS_PATH + vs;
     std::string fs_path = ResourceManager::SHADERS_PATH + fs;
 
+    std::string gs_path = "";
+
+    if (!gs.empty())
+        gs_path = ResourceManager::SHADERS_PATH + gs;
+
+    assert(!loaded_shaders.contains(resource_key));
     if (loaded_shaders.contains(resource_key)) {
         std::cout << "ERROR::SHADER: Shader with such resource key already exists" << std::endl;
     }
 
-    Shader shader = *new Shader(vs_path.c_str(), fs_path.c_str(), NULL);
+    Shader shader = *new Shader(vs_path.c_str(), fs_path.c_str(), gs_path);
 
     loaded_shaders.insert(std::pair(resource_key, shader));
 

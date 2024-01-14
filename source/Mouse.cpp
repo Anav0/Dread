@@ -22,15 +22,12 @@ Ray GetRayFromEyes(m4* projection)
 
     float mouseX = mouse.x  / (screen.x * 0.5f) - 1.0f;
     float mouseY = mouse.y / (screen.y * 0.5f) - 1.0f;
-    v3 mouse_vector = v3(mouseX, mouseY, 0);
 
     m4 view = camera.GetViewMatrix();
 
     m4 invVP = glm::inverse(*projection * view);
     v4 screenPos = glm::vec4(mouseX, -mouseY, 1.0f, 1.0f);
     v4 worldPos = invVP * screenPos;
-
-    v3 dir = glm::normalize(glm::vec3(worldPos));
 
     Ray r;
     r.direction = glm::normalize(glm::vec3(worldPos));

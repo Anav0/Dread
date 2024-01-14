@@ -5,6 +5,7 @@
 #include "EntityManager.h"
 #include "Model.h"
 #include "Renderer.h"
+#include "Line.h"
 
 std::vector<MeshInBuffer> AddModel(v3 position, std::string model_name, v4 color, f32 rotation, f32 scale)
 {
