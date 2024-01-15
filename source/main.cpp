@@ -4,19 +4,25 @@
 #include "Entities.h"
 #include "EntityManager.h"
 #include "GameState.h"
+#include "Line.h"
 #include "Mesh.h"
 #include "Model.h"
 #include "Mouse.h"
+#include "RenderHelpers.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "WindowManager.h"
 
 #include <set>
 
+#define STB_TRUETYPE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
-#include "Line.h"
-#include "RenderHelpers.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
+#include "TextRenderer.h"
 #include "stb_image.h"
+#include "stb_image_write.h"
+#include "stb_truetype.h"
 
 void GLAPIENTRY
 MessageCallback(GLenum source,
@@ -60,6 +66,11 @@ int main(int argc, char* argv[])
 
     stbi_set_flip_vertically_on_load(true);
 
+    //TR.BakeFont("oswald.ttf", "oswald", { 48 }, BakeMode::WriteIfNoneExist);
+    TR.BakeFont("oswald.ttf", "oswald", { 48 }, BakeMode::AlwaysWrite);
+    return;
+    TR.UseFont("oswald.ttf");
+
     Shader* texture_shader = RM.LoadShader("texture.vert", "texture.frag", "texture");
     Shader* objects_shader = RM.LoadShader("object.vert", "object.frag", "object");
     Shader* debug_shader = RM.LoadShader("debug.vert", "debug.frag", "debug");
@@ -70,9 +81,14 @@ int main(int argc, char* argv[])
 
     RM.LoadModel("map/map.obj", "map");
     RM.LoadModel("sphere/sphere.obj", "sphere");
-    RM.LoadModel("cube/cube.obj", "cube");
 
     auto map_buffer_data = AddModel({ 0, 0, 0 }, "map", GREY, 0, 1);
+
+    // TODO: move to some place better
+    R.ui_buffer.Allocate();
+
+    AddText("Igor", { 25, 25 }, RED);
+
     v3 pos = { 0, 0, 0 };
     std::vector<MeshInBuffer> meshes;
     /*for (size_t i = 0; i < 10; i++) {
@@ -94,15 +110,19 @@ int main(int argc, char* argv[])
     pallette.push_back(GOLD);
     pallette.push_back(YELLOW);
 
-       for (auto& mesh : map_buffer_data) {
-           SetupBoundingBox(mesh);
-           auto code = static_cast<OblastCode>(i);
-           oblasts.push_back(Oblast(mesh, static_cast<OblastCode>(i), OBLAST_NAMES.at(code)));
-       }
+#if 0 
+    for (auto& mesh : map_buffer_data) {
+        SetupBoundingBox(mesh);
+        auto code = static_cast<OblastCode>(i);
+        oblasts.push_back(Oblast(mesh, static_cast<OblastCode>(i), OBLAST_NAMES.at(code)));
+    }
+#endif
 
     m4 projection = glm::perspective(glm::radians(camera->zoom), (f32)STATE.window.screen_size.x / (f32)STATE.window.screen_size.y, 0.1f, 1000.0f);
+    m4 ortho_projection = glm::ortho(0.0f, (f32)STATE.window.screen_size.x, 0.0f, (f32)STATE.window.screen_size.y);
 
     R.projection = projection;
+    R.ortho_projection = ortho_projection;
 
     std::vector<Line> lines;
     while (!STATE.window.IsClosing()) {

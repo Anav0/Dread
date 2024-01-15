@@ -11,10 +11,5 @@ void main()
 {
     vec4 texColor = texture(imageSampler, ourTextureCoords);
 
-        if(ourTextureCoords.x <= 0) {
-            color = ourColor;
-        }
-        else {
-            color = texColor * ourColor;
-        }
+    color = texColor * ourColor;
 }  

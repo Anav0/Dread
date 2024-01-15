@@ -20,10 +20,12 @@ class MeshInBuffer;
 class Renderer {
 
 public:
-    std::vector<InstancedBuffer> buffers;
     std::vector<BoundingBox> boxes;
+    std::vector<InstancedBuffer> buffers;
+    RectBuffer ui_buffer;
 
     m4 projection;
+    m4 ortho_projection;
 
     Shader* object_shader;
 

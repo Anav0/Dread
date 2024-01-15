@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 
 #include <ft2build.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -6,7 +6,14 @@
 
 #include "ResourceManager.h"
 #include "TextRenderer.h"
+
 #include <freetype/ftsizes.h>
+#include <stb_image_write.h>
+#include <stb_truetype.h>
+
+#include <vector>
+
+SeanTextRenderer TR;
 
 TextRenderer::TextRenderer(Shader shader, u32 width, u32 height)
 {
@@ -162,4 +169,113 @@ glm::ivec2 TextRenderer::GetTextSize(std::string text, int font_size)
     assert(height > 0);
 
     return glm::ivec2(width, height);
+}
+
+void SeanTextRenderer::BakeFont(std::string font, std::string output_file_name, std::vector<u8> sizes, BakeMode mode)
+{
+    long size;
+    unsigned char* fontBuffer;
+
+    // TODO: to relative path
+    FILE* fontFile = fopen((FONTS_PATH + '/' + font).c_str(), "rb");
+    fseek(fontFile, 0, SEEK_END);
+    size = ftell(fontFile);
+    fseek(fontFile, 0, SEEK_SET);
+
+    fontBuffer = (unsigned char*)malloc(size);
+
+    fread(fontBuffer, size, 1, fontFile);
+    fclose(fontFile);
+
+    constexpr int CHANNEL = 4;
+
+    for (auto font_size : sizes) {
+
+        stbtt_fontinfo info;
+        if (!stbtt_InitFont(&info, fontBuffer, 0)) {
+            printf("failed\n");
+        }
+
+        int b_w = 512 * 4;
+        int b_h = font_size;
+        int l_h = font_size;
+        const char from = 33;
+        const char to = 127;
+
+        float scale = stbtt_ScaleForPixelHeight(&info, l_h);
+
+        int ascent, descent, lineGap;
+        stbtt_GetFontVMetrics(&info, &ascent, &descent, &lineGap);
+
+        ascent = roundf(ascent * scale);
+        descent = roundf(descent * scale);
+
+        unsigned char* bitmap = (unsigned char*)calloc(b_w * b_h * CHANNEL, sizeof(unsigned char));
+
+        int x = 0;
+        FontInfo font_info;
+
+        auto file_name = FONTS_PATH + "/baked/" + output_file_name + "_" + std::to_string(font_size) + ".png";
+        for (char i = from; i < to; ++i) {
+            GlyphInfo glyph;
+
+            int ax;
+            int lsb;
+            stbtt_GetCodepointHMetrics(&info, (char)i, &ax, &lsb);
+
+            int c_x1, c_y1, c_x2, c_y2;
+            stbtt_GetCodepointBitmapBox(&info, (char)i, scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
+
+            int y = ascent + c_y1;
+
+            int byteOffset = x + roundf(lsb * scale) + (y * b_w);
+            stbtt_MakeCodepointBitmap(&info, bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, b_w, scale, scale, (char)i);
+
+            glyph.character = i;
+            glyph.h = c_y2 - c_y1;
+            glyph.w = ax * scale; // add kern?
+            glyph.x = x;
+            glyph.y = y;
+
+            font_info.font_size = l_h;
+            font_info.font_name = font;
+            font_info.path = file_name;
+            font_info.glyphs.insert(std::pair(i, glyph));
+
+            /* advance x */
+            x += roundf(ax * scale);
+
+            /* add kerning */
+            int kern;
+            kern = stbtt_GetCodepointKernAdvance(&info, i, i + 1);
+            x += roundf(kern * scale);
+        }
+
+        fonts.push_back(font_info);
+
+        bool file_exists = fopen(file_name.c_str(), "r");
+        if (mode == BakeMode::AlwaysWrite || (mode == BakeMode::WriteIfNoneExist && !file_exists)) {
+            stbi_write_png(file_name.c_str(), b_w, b_h, 1, bitmap, b_w * CHANNEL); // b_w * 4 gives us transparency
+        }
+
+        free(bitmap);
+    }
+    free(fontBuffer);
+}
+
+void SeanTextRenderer::UseFont(std::string font_name)
+{
+    this->font_in_use = font_name;
+}
+
+FontInfo SeanTextRenderer::GetCurrentFont(u8 font_size)
+{
+    for (auto& font : fonts) {
+        if (font.font_name == this->font_in_use && font.font_size == font_size) {
+            return font;
+        }
+    }
+
+    assert(false); // TODO: error handling
+    return fonts[0];
 }

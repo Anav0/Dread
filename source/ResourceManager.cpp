@@ -42,9 +42,9 @@ Shader* ResourceManager::GetShader(std::string shader_name)
     return &loaded_shaders[shader_name];
 }
 
-Texture* ResourceManager::LoadTexture(std::string file_path, std::string resource_key, bool alpha)
+Texture* ResourceManager::LoadTexture(std::string file_path, std::string resource_key, bool absolute_path, bool alpha)
 {
-    if (file_path.find(ASSETS_PATH) == std::string::npos) {
+    if (!absolute_path && file_path.find(ASSETS_PATH) == std::string::npos) {
         file_path = ASSETS_PATH + file_path;
     }
 
@@ -176,7 +176,7 @@ void ResourceManager::LoadModel(std::string file_path, std::string resource_key,
     const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-        printf("ERROR::ASSIMP:: $s\n", importer.GetErrorString());
+        printf("ERROR::ASSIMP:: %s\n", importer.GetErrorString());
         assert(false);
         return; 
     }
@@ -214,6 +214,7 @@ Shader* ResourceManager::LoadShader(std::string vs, std::string fs, const std::s
     assert(!loaded_shaders.contains(resource_key));
     if (loaded_shaders.contains(resource_key)) {
         std::cout << "ERROR::SHADER: Shader with such resource key already exists" << std::endl;
+        assert(false);
     }
 
     Shader shader = *new Shader(vs_path.c_str(), fs_path.c_str(), gs_path);

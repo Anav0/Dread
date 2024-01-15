@@ -11,6 +11,7 @@ class MeshInBuffer;
 
 std::vector<MeshInBuffer> AddModel(v3 position, v3 size, std::string model_name, v4 color, f32 rotation, f32 scale);
 std::vector<MeshInBuffer> AddModel(v3 position, std::string model_name, v4 color = GREY, f32 rotation = 0.0f, f32 scale = 1.0f);
-void DrawLine(v3 from, v3 to);
+void AddText(std::string text, v2 pos, v4 color = BLACK);
+
 
 #endif
