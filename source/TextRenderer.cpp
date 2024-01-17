@@ -55,7 +55,7 @@ void TextRenderer::Load(std::string font, std::vector<int> font_sizes)
 
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-        for (GLubyte c = 0; c < 128; c++) {
+        for (u8 c = 0; c < 128; c++) {
             if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
                 std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
                 abort();
@@ -191,31 +191,46 @@ void SeanTextRenderer::BakeFont(std::string font, std::string output_file_name, 
 
     for (auto font_size : sizes) {
 
+        FontInfo font_info;
         stbtt_fontinfo info;
+
         if (!stbtt_InitFont(&info, fontBuffer, 0)) {
             printf("failed\n");
         }
 
-        int b_w = 512 * 4;
+        int b_w = 0; // Padding
         int b_h = font_size;
         int l_h = font_size;
-        const char from = 33;
+        const char from = 32;
         const char to = 127;
+        //Onlu uppercase
+        //const char from = 65;
+        //const char to = 90;
 
         float scale = stbtt_ScaleForPixelHeight(&info, l_h);
+        font_info.scale = scale;
+        for (char i = from; i < to; i++) {
+            int c_x1, c_y1, c_x2, c_y2;
+            stbtt_GetCodepointBitmapBox(&info, (char)i, scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
+            b_w += c_x2 - c_x1 + 20;
+        }
 
-        int ascent, descent, lineGap;
+        int baseline, ascent, descent, lineGap;
         stbtt_GetFontVMetrics(&info, &ascent, &descent, &lineGap);
 
-        ascent = roundf(ascent * scale);
+        baseline = roundf(ascent * scale);
         descent = roundf(descent * scale);
 
         unsigned char* bitmap = (unsigned char*)calloc(b_w * b_h, sizeof(unsigned char));
 
         int x = 0;
-        FontInfo font_info;
 
         auto file_name = FONTS_PATH + "/baked/" + output_file_name + "_" + std::to_string(font_size) + ".png";
+
+        font_info.font_size = l_h;
+        font_info.font_name = font;
+        font_info.path = file_name;
+
         for (char i = from; i < to; ++i) {
             GlyphInfo glyph;
 
@@ -226,43 +241,34 @@ void SeanTextRenderer::BakeFont(std::string font, std::string output_file_name, 
             int c_x1, c_y1, c_x2, c_y2;
             stbtt_GetCodepointBitmapBox(&info, (char)i, scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
 
-            int y = ascent + c_y1;
+            int y = baseline + c_y1;
 
             int byteOffset = x + roundf(lsb * scale) + (y * b_w);
             stbtt_MakeCodepointBitmap(&info, bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, b_w, scale, scale, (char)i);
 
             glyph.character = i;
+            glyph.advance = ax;
             glyph.h = c_y2 - c_y1;
-            glyph.w = ax * scale; // add kern?
-            glyph.x = x;
+            glyph.w = c_x2 - c_x1;
+            glyph.x = x + roundf(lsb * scale);
             glyph.y = y;
 
-            font_info.font_size = l_h;
-            font_info.font_name = font;
-            font_info.path = file_name;
             font_info.glyphs.insert(std::pair(i, glyph));
 
-            /* advance x */
             x += roundf(ax * scale);
-
-            /* add kerning */
-            int kern;
-            kern = stbtt_GetCodepointKernAdvance(&info, i, i + 1);
-            x += roundf(kern * scale);
         }
 
         u8* png_data = new u8[b_w * b_h * CHANNEL];
         int i = 0;
         int j = 0;
         for (size_t x = 0; x < b_w; x++) {
-            for(size_t y = 0; y < b_h; y++)
-            {
+            for (size_t y = 0; y < b_h; y++) {
                 u8 alpha = 255;
                 if (bitmap[j] == '\0')
                     alpha = 0;
 
-                png_data[i++] = bitmap[j++]; //R
-                png_data[i++] = alpha; //A
+                png_data[i++] = bitmap[j++]; // R
+                png_data[i++] = alpha; // A
             }
         }
 
@@ -275,6 +281,7 @@ void SeanTextRenderer::BakeFont(std::string font, std::string output_file_name, 
 
         free(bitmap);
     }
+
     free(fontBuffer);
 }
 

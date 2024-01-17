@@ -9,6 +9,8 @@
 #include "ResourceManager.h"
 #include "TextRenderer.h"
 
+#include "stb_truetype.h"
+
 std::vector<MeshInBuffer> AddModel(v3 position, std::string model_name, v4 color, f32 rotation, f32 scale)
 {
     Model* model = RM.GetModel(model_name);
@@ -31,9 +33,8 @@ std::vector<MeshInBuffer> AddModel(v3 position, std::string model_name, v4 color
     return meshes;
 }
 
-void AddText(std::string text, v2 pos, v4 color)
+void AddText(std::string text, v2 pos, v4 color, u8 font_size)
 {
-    auto font_size = 48;
     FontInfo font = TR.GetCurrentFont(font_size);
 
     Texture* font_atlas = RM.GetTexture(font.path);
@@ -42,7 +43,9 @@ void AddText(std::string text, v2 pos, v4 color)
 
     R.ui_buffer.texture_key = font.path;
 
-    for (char c : text) {
+    for (size_t i = 0; i < text.size(); i++) {
+        char c = text[i];
+
         GlyphInfo glyph = font.glyphs[c];
 
         AtlasTextureInfo texture_info;
@@ -51,7 +54,10 @@ void AddText(std::string text, v2 pos, v4 color)
         texture_info.size = v2(glyph.w, glyph.h);
 
         R.ui_buffer.AddTexturedRect(&texture_info, font_atlas, pos, texture_info.size, 0, color);
+
+        //pos.x += roundf(glyph.advance * font.scale);
         pos.x += glyph.w;
+         //pos.y = glyph.y;
     }
 }
 

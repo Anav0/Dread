@@ -12,17 +12,17 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "WindowManager.h"
-
-#include <set>
+#include "TextRenderer.h"
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
-#include "TextRenderer.h"
 #include "stb_image.h"
 #include "stb_image_write.h"
 #include "stb_truetype.h"
+
+#include <set>
 
 void GLAPIENTRY
 MessageCallback(GLenum source,
@@ -66,8 +66,11 @@ int main(int argc, char* argv[])
 
     stbi_set_flip_vertically_on_load(true);
 
-    TR.BakeFont("oswald.ttf", "oswald", { 48 }, BakeMode::WriteIfNoneExist);
-    TR.UseFont("oswald.ttf");
+    u8 size = 128;
+    //TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
+    //TR.UseFont("oswald.ttf");
+    TR.BakeFont("noto.ttf", "noto", { size }, BakeMode::WriteIfNoneExist);
+    TR.UseFont("noto.ttf");
 
     Shader* texture_shader = RM.LoadShader("texture.vert", "texture.frag", "texture");
     Shader* objects_shader = RM.LoadShader("object.vert", "object.frag", "object");
@@ -85,7 +88,11 @@ int main(int argc, char* argv[])
     // TODO: move to some place better
     R.ui_buffer.Allocate();
 
-    AddText("Igor", { 25, 25 }, RED);
+    //AddText("ABCDEFGHIJKLMNOPRSTWXYZ", { 200, 200 }, YELLOW, size);
+    //AddText("Ala ma kota", { 200, 200 }, YELLOW, size);
+    //AddText("ABCDEFGHIJKLMNOPRSTWXYZ", { 200, 200 }, YELLOW, size);
+    //AddText("abcdefghijklmnoprstwxyz", { 200, 200 }, YELLOW, size);
+    AddText("abcde", { 200, 200 }, YELLOW, size);
 
     v3 pos = { 0, 0, 0 };
     std::vector<MeshInBuffer> meshes;

@@ -11,5 +11,8 @@ void main()
 {
     vec4 texColor = texture(imageSampler, ourTextureCoords);
 
+     //if(texColor.a < 0.1)
+     //   discard;
+
     color = texColor * ourColor;
 }  

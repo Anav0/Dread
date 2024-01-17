@@ -6,6 +6,8 @@
 #include <map>
 #include <vector>
 
+#include "stb_truetype.h"
+
 struct Character {
     u32 TextureID;
     glm::ivec2 Size;
@@ -35,6 +37,7 @@ private:
 
 struct GlyphInfo {
     f32 x, y, w, h;
+    u16 advance;
     char character;
 };
 
@@ -43,6 +46,7 @@ struct FontInfo {
     u8 font_size;
     std::string path;
     std::map<char, GlyphInfo> glyphs;
+    f32 scale;
 };
 
 enum class BakeMode {
