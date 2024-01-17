@@ -66,9 +66,7 @@ int main(int argc, char* argv[])
 
     stbi_set_flip_vertically_on_load(true);
 
-    //TR.BakeFont("oswald.ttf", "oswald", { 48 }, BakeMode::WriteIfNoneExist);
-    TR.BakeFont("oswald.ttf", "oswald", { 48 }, BakeMode::AlwaysWrite);
-    return;
+    TR.BakeFont("oswald.ttf", "oswald", { 48 }, BakeMode::WriteIfNoneExist);
     TR.UseFont("oswald.ttf");
 
     Shader* texture_shader = RM.LoadShader("texture.vert", "texture.frag", "texture");

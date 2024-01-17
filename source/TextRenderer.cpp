@@ -187,7 +187,7 @@ void SeanTextRenderer::BakeFont(std::string font, std::string output_file_name, 
     fread(fontBuffer, size, 1, fontFile);
     fclose(fontFile);
 
-    constexpr int CHANNEL = 4;
+    constexpr int CHANNEL = 2;
 
     for (auto font_size : sizes) {
 
@@ -210,7 +210,7 @@ void SeanTextRenderer::BakeFont(std::string font, std::string output_file_name, 
         ascent = roundf(ascent * scale);
         descent = roundf(descent * scale);
 
-        unsigned char* bitmap = (unsigned char*)calloc(b_w * b_h * CHANNEL, sizeof(unsigned char));
+        unsigned char* bitmap = (unsigned char*)calloc(b_w * b_h, sizeof(unsigned char));
 
         int x = 0;
         FontInfo font_info;
@@ -251,11 +251,26 @@ void SeanTextRenderer::BakeFont(std::string font, std::string output_file_name, 
             x += roundf(kern * scale);
         }
 
+        u8* png_data = new u8[b_w * b_h * CHANNEL];
+        int i = 0;
+        int j = 0;
+        for (size_t x = 0; x < b_w; x++) {
+            for(size_t y = 0; y < b_h; y++)
+            {
+                u8 alpha = 255;
+                if (bitmap[j] == '\0')
+                    alpha = 0;
+
+                png_data[i++] = bitmap[j++]; //R
+                png_data[i++] = alpha; //A
+            }
+        }
+
         fonts.push_back(font_info);
 
         bool file_exists = fopen(file_name.c_str(), "r");
         if (mode == BakeMode::AlwaysWrite || (mode == BakeMode::WriteIfNoneExist && !file_exists)) {
-            stbi_write_png(file_name.c_str(), b_w, b_h, 1, bitmap, b_w * CHANNEL); // b_w * 4 gives us transparency
+            stbi_write_png(file_name.c_str(), b_w, b_h, CHANNEL, png_data, b_w * CHANNEL); // b_w * 4 gives us transparency
         }
 
         free(bitmap);
