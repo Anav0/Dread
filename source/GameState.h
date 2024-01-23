@@ -23,13 +23,14 @@ struct GameState {
     // Other
     WindowManager window;
     RenderMode mode = RenderMode::NORMAL;
-    bool show_collisions = true;
+    bool show_collisions = false;
 
     // Game state
-    std::array<Oblast, NUMBER_OF_OBLASTS>    oblasts;
+    std::array<Oblast, NUMBER_OF_OBLASTS> oblasts;
     std::array<Oblast, NUMBER_OF_SUPPORTERS> supporters;
-    
 };
+
+Oblast* GetOblast(OblastCode code);
 
 extern GameState STATE;
 

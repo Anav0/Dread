@@ -22,8 +22,10 @@ void Renderer::Draw()
         buffer.Draw(shader, &projection, nullptr);
     }
 
-    for (auto& box : R.boxes) {
-        box.Draw(&projection);
+    if (STATE.show_collisions) {
+        for (auto& box : R.boxes) {
+            box.Draw(&projection);
+        }
     }
 }
 
