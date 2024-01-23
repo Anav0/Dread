@@ -203,9 +203,9 @@ void SeanTextRenderer::BakeFont(std::string font, std::string output_file_name, 
         int l_h = font_size;
         const char from = 32;
         const char to = 127;
-        //Onlu uppercase
-        //const char from = 65;
-        //const char to = 90;
+        // Onlu uppercase
+        // const char from = 65;
+        // const char to = 90;
 
         float scale = stbtt_ScaleForPixelHeight(&info, l_h);
         font_info.scale = scale;
@@ -242,16 +242,29 @@ void SeanTextRenderer::BakeFont(std::string font, std::string output_file_name, 
             stbtt_GetCodepointBitmapBox(&info, (char)i, scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
 
             int y = baseline + c_y1;
+            glyph.offset_y = c_y1;
 
             int byteOffset = x + roundf(lsb * scale) + (y * b_w);
             stbtt_MakeCodepointBitmap(&info, bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, b_w, scale, scale, (char)i);
 
             glyph.character = i;
-            glyph.advance = ax;
-            glyph.h = c_y2 - c_y1;
-            glyph.w = c_x2 - c_x1;
-            glyph.x = x + roundf(lsb * scale);
-            glyph.y = y;
+            glyph.advance = round(ax * scale);
+            if (i == ' ') {
+                glyph.h = l_h * 0.25;
+                glyph.w = l_h * 0.25;
+                glyph.x = -999;
+                glyph.y = -999;
+            } else {
+                glyph.h = c_y2 - c_y1;
+                glyph.w = c_x2 - c_x1;
+                glyph.x = x + roundf(lsb * scale);
+                // glyph.y = glyph.h + y; //TOP
+                glyph.y = descent * -1;
+            }
+
+            if (i == 'a') {
+                // glyph.y = 28;
+            }
 
             font_info.glyphs.insert(std::pair(i, glyph));
 

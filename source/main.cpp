@@ -23,6 +23,7 @@
 #include "stb_truetype.h"
 
 #include <set>
+#include "Atlas.h"
 
 void GLAPIENTRY
 MessageCallback(GLenum source,
@@ -66,7 +67,7 @@ int main(int argc, char* argv[])
 
     stbi_set_flip_vertically_on_load(true);
 
-    u8 size = 128;
+    u8 size = 36;
     //TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
     //TR.UseFont("oswald.ttf");
     TR.BakeFont("noto.ttf", "noto", { size }, BakeMode::WriteIfNoneExist);
@@ -88,11 +89,9 @@ int main(int argc, char* argv[])
     // TODO: move to some place better
     R.ui_buffer.Allocate();
 
-    //AddText("ABCDEFGHIJKLMNOPRSTWXYZ", { 200, 200 }, YELLOW, size);
-    //AddText("Ala ma kota", { 200, 200 }, YELLOW, size);
-    //AddText("ABCDEFGHIJKLMNOPRSTWXYZ", { 200, 200 }, YELLOW, size);
-    //AddText("abcdefghijklmnoprstwxyz", { 200, 200 }, YELLOW, size);
-    AddText("abcde", { 200, 200 }, YELLOW, size);
+    AddText("ABCDEFGHIJKLMNOPRSTWXYZ", { 200, 300 }, YELLOW, size);
+    AddText("!@#$%^&*()_+=", { 200, 250 }, YELLOW, size);
+    AddText("Ala ma kota", { 200, 200 }, YELLOW, size);
 
     v3 pos = { 0, 0, 0 };
     std::vector<MeshInBuffer> meshes;

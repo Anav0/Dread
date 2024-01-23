@@ -43,6 +43,7 @@ void AddText(std::string text, v2 pos, v4 color, u8 font_size)
 
     R.ui_buffer.texture_key = font.path;
 
+    f32 base_y = pos.y;
     for (size_t i = 0; i < text.size(); i++) {
         char c = text[i];
 
@@ -55,9 +56,9 @@ void AddText(std::string text, v2 pos, v4 color, u8 font_size)
 
         R.ui_buffer.AddTexturedRect(&texture_info, font_atlas, pos, texture_info.size, 0, color);
 
-        //pos.x += roundf(glyph.advance * font.scale);
-        pos.x += glyph.w;
-         //pos.y = glyph.y;
+        //pos.x += glyph.advance;
+        pos.x += glyph.w + 1;
+        pos.y = base_y;
     }
 }
 

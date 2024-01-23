@@ -38,6 +38,7 @@ private:
 struct GlyphInfo {
     f32 x, y, w, h;
     u16 advance;
+    i16 offset_y;
     char character;
 };
 

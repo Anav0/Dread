@@ -94,7 +94,7 @@ public:
 };
 
 // TODO: change to std::vector
-static constexpr int MAX_CAPACITY = 50;
+static constexpr int MAX_CAPACITY = 100;
 
 class RectBuffer {
     unsigned int VAO, VBO, EBO, instanced_VBO;
@@ -112,7 +112,7 @@ public:
     void Allocate();
 
     int AddTexturedRect(const AtlasTextureInfo* texture_info, const Texture* atlas, const v2 pos, const v2 size = { 0, 0 },
-        const float rotation = 0, v4 color = {1.0, 1.0, 1.0, 1.0})
+        const float rotation = 0, v4 color = {0.0, 0.0, 0.0, 1.0})
     {
         assert(rolling_index >= 0);
         assert(rolling_index <= MAX_CAPACITY);
@@ -137,21 +137,6 @@ public:
         textures_coords[coords_index + 1] = { subtex_x + subtex_w, subtex_y }; // BR
         textures_coords[coords_index + 2] = { subtex_x, subtex_y }; // BL
         textures_coords[coords_index + 3] = { subtex_x, subtex_y + subtex_h }; // TL
-
-        UpdateBufferSection(rolling_index);
-
-        const int tmp = rolling_index;
-        rolling_index += 1;
-        return tmp;
-    }
-
-    int AddRect(const Rectangle* rect)
-    {
-        assert(rolling_index >= 0);
-        assert(rolling_index <= MAX_CAPACITY);
-
-        this->colors[rolling_index] = rect->color;
-        this->matrices[rolling_index] = GetTransformMatrix(rect->transform.position, rect->transform.size, rect->transform.rotation);
 
         UpdateBufferSection(rolling_index);
 
