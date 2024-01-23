@@ -75,8 +75,6 @@ Collision CheckRayCollision(Ray ray, m4 projection)
     if (!collision.hit_something)
         return collision;
 
-    auto mesh_in_buffer = collision.box.mesh_info;
-    mesh_in_buffer.ChangeColor(RED);
     return collision;
 }
 
