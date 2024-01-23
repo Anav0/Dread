@@ -94,7 +94,7 @@ public:
 };
 
 // TODO: change to std::vector
-static constexpr int MAX_CAPACITY = 100;
+static constexpr int MAX_CAPACITY = 4096;
 
 class RectBuffer {
     unsigned int VAO, VBO, EBO, instanced_VBO;

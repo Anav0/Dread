@@ -258,12 +258,7 @@ void SeanTextRenderer::BakeFont(std::string font, std::string output_file_name, 
                 glyph.h = c_y2 - c_y1;
                 glyph.w = c_x2 - c_x1;
                 glyph.x = x + roundf(lsb * scale);
-                // glyph.y = glyph.h + y; //TOP
                 glyph.y = descent * -1;
-            }
-
-            if (i == 'a') {
-                // glyph.y = 28;
             }
 
             font_info.glyphs.insert(std::pair(i, glyph));
