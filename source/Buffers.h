@@ -123,7 +123,6 @@ public:
             size_to_use = texture_info->size;
 
         this->colors[rolling_index] = color;
-        // TODO: 1.0f or 0.0f? size.z
         this->matrices[rolling_index] = GetTransformMatrix(pos, size_to_use, rotation);
 
         float subtex_w = texture_info->size.x / atlas->Width;
