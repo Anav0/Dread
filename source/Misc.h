@@ -47,6 +47,15 @@ inline m4 GetTransformMatrix(v2 position, v2 size, float rotate = 0.0, v2 scale 
     return model;
 }
 
+inline v4 lerp(v4 a, v4 b, f32 progress) {
+    v4 output;
+    output.x = std::lerp(a.x, b.x, progress);
+    output.y = std::lerp(a.y, b.y, progress);
+    output.z = std::lerp(a.z, b.z, progress);
+    output.w = std::lerp(a.w, b.w, progress);
+    return output;
+}
+
 inline m4 GetTransformMatrix(v3 position, v3 size, f32 rotate = 0.0, v3 scale = v3(1.0, 1.0, 1.0))
 {
     m4 model = m4(1.0f);

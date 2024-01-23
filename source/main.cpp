@@ -11,8 +11,8 @@
 #include "RenderHelpers.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
-#include "WindowManager.h"
 #include "TextRenderer.h"
+#include "WindowManager.h"
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -22,8 +22,10 @@
 #include "stb_image_write.h"
 #include "stb_truetype.h"
 
-#include <set>
 #include "Atlas.h"
+
+#include <algorithm>
+#include <set>
 
 void GLAPIENTRY
 MessageCallback(GLenum source,
@@ -68,8 +70,8 @@ int main(int argc, char* argv[])
     stbi_set_flip_vertically_on_load(true);
 
     u8 size = 36;
-    //TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
-    //TR.UseFont("oswald.ttf");
+    // TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
+    // TR.UseFont("oswald.ttf");
     TR.BakeFont("noto.ttf", "noto", { size }, BakeMode::WriteIfNoneExist);
     TR.UseFont("noto.ttf");
 
@@ -89,36 +91,22 @@ int main(int argc, char* argv[])
     // TODO: move to some place better
     R.ui_buffer.Allocate();
 
-    AddText("ABCDEFGHIJKLMNOPRSTWXYZ", { 200, 300 }, YELLOW, size);
-    AddText("!@#$%^&*()_+=", { 200, 250 }, YELLOW, size);
-    AddText("Ala ma kota", { 200, 200 }, YELLOW, size);
-
-    v3 pos = { 0, 0, 0 };
     std::vector<MeshInBuffer> meshes;
-    /*for (size_t i = 0; i < 10; i++) {
-        auto mesh = AddModel(pos, "sphere", GREY, 0, 1)[0];
-        SetupBoundingBox(mesh);
-        pos.x += 5;
-    }*/
 
-    std::vector<Oblast> oblasts;
     int i = 0;
-    std::set<OblastCode> to_show = {
-        OblastCode::Lviv,
-        OblastCode::Donetsk,
-        OblastCode::Crimea
-    };
 
-    std::vector<v4> pallette;
-    pallette.push_back(RED);
-    pallette.push_back(GOLD);
-    pallette.push_back(YELLOW);
-
-#if 0 
+#if 1
     for (auto& mesh : map_buffer_data) {
+        if (i > NUMBER_OF_OBLASTS - 1)
+            continue;
+
         SetupBoundingBox(mesh);
-        auto code = static_cast<OblastCode>(i);
-        oblasts.push_back(Oblast(mesh, static_cast<OblastCode>(i), OBLAST_NAMES.at(code)));
+        OblastCode code = static_cast<OblastCode>(i);
+        f32 control = INITIAL_CONTROL.at(code);
+        STATE.oblasts[i] = Oblast(mesh, static_cast<OblastCode>(i), OBLAST_NAMES.at(code), control);
+        v4 color = lerp(RUSSIAN_COLOR, UKRAINE_COLOR, control);
+        mesh.ChangeColor(color);
+        i++;
     }
 #endif
 
@@ -141,17 +129,19 @@ int main(int argc, char* argv[])
 
         if (STATE.window.buttonAction == MouseAction::PRESSED && STATE.window.buttonType == MouseButton::LEFT) {
             Ray ray = GetRayFromEyes(&projection);
-            // AddModel(STATE.window.camera.position, "sphere", YELLOW, 0, 0.1);
-            // AddModel(ray.position, "sphere", BLUE, 0, 0.1);
             lines.push_back(Line(ray.position, ray.position + ray.direction * 1000.0f));
             Collision c = CheckRayCollision(ray, projection);
             if (c.hit_something) {
                 switch (c.what_was_hit) {
                 case EntityType::eBoundingBox:
+#if 0
                     printf("Hit bounding box\n");
+#endif
                     break;
                 case EntityType::eModel:
+#if 0
                     printf("Hit model\n");
+#endif
                     break;
                 }
             } else {
@@ -161,8 +151,10 @@ int main(int argc, char* argv[])
 
         R.Draw();
 
+#if 0
         for (auto& line : lines)
             line.Draw(line_shader, &projection);
+#endif
 
         printf("Camera: %f %f %f | %f %f\r", camera->position.x, camera->position.y, camera->position.z, camera->yaw, camera->pitch);
 

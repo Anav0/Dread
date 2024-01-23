@@ -9,6 +9,7 @@
 
 #include <map>
 
+//25 or 27
 enum class OblastCode {
     Zythomyr,
     Zaporizhia,
@@ -37,7 +38,34 @@ enum class OblastCode {
     Cherkasy,
     /*  Capitol,
       Sevastopol,*/
+};
 
+const std::map<OblastCode, f32> INITIAL_CONTROL = {
+    { OblastCode::Zythomyr, 1.0f },
+    { OblastCode::Zaporizhia, 1.0f },
+    { OblastCode::Zakarpatia, 1.0f },
+    { OblastCode::Volyn, 1.0f },
+    { OblastCode::Vinnytsia, 1.0f },
+    { OblastCode::Ternopil, 1.0f },
+    { OblastCode::Sumy, 1.0f },
+    { OblastCode::Rivne, 1.0f },
+    { OblastCode::Poltava, 1.0f },
+    { OblastCode::Odessa, 1.0f },
+    { OblastCode::Mykolaiv, 1.0f },
+    { OblastCode::Lviv, 1.0f },
+    { OblastCode::Luhansk, 0.2f },
+    { OblastCode::Kirovohrad, 1.0f },
+    { OblastCode::Kiev, 1.0f },
+    { OblastCode::Chmielnicki, 1.0f },
+    { OblastCode::Kherson, 1.0f },
+    { OblastCode::Kharkiv, 1.0f },
+    { OblastCode::IvanoFrankivsk, 1.0f },
+    { OblastCode::Donetsk, 0.3f },
+    { OblastCode::Dnipropetrovsk, 1.0f },
+    { OblastCode::Crimea, 0.0f },
+    { OblastCode::Chernihiv, 1.0f },
+    { OblastCode::Chernivtsi, 1.0f },
+    { OblastCode::Cherkasy, 1.0f },
 };
 
 const std::map<OblastCode, const char*> OBLAST_NAMES = {
@@ -69,7 +97,7 @@ const std::map<OblastCode, const char*> OBLAST_NAMES = {
 };
 
 class Oblast {
-    public:
+public:
     const char* name = "";
     MeshInBuffer mesh;
     OblastCode code = OblastCode::Kiev;

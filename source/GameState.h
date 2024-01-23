@@ -4,19 +4,20 @@
 #define GameState_H
 
 #include "Camera.h"
-#include "WindowManager.h"
 #include "Constants.h"
 #include "Entities.h"
+#include "WindowManager.h"
 
-#include <set>
 #include <array>
+#include <set>
+#include <map>
 
 enum class RenderMode {
     WIREFRAME,
     NORMAL,
 };
 
-constexpr static u8 NUMBER_OF_OBLASTS    = 26;
+constexpr static u8 NUMBER_OF_OBLASTS = 25;
 constexpr static u8 NUMBER_OF_SUPPORTERS = 10;
 
 struct GameState {
