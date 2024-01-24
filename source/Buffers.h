@@ -7,9 +7,9 @@
 #include "Constants.h"
 #include "Mesh.h"
 #include "Misc.h"
+#include "ResourceManager.h"
 #include "Shader.h"
 #include "Texture.h"
-#include "ResourceManager.h"
 
 #include <string>
 
@@ -106,7 +106,7 @@ class RectBuffer {
     u16 rolling_index = 0;
 
 public:
-    //TODO: make better.
+    // TODO: make better.
     std::string texture_key;
 
     void Allocate();
@@ -114,7 +114,7 @@ public:
     u16 GetCurrentIndex();
 
     int AddTexturedRect(const AtlasTextureInfo* texture_info, const Texture* atlas, const v2 pos, const v2 size = { 0, 0 },
-        const float rotation = 0, v4 color = {0.0, 0.0, 0.0, 1.0})
+        const float rotation = 0, v4 color = { 0.0, 0.0, 0.0, 1.0 })
     {
         assert(rolling_index >= 0);
         assert(rolling_index <= MAX_CAPACITY);
@@ -144,6 +144,33 @@ public:
         const int tmp = rolling_index;
         rolling_index += 1;
         return tmp;
+    }
+
+    void UpdateTexturedRect(u32 index, const AtlasTextureInfo* texture_info, const Texture* atlas, v2 pos, v2 size = { 0, 0 }, f32 rotation = 0.0f)
+    {
+        assert(index >= 0);
+        assert(index <= MAX_CAPACITY);
+
+        v2 size_to_use = size;
+
+        if (size.x == 0 && size.y == 0)
+            size_to_use = texture_info->size;
+
+        this->matrices[index] = GetTransformMatrix(pos, size_to_use, rotation);
+
+        float subtex_w = texture_info->size.x / atlas->Width;
+        float subtex_h = texture_info->size.y / atlas->Height;
+        float subtex_x = texture_info->position.x / atlas->Width;
+        float subtex_y = texture_info->position.y / atlas->Height;
+
+        int coords_index = index * 4;
+
+        textures_coords[coords_index] = { subtex_x + subtex_w, subtex_y + subtex_h }; // TR
+        textures_coords[coords_index + 1] = { subtex_x + subtex_w, subtex_y }; // BR
+        textures_coords[coords_index + 2] = { subtex_x, subtex_y }; // BL
+        textures_coords[coords_index + 3] = { subtex_x, subtex_y + subtex_h }; // TL
+
+        UpdateBufferSection(index);
     }
 
     void UpdateColor(const int index, v4 color)

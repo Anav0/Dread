@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 
     std::vector<Line> lines;
 
-    auto ui_oblast_control = AddText("Control: ---", { 20, GetScreenSize().y - 50 }, WHITE, size);
+    auto ui_oblast_control = AddText(std::string("Control: 100.00%").size(), { 20, GetScreenSize().y - 50 }, WHITE, size);
 
     while (!STATE.window.IsClosing()) {
         STATE.window.onBeginOfTheLoop();
@@ -139,8 +139,11 @@ int main(int argc, char* argv[])
             if (c.hit_something) {
                 switch (c.what_was_hit) {
                 case EntityType::BoundingBox:
-                    break;
-                case EntityType::Oblast:
+                    auto entity = E.GetEntityById(c.box.child_id);
+                    if (entity->type == EntityType::Oblast) {
+                        f32 region_control = entity->oblast.ukrainian_control;
+                        ui_oblast_control.ChangeText(std::format("Control: {:.2f}%", region_control*100), size, { 20, GetScreenSize().y - 50 });
+                    }
                     break;
                 }
             } else {

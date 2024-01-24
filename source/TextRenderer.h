@@ -5,6 +5,7 @@
 
 #include <map>
 #include <vector>
+#include <string>
 
 #include "stb_truetype.h"
 
@@ -33,7 +34,7 @@ struct TextInBuffer {
     u32 length = 0;
 
     void ChangeColor(v4 color);
-    void ChangeText(char* text);
+    void ChangeText(std::string text, u8 size, v2 pos);
 };
 
 class SeanTextRenderer {

@@ -8,8 +8,8 @@
 #include <stb_image_write.h>
 #include <stb_truetype.h>
 
-#include <vector>
 #include "Renderer.h"
+#include <vector>
 
 SeanTextRenderer TR;
 
@@ -156,13 +156,34 @@ v2 SeanTextRenderer::GetTextSize(char* text, u8 font_size)
 
 void TextInBuffer::ChangeColor(v4 color)
 {
-    for (size_t i = pos_in_buffer; i < pos_in_buffer+length; i++) {
+    for (size_t i = pos_in_buffer; i < pos_in_buffer + length; i++) {
         R.ui_buffer.UpdateColor(i, color);
     }
 }
 
-void TextInBuffer::ChangeText(char* text)
+void TextInBuffer::ChangeText(std::string text, u8 size, v2 pos)
 {
-    for (size_t i = pos_in_buffer; i < pos_in_buffer+length; i++) {
+    auto font = TR.GetCurrentFont(size);
+    auto atlas = RM.GetTexture(font.path);
+
+    // TODO: sucks
+    assert(text.size() <= length);
+
+    for (size_t i = pos_in_buffer; i < pos_in_buffer + length; i++) {
+        GlyphInfo glyph;
+        if (i >= text.size()) {
+            glyph = font.glyphs.at(' ');
+        } else {
+            char c = text[i];
+            glyph = font.glyphs.at(c);
+        }
+
+        AtlasTextureInfo texture_info;
+        texture_info.position = v2(glyph.x, glyph.y);
+        texture_info.scale = v2(1.0f, 1.0f);
+        texture_info.size = v2(glyph.w, glyph.h);
+
+        R.ui_buffer.UpdateTexturedRect(i, &texture_info, atlas, pos);
+        pos.x += glyph.w;
     }
 }
