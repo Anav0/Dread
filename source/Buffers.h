@@ -111,6 +111,8 @@ public:
 
     void Allocate();
 
+    u16 GetCurrentIndex();
+
     int AddTexturedRect(const AtlasTextureInfo* texture_info, const Texture* atlas, const v2 pos, const v2 size = { 0, 0 },
         const float rotation = 0, v4 color = {0.0, 0.0, 0.0, 1.0})
     {
@@ -147,6 +149,7 @@ public:
     void UpdateColor(const int index, v4 color)
     {
         this->colors[index] = color;
+        UpdateBufferSection(index);
     }
 
     void UpdateBufferSection(const int index)

@@ -3,6 +3,15 @@
 
 EntityManager E;
 
+ID EntityManager::CreateOblast(Oblast oblast)
+{
+    entities[ROLLING_INDEX].oblast = oblast;
+    entities[ROLLING_INDEX].id = ROLLING_INDEX;
+    entities[ROLLING_INDEX].type = EntityType::Oblast;
+
+    return ROLLING_INDEX++;
+}
+
 void EntityManager::Update()
 {
     for (size_t i = 0; i < ROLLING_INDEX; i++)
@@ -17,11 +26,11 @@ void EntityManager::Update()
     }
 }
 
-Entities *EntityManager::GetEntityById(ID id)
+GameEntity *EntityManager::GetEntityById(ID id)
 {
     for (size_t i = 0; i < ROLLING_INDEX; i++)
     {
-        Entities *e = &entities[i];
+        GameEntity *e = &entities[i];
         if (e->id == id)
             return e;
     }

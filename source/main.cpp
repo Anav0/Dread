@@ -100,10 +100,12 @@ int main(int argc, char* argv[])
         if (i > NUMBER_OF_OBLASTS - 1)
             continue;
 
-        SetupBoundingBox(mesh);
-        OblastCode code = static_cast<OblastCode>(i);
-        f32 control = INITIAL_CONTROL.at(code);
-        STATE.oblasts[i] = Oblast(mesh, static_cast<OblastCode>(i), OBLAST_NAMES.at(code), control);
+        auto code = static_cast<OblastCode>(i);
+        auto control = INITIAL_CONTROL.at(code);
+
+        ID id = E.CreateOblast(Oblast(mesh, static_cast<OblastCode>(i), OBLAST_NAMES.at(code), control));
+        SetupBoundingBox(mesh, id);
+
         v4 color = lerp(RUSSIAN_COLOR, UKRAINE_COLOR, control);
         mesh.ChangeColor(color);
         i++;
@@ -117,6 +119,9 @@ int main(int argc, char* argv[])
     R.ortho_projection = ortho_projection;
 
     std::vector<Line> lines;
+
+    auto ui_oblast_control = AddText("Control: ---", { 20, GetScreenSize().y - 50 }, WHITE, size);
+
     while (!STATE.window.IsClosing()) {
         STATE.window.onBeginOfTheLoop();
         glfwPollEvents();
@@ -133,15 +138,9 @@ int main(int argc, char* argv[])
             Collision c = CheckRayCollision(ray, projection);
             if (c.hit_something) {
                 switch (c.what_was_hit) {
-                case EntityType::eBoundingBox:
-#if 0
-                    printf("Hit bounding box\n");
-#endif
+                case EntityType::BoundingBox:
                     break;
-                case EntityType::eModel:
-#if 0
-                    printf("Hit model\n");
-#endif
+                case EntityType::Oblast:
                     break;
                 }
             } else {

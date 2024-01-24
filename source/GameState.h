@@ -26,12 +26,12 @@ struct GameState {
     RenderMode mode = RenderMode::NORMAL;
     bool show_collisions = false;
 
-    // Game state
-    std::array<Oblast, NUMBER_OF_OBLASTS> oblasts;
-    std::array<Oblast, NUMBER_OF_SUPPORTERS> supporters;
+    Oblast* selected_oblast = nullptr;
 };
 
 Oblast* GetOblast(OblastCode code);
+
+v2 GetScreenSize();
 
 extern GameState STATE;
 

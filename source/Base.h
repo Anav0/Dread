@@ -51,8 +51,8 @@ struct UiColor {
 
 enum class EntityType {
     Rect,
-    eBoundingBox,
-    eModel,
+    BoundingBox,
+    Oblast,
 };
 
 class Entity {

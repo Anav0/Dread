@@ -31,6 +31,6 @@ Collision CheckBoundingBoxCollision(Ray ray, BoundingBox box);
 Collision CheckMeshCollision(Ray* ray, Mesh* mesh, m4 transform);
 Collision CheckTriangleCollision(Ray* ray, v3 p1, v3 p2, v3 p3);
 
-void SetupBoundingBox(MeshInBuffer mesh);
+void SetupBoundingBox(MeshInBuffer mesh, ID child_id);
 
 #endif

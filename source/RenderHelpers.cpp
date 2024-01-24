@@ -33,7 +33,7 @@ std::vector<MeshInBuffer> AddModel(v3 position, std::string model_name, v4 color
     return meshes;
 }
 
-void AddText(std::string text, v2 pos, v4 color, u8 font_size)
+TextInBuffer AddText(std::string text, v2 pos, v4 color, u8 font_size)
 {
     FontInfo font = TR.GetCurrentFont(font_size);
 
@@ -44,6 +44,8 @@ void AddText(std::string text, v2 pos, v4 color, u8 font_size)
     R.ui_buffer.texture_key = font.path;
 
     f32 base_y = pos.y;
+    TextInBuffer handle {}; 
+    handle.pos_in_buffer = R.ui_buffer.GetCurrentIndex();
     for (size_t i = 0; i < text.size(); i++) {
         char c = text[i];
 
@@ -55,11 +57,14 @@ void AddText(std::string text, v2 pos, v4 color, u8 font_size)
         texture_info.size = v2(glyph.w, glyph.h);
 
         R.ui_buffer.AddTexturedRect(&texture_info, font_atlas, pos, texture_info.size, 0, color);
+        handle.length += 1;
 
         //pos.x += glyph.advance;
         pos.x += glyph.w + 1;
         pos.y = base_y;
     }
+
+    return handle;
 }
 
 std::vector<MeshInBuffer> AddModel(v3 position, v3 size, std::string model_name, v4 color = { 0.0f, 0.0f, 0.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f)

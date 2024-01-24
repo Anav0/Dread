@@ -90,11 +90,6 @@ void Mesh::Setup()
     glBindVertexArray(0);
 }
 
-std::string MeshInBuffer::DeriveKeyFromIndexes()
-{
-    return std::string(buffer_index + "_" + pos_in_buffer);
-}
-
 m4 MeshInBuffer::GetMatrix()
 {
     auto buffer = &R.buffers[buffer_index];

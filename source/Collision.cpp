@@ -103,8 +103,8 @@ Collision CheckRayCollisionWithBoundingBoxes(Ray ray, m4 projection)
     for (auto const& box : R.boxes) {
         Collision c = CheckBoundingBoxCollision(ray, box);
         if (c.hit_something) {
-            printf("Bounding box hit! ID: %i\n", i);
             c.box = box;
+            c.what_was_hit = EntityType::BoundingBox;
             return c;
         }
         i++;
@@ -252,7 +252,7 @@ Collision CheckTriangleCollision(Ray* ray, v3 p1, v3 p2, v3 p3)
     return collision;
 }
 
-void SetupBoundingBox(MeshInBuffer mesh)
+void SetupBoundingBox(MeshInBuffer mesh, ID child_id)
 {
     auto buffer = R.GetBufferByIndex(mesh.buffer_index);
 
@@ -286,7 +286,6 @@ void SetupBoundingBox(MeshInBuffer mesh)
     v3 min = TransformV3({ min_x, min_y, min_z }, mesh.GetMatrix());
     v3 max = TransformV3({ max_x, max_y, max_z }, mesh.GetMatrix());
 
-    auto box = BoundingBox(min, max, mesh);
-    auto key = mesh.DeriveKeyFromIndexes();
+    auto box = BoundingBox(min, max, child_id);
     R.boxes.push_back(box);
 }

@@ -9,6 +9,7 @@
 #include <stb_truetype.h>
 
 #include <vector>
+#include "Renderer.h"
 
 SeanTextRenderer TR;
 
@@ -146,4 +147,22 @@ FontInfo SeanTextRenderer::GetCurrentFont(u8 font_size)
 
     assert(false); // TODO: error handling
     return fonts[0];
+}
+
+v2 SeanTextRenderer::GetTextSize(char* text, u8 font_size)
+{
+    return v2();
+}
+
+void TextInBuffer::ChangeColor(v4 color)
+{
+    for (size_t i = pos_in_buffer; i < pos_in_buffer+length; i++) {
+        R.ui_buffer.UpdateColor(i, color);
+    }
+}
+
+void TextInBuffer::ChangeText(char* text)
+{
+    for (size_t i = pos_in_buffer; i < pos_in_buffer+length; i++) {
+    }
 }

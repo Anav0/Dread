@@ -29,10 +29,11 @@ enum class BakeMode {
 };
 
 struct TextInBuffer {
-    u32 buffer_index = 0;
-    u32 pos_in_buffer;
+    u32 pos_in_buffer = 0;
+    u32 length = 0;
 
     void ChangeColor(v4 color);
+    void ChangeText(char* text);
 };
 
 class SeanTextRenderer {
@@ -43,6 +44,7 @@ public:
     void BakeFont(std::string font, std::string output_file_name, std::vector<u8> sizes, BakeMode mode = BakeMode::WriteIfNoneExist);
     void UseFont(std::string font_name);
     FontInfo GetCurrentFont(u8 font_size);
+    v2 GetTextSize(char* text, u8 font_size);
 };
 
 extern SeanTextRenderer TR;

@@ -2,8 +2,7 @@
 
 GameState STATE;
 
-Oblast* GetOblast(OblastCode code)
+v2 GetScreenSize()
 {
-    int i = static_cast<int>(code);
-    return &STATE.oblasts[i];
+    return STATE.window.screen_size;
 }

@@ -3,31 +3,34 @@
 
 #pragma once
 
-#include "Constants.h"
 #include "Base.h"
 #include "BoundingBox.h"
+#include "Constants.h"
 
 constexpr int MAX_ENTITIES = 1024;
 
-struct Entities {
+struct GameEntity {
     ID id;
     EntityType type;
-    int render_group_index, buffer_index;
     bool is_dirty;
 
     union {
         Rectangle rect;
         BoundingBox box;
+        Oblast oblast;
     };
 };
 
 class EntityManager {
 public:
-    Entities entities[MAX_ENTITIES] = {};
+    GameEntity entities[MAX_ENTITIES] = {};
     int ROLLING_INDEX = 0;
 
     void Update();
-    Entities* GetEntityById(ID id);
+
+    ID CreateOblast(Oblast oblast);
+
+    GameEntity* GetEntityById(ID id);
 };
 
 extern EntityManager E;

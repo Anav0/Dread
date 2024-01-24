@@ -179,3 +179,7 @@ void RectBuffer::Allocate()
 
     glBindVertexArray(0);
 }
+
+u16 RectBuffer::GetCurrentIndex() {
+    return rolling_index;
+}
