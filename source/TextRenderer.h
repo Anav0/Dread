@@ -45,7 +45,7 @@ public:
     void BakeFont(std::string font, std::string output_file_name, std::vector<u8> sizes, BakeMode mode = BakeMode::WriteIfNoneExist);
     void UseFont(std::string font_name);
     FontInfo GetCurrentFont(u8 font_size);
-    v2 GetTextSize(char* text, u8 font_size);
+    v2 GetTextSize(const char* text, u8 font_size);
 };
 
 extern SeanTextRenderer TR;

@@ -149,9 +149,26 @@ FontInfo SeanTextRenderer::GetCurrentFont(u8 font_size)
     return fonts[0];
 }
 
-v2 SeanTextRenderer::GetTextSize(char* text, u8 font_size)
+v2 SeanTextRenderer::GetTextSize(const char* text, u8 font_size)
 {
-    return v2();
+    u8 padding = 10;
+    v2 size = { 0, 0 };
+    auto font = GetCurrentFont(font_size);
+    const char* c = &text[0];
+    while (*c != '\0') {
+        auto& glyph = font.glyphs.at(*c);
+        size.x += glyph.w;
+
+        if (glyph.h > size.y)
+            size.y = glyph.h;
+
+        c++;
+    }
+
+    size.x += padding;
+    size.y += padding;
+
+    return size;
 }
 
 void TextInBuffer::ChangeColor(v4 color)

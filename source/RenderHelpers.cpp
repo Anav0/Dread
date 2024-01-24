@@ -18,7 +18,7 @@ std::vector<MeshInBuffer> AddModel(v3 position, std::string model_name, v4 color
     std::vector<MeshInBuffer> meshes;
 
     for (auto& mesh : model->meshes) {
-        InstancedBuffer* buffer;
+        InstancedMeshBuffer* buffer;
         buffer = R.GetBuffer(mesh.id);
         if (buffer == nullptr)
             buffer = R.CreateBuffer(mesh);
@@ -108,7 +108,7 @@ std::vector<MeshInBuffer> AddModel(v3 position, v3 size, std::string model_name,
     std::vector<MeshInBuffer> meshes;
 
     for (auto& mesh : model->meshes) {
-        InstancedBuffer* buffer;
+        InstancedMeshBuffer* buffer;
         buffer = R.GetBuffer(mesh.id);
         if (buffer == nullptr)
             buffer = R.CreateBuffer(mesh);

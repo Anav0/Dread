@@ -147,6 +147,7 @@
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="Gui.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -171,6 +172,7 @@
     <ClInclude Include="Entities.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="Gui.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />

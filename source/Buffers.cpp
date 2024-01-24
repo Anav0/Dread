@@ -5,13 +5,13 @@
 #include "ResourceManager.h"
 #include "TextRenderer.h"
 
-InstancedBuffer::InstancedBuffer(Mesh mesh)
+InstancedMeshBuffer::InstancedMeshBuffer(Mesh mesh)
 {
     this->mesh = mesh;
     glGenBuffers(1, &VBO);
 }
 
-void InstancedBuffer::Allocate()
+void InstancedMeshBuffer::Allocate()
 {
     glBindVertexArray(mesh.VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -47,7 +47,7 @@ void InstancedBuffer::Allocate()
     glBindVertexArray(0);
 }
 
-void InstancedBuffer::Draw(Shader* shader, m4* projection, Texture* atlas)
+void InstancedMeshBuffer::Draw(Shader* shader, m4* projection, Texture* atlas)
 {
     if (colors.size() == 0)
         return;
@@ -72,12 +72,12 @@ void InstancedBuffer::Draw(Shader* shader, m4* projection, Texture* atlas)
     glBindVertexArray(0);
 }
 
-m4 InstancedBuffer::GetMatrix(u32 index)
+m4 InstancedMeshBuffer::GetMatrix(u32 index)
 {
     return matrices[index];
 }
 
-MeshInBuffer InstancedBuffer::AddMesh(v3 position, v3 size, v4 color, f32 rotation, f32 scale)
+MeshInBuffer InstancedMeshBuffer::AddMesh(v3 position, v3 size, v4 color, f32 rotation, f32 scale)
 {
     auto mesh_in_buffer = MeshInBuffer();
 
@@ -91,7 +91,7 @@ MeshInBuffer InstancedBuffer::AddMesh(v3 position, v3 size, v4 color, f32 rotati
 
     return mesh_in_buffer;
 }
-MeshInBuffer InstancedBuffer::AddMesh(v3 position, v4 color, f32 rotation, f32 scale)
+MeshInBuffer InstancedMeshBuffer::AddMesh(v3 position, v4 color, f32 rotation, f32 scale)
 {
     auto mesh_in_buffer = MeshInBuffer();
 
@@ -106,7 +106,61 @@ MeshInBuffer InstancedBuffer::AddMesh(v3 position, v4 color, f32 rotation, f32 s
     return mesh_in_buffer;
 }
 
-void RectBuffer::Allocate()
+u32 TexturedQuadBuffer::AddTexturedRect(const AtlasTextureInfo* texture_info, const Texture* atlas, const v2 pos, const v2 size, const float rotation, v4 color)
+{
+    assert(rolling_index >= 0);
+    assert(rolling_index <= MAX_CAPACITY);
+
+    v2 size_to_use = size;
+
+    if (size.x == 0 && size.y == 0)
+        size_to_use = texture_info->size;
+
+    this->colors[rolling_index] = color;
+    this->matrices[rolling_index] = GetTransformMatrix(pos, size_to_use, rotation);
+
+    float subtex_w = texture_info->size.x / atlas->Width;
+    float subtex_h = texture_info->size.y / atlas->Height;
+    float subtex_x = texture_info->position.x / atlas->Width;
+    float subtex_y = texture_info->position.y / atlas->Height;
+
+    int coords_index = rolling_index * 4;
+
+    textures_coords[coords_index] = { subtex_x + subtex_w, subtex_y + subtex_h }; // TR
+    textures_coords[coords_index + 1] = { subtex_x + subtex_w, subtex_y }; // BR
+    textures_coords[coords_index + 2] = { subtex_x, subtex_y }; // BL
+    textures_coords[coords_index + 3] = { subtex_x, subtex_y + subtex_h }; // TL
+
+    UpdateBufferSection(rolling_index);
+
+    const int tmp = rolling_index;
+    rolling_index += 1;
+    return tmp;
+}
+
+u32 TexturedQuadBuffer::AddRect(const Rectangle rect)
+{
+    assert(rolling_index >= 0);
+    assert(rolling_index <= MAX_CAPACITY);
+
+    this->colors[rolling_index] = rect.color;
+    this->matrices[rolling_index] = GetTransformMatrix(rect.transform.position, rect.transform.size, rect.transform.rotation);
+
+    int coords_index = rolling_index * 4;
+
+    textures_coords[coords_index] = { -1, -1 };
+    textures_coords[coords_index + 1] = { -1, -1 };
+    textures_coords[coords_index + 2] = { -1, -1 };
+    textures_coords[coords_index + 3] = { -1, -1 };
+
+    UpdateBufferSection(rolling_index);
+
+    const int tmp = rolling_index;
+    rolling_index += 1;
+    return tmp;
+}
+
+void TexturedQuadBuffer::Allocate()
 {
     constexpr float vertices[] = {
         0.5f, 0.5f, 0.0f, // top right
@@ -180,6 +234,7 @@ void RectBuffer::Allocate()
     glBindVertexArray(0);
 }
 
-u16 RectBuffer::GetCurrentIndex() {
+u16 TexturedQuadBuffer::GetCurrentIndex()
+{
     return rolling_index;
 }

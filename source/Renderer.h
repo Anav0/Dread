@@ -21,8 +21,8 @@ class Renderer {
 
 public:
     std::vector<BoundingBox> boxes;
-    std::vector<InstancedBuffer> buffers;
-    RectBuffer ui_buffer;
+    std::vector<InstancedMeshBuffer> buffers;
+    TexturedQuadBuffer ui_buffer;
 
     m4 projection;
     m4 ortho_projection;
@@ -35,9 +35,9 @@ public:
     Renderer();
     void Draw();
     void Update();
-    InstancedBuffer* GetBuffer(std::string mesh_name);
-    InstancedBuffer* GetBufferByIndex(u32 index);
-    InstancedBuffer* CreateBuffer(Mesh mesh);
+    InstancedMeshBuffer* GetBuffer(std::string mesh_name);
+    InstancedMeshBuffer* GetBufferByIndex(u32 index);
+    InstancedMeshBuffer* CreateBuffer(Mesh mesh);
 };
 
 extern Renderer R;

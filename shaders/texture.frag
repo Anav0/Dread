@@ -9,10 +9,14 @@ uniform sampler2D imageSampler;
 
 void main()
 {
-    vec4 texColor = texture(imageSampler, ourTextureCoords);
+    if(ourTextureCoords.x < 0.0) {
+        color = ourColor;
+    }
+    else {
+        vec4 texColor = texture(imageSampler, ourTextureCoords);
+        if(texColor.a < 0.1)
+         discard;
 
-     if(texColor.a < 0.1)
-        discard;
-
-    color = texColor * ourColor;
+        color = texColor * ourColor;
+    }
 }  

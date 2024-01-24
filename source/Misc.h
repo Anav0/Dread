@@ -35,6 +35,16 @@ inline void Rotate(m4* model, const f32 degs)
     *model = glm::rotate(*model, glm::radians(degs), v3(0.0f, 0.0f, 1.0f));
 }
 
+inline v4 lerp(v4 a, v4 b, f32 progress)
+{
+    v4 output;
+    output.x = std::lerp(a.x, b.x, progress);
+    output.y = std::lerp(a.y, b.y, progress);
+    output.z = std::lerp(a.z, b.z, progress);
+    output.w = std::lerp(a.w, b.w, progress);
+    return output;
+}
+
 inline m4 GetTransformMatrix(v2 position, v2 size, float rotate = 0.0, v2 scale = v2(1.0, 1.0))
 {
     m4 model = m4(1.0f);
@@ -47,15 +57,6 @@ inline m4 GetTransformMatrix(v2 position, v2 size, float rotate = 0.0, v2 scale 
     return model;
 }
 
-inline v4 lerp(v4 a, v4 b, f32 progress) {
-    v4 output;
-    output.x = std::lerp(a.x, b.x, progress);
-    output.y = std::lerp(a.y, b.y, progress);
-    output.z = std::lerp(a.z, b.z, progress);
-    output.w = std::lerp(a.w, b.w, progress);
-    return output;
-}
-
 inline m4 GetTransformMatrix(v3 position, v3 size, f32 rotate = 0.0, v3 scale = v3(1.0, 1.0, 1.0))
 {
     m4 model = m4(1.0f);
@@ -63,7 +64,9 @@ inline m4 GetTransformMatrix(v3 position, v3 size, f32 rotate = 0.0, v3 scale = 
     model = glm::translate(model, size);
     model = glm::rotate(model, glm::radians(rotate), v3(0.0f, 0.0f, 1.0f));
     model = glm::translate(model, v3(-0.5f * size.x, -0.5f * size.y, 0.0f));
-    model = glm::scale(model, scale);
+    auto finalSize = size * scale;
+    model = glm::scale(model, v3(finalSize.x, finalSize.y, 1.0f));
+    return model;
 
     return model;
 }

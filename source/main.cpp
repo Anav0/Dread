@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Gui.h"
 #include "Collision.h"
 #include "Constants.h"
 #include "Entities.h"
@@ -75,6 +76,9 @@ int main(int argc, char* argv[])
     TR.BakeFont("noto.ttf", "noto", { size }, BakeMode::WriteIfNoneExist);
     TR.UseFont("noto.ttf");
 
+    RM.LoadTexture("atlas.png", "atlas", false, true);
+
+    Shader* rect_shader = RM.LoadShader("rekt.vert", "rekt.frag", "rect");
     Shader* texture_shader = RM.LoadShader("texture.vert", "texture.frag", "texture");
     Shader* objects_shader = RM.LoadShader("object.vert", "object.frag", "object");
     Shader* debug_shader = RM.LoadShader("debug.vert", "debug.frag", "debug");
@@ -120,7 +124,9 @@ int main(int argc, char* argv[])
 
     std::vector<Line> lines;
 
-    auto ui_oblast_control = AddText(std::string("Control: 100.00%").size(), { 20, GetScreenSize().y - 50 }, WHITE, size);
+    //auto ui_oblast_control = AddText(std::string("Control: 100.00%").size(), { 20, GetScreenSize().y - 50 }, WHITE, size);
+
+    UI.DrawBtn("Hello", size, { 200, 200 });
 
     while (!STATE.window.IsClosing()) {
         STATE.window.onBeginOfTheLoop();
@@ -142,7 +148,7 @@ int main(int argc, char* argv[])
                     auto entity = E.GetEntityById(c.box.child_id);
                     if (entity->type == EntityType::Oblast) {
                         f32 region_control = entity->oblast.ukrainian_control;
-                        ui_oblast_control.ChangeText(std::format("Control: {:.2f}%", region_control*100), size, { 20, GetScreenSize().y - 50 });
+                        //ui_oblast_control.ChangeText(std::format("Control: {:.2f}%", region_control*100), size, { 20, GetScreenSize().y - 50 });
                     }
                     break;
                 }
