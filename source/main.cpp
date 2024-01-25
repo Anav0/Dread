@@ -65,6 +65,7 @@ int main(int argc, char* argv[])
     glEnable(GL_BLEND);
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDebugMessageCallback(MessageCallback, 0);
 
