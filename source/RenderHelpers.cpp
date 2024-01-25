@@ -83,9 +83,7 @@ TextInBuffer AddText(u8 size, v2 pos, v4 color, u8 font_size)
     TextInBuffer handle {};
     handle.pos_in_buffer = R.ui_buffer.GetCurrentIndex();
     for (size_t i = 0; i < size; i++) {
-        char c = ' ';
-
-        GlyphInfo glyph = font.glyphs[c];
+        GlyphInfo glyph = font.glyphs[' '];
 
         AtlasTextureInfo texture_info;
         texture_info.position = v2(glyph.x, glyph.y);
@@ -94,7 +92,6 @@ TextInBuffer AddText(u8 size, v2 pos, v4 color, u8 font_size)
 
         R.ui_buffer.AddTexturedRect(&texture_info, font_atlas, pos, texture_info.size, 0, color);
 
-        // pos.x += glyph.advance;
         pos.x += glyph.w;
         pos.y = base_y;
         handle.length += 1;

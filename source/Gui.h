@@ -4,8 +4,9 @@
 #pragma once
 
 #include "Constants.h"
-#include "TextRenderer.h"
 #include "GameState.h"
+#include "TextRenderer.h"
+#include "Renderer.h"
 
 #include <string>
 
@@ -33,6 +34,7 @@ struct ButtonInfo {
     u32 bg_index_in_ui_buffer;
     v2 pos, size;
     void (*on_click)(void);
+    bool was_hovered = false;
 
     ButtonInfo(TextInBuffer text_info, u32 bg_index_in_ui_buffer, v2 pos, v2 size, void (*on_click)(void))
     {
@@ -45,14 +47,23 @@ struct ButtonInfo {
 
     void Update()
     {
-        if (STATE.window.buttonAction == MouseAction::PRESSED && STATE.window.buttonType == MouseButton::LEFT) {
-            auto mouse_x = STATE.window.mouse_x;
-            auto mouse_y = STATE.window.mouse_y;
-            auto mouse_over = isPointInRect(pos, size, mouse_x, mouse_y);
+        auto mouse_x = STATE.window.mouse_x;
+        auto mouse_y = STATE.window.mouse_y;
+        auto mouse_over = isPointInRect(pos, size, mouse_x, mouse_y);
 
-            if (mouse_over) {
+        if (mouse_over) {
+            if (!was_hovered)
+                R.ui_buffer.UpdateColor(bg_index_in_ui_buffer, UI_BTN_HOVER_BG);
+
+            was_hovered = true;
+            if (STATE.window.buttonAction == MouseAction::PRESSED && STATE.window.buttonType == MouseButton::LEFT) {
                 on_click();
             }
+        } else {
+            if (was_hovered) {
+                R.ui_buffer.UpdateColor(bg_index_in_ui_buffer, UI_BTN_BG);
+            }
+            was_hovered = false;
         }
     }
 };
