@@ -69,6 +69,8 @@ void SeanTextRenderer::BakeFont(std::string font, std::string output_file_name, 
         font_info.font_size = l_h;
         font_info.font_name = font;
         font_info.path = file_name;
+        font_info.space_width = l_h * 0.25;
+        font_info.space_height = l_h * 0.25;
 
         for (char i = from; i < to; ++i) {
             GlyphInfo glyph;
@@ -89,8 +91,8 @@ void SeanTextRenderer::BakeFont(std::string font, std::string output_file_name, 
             glyph.character = i;
             glyph.advance = round(ax * scale);
             if (i == ' ') {
-                glyph.h = l_h * 0.25;
-                glyph.w = l_h * 0.25;
+                glyph.h = font_info.space_height;
+                glyph.w = font_info.space_width;
                 glyph.x = -999;
                 glyph.y = -999;
             } else {
@@ -151,12 +153,12 @@ FontInfo SeanTextRenderer::GetCurrentFont(u8 font_size)
 
 v2 SeanTextRenderer::GetTextSize(const char* text, u8 font_size)
 {
-    u8 padding = 10;
     v2 size = { 0, 0 };
     auto font = GetCurrentFont(font_size);
     const char* c = &text[0];
     while (*c != '\0') {
         auto& glyph = font.glyphs.at(*c);
+
         size.x += glyph.w;
 
         if (glyph.h > size.y)
@@ -164,9 +166,6 @@ v2 SeanTextRenderer::GetTextSize(const char* text, u8 font_size)
 
         c++;
     }
-
-    size.x += padding;
-    size.y += padding;
 
     return size;
 }

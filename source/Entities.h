@@ -104,12 +104,17 @@ public:
     f32 ukrainian_control = 0.0f;
 
     Oblast() { }
+
+    void UpdateColorBasedOnControl();
+
     Oblast(MeshInBuffer mesh, OblastCode code, const char* name, f32 ukrainian_control = 0.0f)
     {
         this->mesh = mesh;
         this->code = code;
         this->name = name;
         this->ukrainian_control = ukrainian_control;
+
+        UpdateColorBasedOnControl();
     }
 };
 

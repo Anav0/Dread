@@ -32,6 +32,7 @@ struct GameState {
 Oblast* GetOblast(OblastCode code);
 
 v2 GetScreenSize();
+void ChangeControl(f32 by);
 
 extern GameState STATE;
 

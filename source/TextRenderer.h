@@ -19,6 +19,7 @@ struct GlyphInfo {
 struct FontInfo {
     std::string font_name;
     u8 font_size;
+    u8 space_width, space_height;
     std::string path;
     std::map<char, GlyphInfo> glyphs;
     f32 scale;

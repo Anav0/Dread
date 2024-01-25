@@ -53,6 +53,7 @@ enum class EntityType {
     Rect,
     BoundingBox,
     Oblast,
+    Button,
 };
 
 class Entity {

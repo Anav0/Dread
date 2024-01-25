@@ -6,6 +6,7 @@
 #include "Base.h"
 #include "BoundingBox.h"
 #include "Constants.h"
+#include "Gui.h"
 
 constexpr int MAX_ENTITIES = 1024;
 
@@ -18,6 +19,7 @@ struct GameEntity {
         Rectangle rect;
         BoundingBox box;
         Oblast oblast;
+        ButtonInfo button;
     };
 };
 
@@ -26,10 +28,9 @@ public:
     GameEntity entities[MAX_ENTITIES] = {};
     int ROLLING_INDEX = 0;
 
-    void Update();
-
     ID CreateOblast(Oblast oblast);
 
+    void Update();
     GameEntity* GetEntityById(ID id);
 };
 

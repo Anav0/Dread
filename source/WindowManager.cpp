@@ -11,6 +11,8 @@ void WindowManager::onBeginOfTheLoop()
 
     glfwGetCursorPos(window, &mouse_x, &mouse_y);
 
+    mouse_y = STATE.window.screen_size.y - mouse_y;
+
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 

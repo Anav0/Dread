@@ -1,10 +1,10 @@
 #include "Camera.h"
-#include "Gui.h"
 #include "Collision.h"
 #include "Constants.h"
 #include "Entities.h"
 #include "EntityManager.h"
 #include "GameState.h"
+#include "Gui.h"
 #include "Line.h"
 #include "Mesh.h"
 #include "Model.h"
@@ -110,8 +110,6 @@ int main(int argc, char* argv[])
         ID id = E.CreateOblast(Oblast(mesh, static_cast<OblastCode>(i), OBLAST_NAMES.at(code), control));
         SetupBoundingBox(mesh, id);
 
-        v4 color = lerp(RUSSIAN_COLOR, UKRAINE_COLOR, control);
-        mesh.ChangeColor(color);
         i++;
     }
 #endif
@@ -124,9 +122,10 @@ int main(int argc, char* argv[])
 
     std::vector<Line> lines;
 
-    //auto ui_oblast_control = AddText(std::string("Control: 100.00%").size(), { 20, GetScreenSize().y - 50 }, WHITE, size);
+    auto ui_oblast_control = AddText(std::string("Control: 100.00%").size(), { 20, GetScreenSize().y - 50 }, WHITE, size);
 
-    UI.DrawBtn("Hello", size, { 200, 200 });
+    UI.DrawBtn("Increase control", size, { 200, 200 }, []() { ChangeControl(0.1); });
+    UI.DrawBtn("Decrease control", size, { 200, 250 }, []() { ChangeControl(-0.1); });
 
     while (!STATE.window.IsClosing()) {
         STATE.window.onBeginOfTheLoop();
@@ -148,7 +147,7 @@ int main(int argc, char* argv[])
                     auto entity = E.GetEntityById(c.box.child_id);
                     if (entity->type == EntityType::Oblast) {
                         f32 region_control = entity->oblast.ukrainian_control;
-                        //ui_oblast_control.ChangeText(std::format("Control: {:.2f}%", region_control*100), size, { 20, GetScreenSize().y - 50 });
+                        ui_oblast_control.ChangeText(std::format("Control: {:.2f}%", region_control*100), size, { 20, GetScreenSize().y - 50 });
                     }
                     break;
                 }

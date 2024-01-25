@@ -14,23 +14,29 @@ ID EntityManager::CreateOblast(Oblast oblast)
 
 void EntityManager::Update()
 {
-    for (size_t i = 0; i < ROLLING_INDEX; i++)
-    {
+    for (size_t i = 0; i < ROLLING_INDEX; i++) {
         auto e = &entities[i];
 
-        switch (e->type)
-        {
+        switch (e->type) {
+        case EntityType::Rect:
+            break;
+        case EntityType::BoundingBox:
+            break;
+        case EntityType::Button:
+            e->button.Update();
+            break;
+        case EntityType::Oblast:
+            break;
         }
 
         e->is_dirty = false;
     }
 }
 
-GameEntity *EntityManager::GetEntityById(ID id)
+GameEntity* EntityManager::GetEntityById(ID id)
 {
-    for (size_t i = 0; i < ROLLING_INDEX; i++)
-    {
-        GameEntity *e = &entities[i];
+    for (size_t i = 0; i < ROLLING_INDEX; i++) {
+        GameEntity* e = &entities[i];
         if (e->id == id)
             return e;
     }
