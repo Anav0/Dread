@@ -64,6 +64,7 @@ void InstancedMeshBuffer::Draw(Shader* shader, m4* projection, Texture* atlas)
 
     shader->Use();
     shader->setInt("imageSampler", 0);
+    shader->setBool("hideAlpha", HIDE_ALPHA);
     shader->setMat4("projection", *projection);
     shader->setMat4("view", STATE.window.camera.GetViewMatrix());
 

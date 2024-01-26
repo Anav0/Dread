@@ -38,11 +38,14 @@ void Gui::DrawBtn(const char* text, u8 font_size, v2 pos, void on_click())
     E.ROLLING_INDEX++;
 }
 
-void Gui::DrawIconAndLabel(u16 icon, std::string label, v2 pos)
+void Gui::DrawIconAndLabel(u16 icon, std::string label, v2 pos, u8 font_size)
 {
     auto icon_size = v2(64);
     auto atlas = RM.GetTexture("icons");
     auto info = GetTextureInfoByIndex(icon, icon_size, "icons");
 
     R.icons_buffer.AddTexturedRect(&info, atlas, pos, icon_size);
+
+    pos.x += icon_size.x;
+    AddText(label, pos, WHITE, font_size);
 }

@@ -20,6 +20,8 @@ enum class RenderMode {
 constexpr static u8 NUMBER_OF_OBLASTS = 25;
 constexpr static u8 NUMBER_OF_SUPPORTERS = 10;
 
+constexpr bool HIDE_ALPHA = true;
+
 struct GameState {
     // Other
     WindowManager window;

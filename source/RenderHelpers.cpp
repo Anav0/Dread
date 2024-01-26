@@ -101,10 +101,10 @@ TextInBuffer AddText(u8 size, v2 pos, v4 color, u8 font_size)
     return handle;
 }
 
-void DrawResources()
+void DrawResources(u8 font_size)
 {
-    UI.DrawIconAndLabel(SWORD, std::format("{}", STATE.reserve), { 200, 400 });
-    UI.DrawIconAndLabel(MEGAPHONE, std::format("{}%", STATE.popular_support), { 200, 500 });
+    UI.DrawIconAndLabel(SWORD, std::format("{}", STATE.reserve), { 200, 400 }, font_size);
+    UI.DrawIconAndLabel(MEGAPHONE, std::format("{}%", STATE.popular_support), { 200, 500 }, font_size);
 }
 
 std::vector<MeshInBuffer> AddModel(v3 position, v3 size, std::string model_name, v4 color = { 0.0f, 0.0f, 0.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f)

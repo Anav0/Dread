@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
     UI.DrawBtn("Increase control", size, { 200, 200 }, []() { ChangeControl(0.1); });
     UI.DrawBtn("Decrease control", size, { 200, 250 }, []() { ChangeControl(-0.1); });
 
-    DrawResources();
+    DrawResources(size);
 
     while (!STATE.window.IsClosing()) {
         STATE.window.onBeginOfTheLoop();

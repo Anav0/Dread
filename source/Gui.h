@@ -76,7 +76,7 @@ class Gui {
     const std::string ui_atlas = "ui_atlas";
 
 public:
-    void DrawIconAndLabel(u16 icon, std::string label, v2 pos);
+    void DrawIconAndLabel(u16 icon, std::string label, v2 pos, u8 font_size);
     void DrawLabel(std::string text, v2 pos, v4 color, TextStyle style = default_style);
     void DrawBtn(const char* text, u8 font_size, v2 pos, void on_click());
     void BeginLayout(Layout layout, u8 gap = 8);

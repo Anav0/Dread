@@ -6,6 +6,7 @@ in vec4 ourColor;
 out vec4 color;
 
 uniform sampler2D imageSampler;
+uniform bool hideAlpha;
 
 void main()
 {
@@ -14,7 +15,7 @@ void main()
     }
     else {
         vec4 texColor = texture(imageSampler, ourTextureCoords);
-        if(texColor.a < 0.1)
+        if(hideAlpha && texColor.a < 0.1)
          discard;
 
         color = texColor * ourColor;

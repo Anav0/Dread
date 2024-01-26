@@ -10,6 +10,7 @@
 #include "ResourceManager.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "GameState.h"
 
 #include <string>
 
@@ -191,6 +192,7 @@ public:
 
         shader->Use();
         shader->setInt("imageSampler", 0);
+        shader->setBool("hideAlpha", HIDE_ALPHA);
         shader->setMat4("projection", *projection);
 
         auto atlas = RM.GetTexture(this->texture_key);
