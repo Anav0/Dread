@@ -16,7 +16,8 @@ void Renderer::Draw()
     auto shader = RM.GetShader("object");
     auto texture_shader = RM.GetShader("texture");
 
-    ui_buffer.Draw(texture_shader, &ortho_projection);
+    font_buffer.Draw(texture_shader, &ortho_projection);
+    icons_buffer.Draw(texture_shader, &ortho_projection);
 
     for (auto& buffer : buffers) {
         buffer.Draw(shader, &projection, nullptr);

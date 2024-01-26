@@ -48,6 +48,9 @@ public:
                     
 };
 
+// Returns texture info eg. pos, width and height based on it's index in atlas
+AtlasTextureInfo GetTextureInfoByIndex(u16 index, v2 icon_size, std::string atlas_key);
+
 extern ResourceManager RM;
 
 #endif

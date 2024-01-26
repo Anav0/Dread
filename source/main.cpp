@@ -78,6 +78,7 @@ int main(int argc, char* argv[])
     TR.UseFont("noto.ttf");
 
     RM.LoadTexture("atlas.png", "atlas", false, true);
+    RM.LoadTexture("icons.png", "icons", false, true);
 
     Shader* rect_shader = RM.LoadShader("rekt.vert", "rekt.frag", "rect");
     Shader* texture_shader = RM.LoadShader("texture.vert", "texture.frag", "texture");
@@ -94,7 +95,9 @@ int main(int argc, char* argv[])
     auto map_buffer_data = AddModel({ 0, 0, 0 }, "map", GREY, 0, 1);
 
     // TODO: move to some place better
-    R.ui_buffer.Allocate();
+    R.font_buffer.Allocate();
+    R.icons_buffer.Allocate();
+    R.icons_buffer.texture_key = "icons";
 
     std::vector<MeshInBuffer> meshes;
 
@@ -127,6 +130,8 @@ int main(int argc, char* argv[])
 
     UI.DrawBtn("Increase control", size, { 200, 200 }, []() { ChangeControl(0.1); });
     UI.DrawBtn("Decrease control", size, { 200, 250 }, []() { ChangeControl(-0.1); });
+
+    DrawResources();
 
     while (!STATE.window.IsClosing()) {
         STATE.window.onBeginOfTheLoop();

@@ -223,3 +223,21 @@ Shader* ResourceManager::LoadShader(std::string vs, std::string fs, const std::s
 
     return &loaded_shaders[resource_key];
 }
+
+AtlasTextureInfo GetTextureInfoByIndex(u16 index, v2 icon_size, std::string atlas_key)
+{
+    auto info = AtlasTextureInfo();
+
+    auto atlas = RM.GetTexture(atlas_key);
+
+    u8 row_size = atlas->Width / icon_size.x;
+    u8 column_size = atlas->Height / icon_size.y;
+
+    info.position.x = (index % row_size) * icon_size.x;
+    info.position.y = atlas->Height - (index / column_size * icon_size.y);
+
+    info.size = icon_size;
+    info.scale = v3(1.0);
+
+    return info;
+}

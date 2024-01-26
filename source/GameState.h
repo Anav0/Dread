@@ -27,6 +27,10 @@ struct GameState {
     bool show_collisions = false;
 
     Oblast* selected_oblast = nullptr;
+
+    f32 popular_support = 0.8;
+    u64 reserve         = 600.000;
+
 };
 
 Oblast* GetOblast(OblastCode code);

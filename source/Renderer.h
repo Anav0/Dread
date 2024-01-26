@@ -22,7 +22,8 @@ class Renderer {
 public:
     std::vector<BoundingBox> boxes;
     std::vector<InstancedMeshBuffer> buffers;
-    TexturedQuadBuffer ui_buffer;
+    TexturedQuadBuffer font_buffer;
+    TexturedQuadBuffer icons_buffer;
 
     m4 projection;
     m4 ortho_projection;

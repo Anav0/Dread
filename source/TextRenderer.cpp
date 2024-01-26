@@ -173,7 +173,7 @@ v2 SeanTextRenderer::GetTextSize(const char* text, u8 font_size)
 void TextInBuffer::ChangeColor(v4 color)
 {
     for (size_t i = pos_in_buffer; i < pos_in_buffer + length; i++) {
-        R.ui_buffer.UpdateColor(i, color);
+        R.font_buffer.UpdateColor(i, color);
     }
 }
 
@@ -199,7 +199,7 @@ void TextInBuffer::ChangeText(std::string text, u8 size, v2 pos)
         texture_info.scale = v2(1.0f, 1.0f);
         texture_info.size = v2(glyph.w, glyph.h);
 
-        R.ui_buffer.UpdateTexturedRect(i, &texture_info, atlas, pos);
+        R.font_buffer.UpdateTexturedRect(i, &texture_info, atlas, pos);
         pos.x += glyph.w;
     }
 }

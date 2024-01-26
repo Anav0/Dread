@@ -32,8 +32,17 @@ void Gui::DrawBtn(const char* text, u8 font_size, v2 pos, void on_click())
     auto parent_pos = v2(transform.position);
     CenterChildInParent(&parent_pos, &parent_size, &pos, &text_size);
     auto text_info = AddText(text, pos, WHITE, font_size);
-    auto rect_index = R.ui_buffer.AddRect(rect);
+    auto rect_index = R.font_buffer.AddRect(rect);
 
     E.entities[E.ROLLING_INDEX].button = ButtonInfo(text_info, rect_index, parent_pos, parent_size, on_click);
     E.ROLLING_INDEX++;
+}
+
+void Gui::DrawIconAndLabel(u16 icon, std::string label, v2 pos)
+{
+    auto icon_size = v2(64);
+    auto atlas = RM.GetTexture("icons");
+    auto info = GetTextureInfoByIndex(icon, icon_size, "icons");
+
+    R.icons_buffer.AddTexturedRect(&info, atlas, pos, icon_size);
 }

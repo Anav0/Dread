@@ -94,7 +94,7 @@ public:
 };
 
 // TODO: change to std::vector
-static constexpr int MAX_CAPACITY = 4096;
+static constexpr int MAX_CAPACITY = 2048;
 
 class TexturedQuadBuffer {
     unsigned int VAO, VBO, EBO, instanced_VBO;
@@ -116,7 +116,7 @@ public:
     u32 AddRect(const Rectangle rect);
 
     u32 AddTexturedRect(const AtlasTextureInfo* texture_info, const Texture* atlas, const v2 pos, const v2 size = { 0, 0 },
-        const float rotation = 0, v4 color = { 0.0, 0.0, 0.0, 1.0 });
+        const float rotation = 0, v4 color = { 1.0, 1.0, 1.0, 1.0 });
 
     void UpdateTexturedRect(u32 index, const AtlasTextureInfo* texture_info, const Texture* atlas, v2 pos, v2 size = { 0, 0 }, f32 rotation = 0.0f)
     {
