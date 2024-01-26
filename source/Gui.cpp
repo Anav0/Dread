@@ -54,3 +54,7 @@ void Gui::DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos, u8
 
     AddText(label, pos, WHITE, font_size);
 }
+
+void Gui::Stack(Direction layout, u8 spacing = 20) { }
+
+void Gui::EndLayout() { }

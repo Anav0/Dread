@@ -12,7 +12,7 @@
 
 class Texture;
 
-enum class Layout {
+enum class Direction {
     Vertical,
     Horizontal,
 };
@@ -86,7 +86,7 @@ public:
     void DrawIconAndLabel(IconParams params, std::string label, v2 pos, u8 font_size);
     void DrawLabel(std::string text, v2 pos, v4 color, TextStyle style = default_style);
     void DrawBtn(const char* text, u8 font_size, v2 pos, void on_click());
-    void BeginLayout(Layout layout, u8 gap = 8);
+    void Stack(Direction layout, u8 spacing = 20);
     void EndLayout();
 };
 
