@@ -117,6 +117,12 @@ void DrawResources(u8 font_size)
         UI.DrawIconAndLabel(megaphone_icon, std::format("{}%", STATE.popular_support), { 200, 500 }, font_size);
     UI.EndLayout();
 
+    UI.Stack(Direction::Vertical, 0, { 200, 800 });
+        UI.DrawIconAndLabel(sword_icon, std::format("{}", STATE.reserve), { 200, 400 }, font_size);
+        UI.DrawIconAndLabel(megaphone_icon, std::format("{}%", STATE.popular_support), { 200, 500 }, font_size);
+    UI.EndLayout();
+
+
     // UI.Stack(Direction::Vertical, 20, {200, 200});
     //     UI.Stack(Direction::Horizontal);
     //         UI.DrawIconAndLabel(sword_icon, std::format("{}", STATE.reserve), { 200, 400 }, font_size);

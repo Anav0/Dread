@@ -111,4 +111,5 @@ void Gui::Stack(Direction dir, u8 spacing, v2 pos)
 
 void Gui::EndLayout()
 {
+    layouts.pop();
 }
