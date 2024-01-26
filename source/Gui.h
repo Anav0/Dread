@@ -5,9 +5,10 @@
 
 #include "Constants.h"
 #include "GameState.h"
-#include "TextRenderer.h"
 #include "Renderer.h"
+#include "TextRenderer.h"
 
+#include <queue>
 #include <string>
 
 class Texture;
@@ -68,7 +69,7 @@ struct ButtonInfo {
     }
 };
 
-//TODO: move
+// TODO: move
 constexpr u16 SWORD = 10;
 constexpr u16 MEGAPHONE = 11;
 
@@ -79,14 +80,38 @@ struct IconParams {
     f32 padding;
 };
 
+enum class LayoutType {
+    Stack
+};
+
+struct StackLayout {
+    u8 spacing;
+    Direction dir;
+    u16 total_height, total_width;
+    void PositionChild(v2, v2&, v2, u16);
+};
+
+struct Layout {
+    i16 parent_id = -1; //-1 means global canvas that - just like god - exists only in my head
+    v2 pos = { -1, -1 };
+    LayoutType type;
+    u16 number_of_children = 0;
+    union {
+        StackLayout stack;
+    };
+
+    void PositionChild(v2& pos, v2 child_size);
+};
+
 class Gui {
     const std::string ui_atlas = "ui_atlas";
+    std::queue<Layout> layouts;
 
 public:
     void DrawIconAndLabel(IconParams params, std::string label, v2 pos, u8 font_size);
     void DrawLabel(std::string text, v2 pos, v4 color, TextStyle style = default_style);
     void DrawBtn(const char* text, u8 font_size, v2 pos, void on_click());
-    void Stack(Direction layout, u8 spacing = 20);
+    void Stack(Direction layout, u8 spacing = 20, v2 pos = { -1, -1 });
     void EndLayout();
 };
 

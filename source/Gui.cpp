@@ -38,8 +38,44 @@ void Gui::DrawBtn(const char* text, u8 font_size, v2 pos, void on_click())
     E.ROLLING_INDEX++;
 }
 
+void StackLayout::PositionChild(v2 own_pos, v2& pos, v2 child_size, u16 child_index)
+{
+    switch (dir) {
+    case Direction::Vertical:
+        pos.y = own_pos.y + total_height;
+        if (child_index > 0)
+            pos.y += spacing;
+        pos.x = own_pos.x;
+        total_height += child_size.y + spacing;
+        break;
+    case Direction::Horizontal:
+        pos.x = own_pos.x + total_width;
+        if (child_index > 0)
+            pos.x += spacing;
+        pos.y = own_pos.y;
+        total_width += child_size.x + spacing;
+        break;
+    }
+}
+
+void Layout::PositionChild(v2& pos, v2 child_size)
+{
+    switch (type) {
+    case LayoutType::Stack:
+        stack.PositionChild(this->pos, pos, child_size, number_of_children);
+        break;
+    }
+    number_of_children++;
+}
+
 void Gui::DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos, u8 font_size)
 {
+    if (!layouts.empty()) {
+        Layout& parent = layouts.back();
+
+        parent.PositionChild(pos, icon_params.size);
+    }
+
     auto icon_index = icon_params.index;
     auto icon_size = icon_params.size;
 
@@ -55,6 +91,24 @@ void Gui::DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos, u8
     AddText(label, pos, WHITE, font_size);
 }
 
-void Gui::Stack(Direction layout, u8 spacing = 20) { }
+void Gui::Stack(Direction dir, u8 spacing, v2 pos)
+{
+    Layout layout;
+    layout.stack = StackLayout();
+    layout.stack.spacing = spacing;
+    layout.stack.dir = dir;
+    layout.pos = pos;
+    layout.type = LayoutType::Stack;
 
-void Gui::EndLayout() { }
+    assert(pos.x != -1 && layouts.empty());
+
+    if (!layouts.empty()) {
+        layout.pos = { -1, -1 };
+    }
+
+    layouts.push(layout);
+}
+
+void Gui::EndLayout()
+{
+}
