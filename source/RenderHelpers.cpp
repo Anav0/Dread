@@ -103,8 +103,17 @@ TextInBuffer AddText(u8 size, v2 pos, v4 color, u8 font_size)
 
 void DrawResources(u8 font_size)
 {
-    UI.DrawIconAndLabel(SWORD, std::format("{}", STATE.reserve), { 200, 400 }, font_size);
-    UI.DrawIconAndLabel(MEGAPHONE, std::format("{}%", STATE.popular_support), { 200, 500 }, font_size);
+    IconParams sword_icon, megaphone_icon;
+    sword_icon.size = v2(64);
+    sword_icon.scale = 0.6;
+    sword_icon.padding = 25;
+    megaphone_icon = sword_icon;
+
+    megaphone_icon.index = MEGAPHONE;
+    sword_icon.index = SWORD;
+
+    UI.DrawIconAndLabel(sword_icon, std::format("{}", STATE.reserve), { 200, 400 }, font_size);
+    UI.DrawIconAndLabel(megaphone_icon, std::format("{}%", STATE.popular_support), { 200, 500 }, font_size);
 }
 
 std::vector<MeshInBuffer> AddModel(v3 position, v3 size, std::string model_name, v4 color = { 0.0f, 0.0f, 0.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f)

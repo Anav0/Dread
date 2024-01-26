@@ -118,7 +118,7 @@ u32 TexturedQuadBuffer::AddTexturedRect(const AtlasTextureInfo* texture_info, co
         size_to_use = texture_info->size;
 
     this->colors[rolling_index] = color;
-    this->matrices[rolling_index] = GetTransformMatrix(pos, size_to_use, rotation);
+    this->matrices[rolling_index] = GetTransformMatrix(pos, size_to_use, rotation, texture_info->scale);
 
     float subtex_w = texture_info->size.x / atlas->Width;
     float subtex_h = texture_info->size.y / atlas->Height;
