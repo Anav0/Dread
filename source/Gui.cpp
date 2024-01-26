@@ -100,16 +100,15 @@ void Gui::Stack(Direction dir, u8 spacing, v2 pos)
     layout.pos = pos;
     layout.type = LayoutType::Stack;
 
-    assert(pos.x != -1 && layouts.empty());
-
     if (!layouts.empty()) {
-        layout.pos = { -1, -1 };
+        auto& parent = layouts.back();
+        parent.PositionChild(layout.pos, v2(0));
     }
 
-    layouts.push(layout);
+    layouts.push_back(layout);
 }
 
 void Gui::EndLayout()
 {
-    layouts.pop();
+    layouts.pop_back();
 }

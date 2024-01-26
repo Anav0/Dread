@@ -105,13 +105,13 @@ struct Layout {
 
 class Gui {
     const std::string ui_atlas = "ui_atlas";
-    std::queue<Layout> layouts;
+    std::deque<Layout> layouts;
 
 public:
     void DrawIconAndLabel(IconParams params, std::string label, v2 pos, u8 font_size);
     void DrawLabel(std::string text, v2 pos, v4 color, TextStyle style = default_style);
     void DrawBtn(const char* text, u8 font_size, v2 pos, void on_click());
-    void Stack(Direction layout, u8 spacing = 20, v2 pos = { -1, -1 });
+    void Stack(Direction layout, u8 spacing = 20, v2 pos = { 0, 0 });
     void EndLayout();
 };
 
