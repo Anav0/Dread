@@ -31,7 +31,7 @@ struct GameState {
     Oblast* selected_oblast = nullptr;
 
     f32 popular_support = 0.8;
-    u64 reserve         = 600.000;
+    u64 reserve         = 600'000;
 
 };
 

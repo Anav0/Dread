@@ -35,6 +35,7 @@ public:
     }
 
     void LoadAllResources();
+	void LoadRequiredResources();
 
     Texture*            GetTexture(std::string resource_key);
     Shader*             GetShader(std::string shader_name);

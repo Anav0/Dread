@@ -14,6 +14,18 @@
 
 ResourceManager RM;
 
+void ResourceManager::LoadRequiredResources() {
+	LoadTexture("atlas.png", "atlas", false, true);
+	LoadTexture("icons.png", "icons", false, true);
+
+	LoadShader("rekt.vert", "rekt.frag", "rect");
+	LoadShader("texture.vert", "texture.frag", "texture");
+	LoadShader("object.vert", "object.frag", "object");
+	LoadShader("debug.vert", "debug.frag", "debug");
+	LoadShader("mesh.vert", "mesh.frag", "mesh");
+	LoadShader("line.vert", "line.frag", "line");
+}
+
 void ResourceManager::LoadAllResources()
 {
     for (const auto& entry : std::filesystem::recursive_directory_iterator(ASSETS_PATH)) {

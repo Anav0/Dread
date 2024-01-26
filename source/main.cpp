@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <set>
+#include <windows.h>
 
 void GLAPIENTRY
 MessageCallback(GLenum source,
@@ -77,17 +78,9 @@ int main(int argc, char* argv[])
     TR.BakeFont("noto.ttf", "noto", { size }, BakeMode::WriteIfNoneExist);
     TR.UseFont("noto.ttf");
 
-    RM.LoadTexture("atlas.png", "atlas", false, true);
-    RM.LoadTexture("icons.png", "icons", false, true);
-
-    Shader* rect_shader = RM.LoadShader("rekt.vert", "rekt.frag", "rect");
-    Shader* texture_shader = RM.LoadShader("texture.vert", "texture.frag", "texture");
-    Shader* objects_shader = RM.LoadShader("object.vert", "object.frag", "object");
-    Shader* debug_shader = RM.LoadShader("debug.vert", "debug.frag", "debug");
-    Shader* mesh_shader = RM.LoadShader("mesh.vert", "mesh.frag", "mesh");
-    Shader* line_shader = RM.LoadShader("line.vert", "line.frag", "line");
-
-    R.object_shader = objects_shader;
+	RM.LoadRequiredResources();
+  
+	R.object_shader = RM.GetShader("object");
 
     RM.LoadModel("map/map.obj", "map");
     RM.LoadModel("sphere/sphere.obj", "sphere");
