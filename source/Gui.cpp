@@ -72,8 +72,7 @@ void Gui::DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos, u8
 {
     if (!layouts.empty()) {
         Layout& parent = layouts.back();
-
-        parent.PositionChild(pos, icon_params.size);
+        parent.PositionChild(pos, icon_params.size + TR.GetTextSize(label.c_str(), font_size));
     }
 
     auto icon_index = icon_params.index;

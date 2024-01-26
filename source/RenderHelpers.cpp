@@ -110,19 +110,15 @@ void DrawResources(u8 font_size)
     megaphone_icon = sword_icon;
 
     megaphone_icon.index = MEGAPHONE;
-    sword_icon.index = SWORD;
+    sword_icon.index    = SWORD;
 
+	auto y = STATE.window.screen_size.y - 80;
+	auto x = STATE.window.screen_size.x - 600;
 
-     UI.Stack(Direction::Vertical, 20, {200, 500});
-         UI.Stack(Direction::Horizontal);
-             UI.DrawIconAndLabel(sword_icon, std::format("{}", STATE.reserve), { 200, 400 }, font_size);
-             UI.DrawIconAndLabel(megaphone_icon, std::format("{}%", STATE.popular_support), { 200, 500 }, font_size);
-         UI.EndLayout();
-         UI.Stack(Direction::Horizontal);
-            UI.DrawIconAndLabel(sword_icon, std::format("{}", STATE.reserve), { 200, 400 }, font_size);
-            UI.DrawIconAndLabel(megaphone_icon, std::format("{}%", STATE.popular_support), { 200, 500 }, font_size);
-         UI.EndLayout();
-     UI.EndLayout();
+	UI.Stack(Direction::Horizontal, 10, { x, y });
+		UI.DrawIconAndLabel(sword_icon, std::format("Reserve: {}", STATE.reserve), { 200, 400 }, font_size);
+		UI.DrawIconAndLabel(megaphone_icon, std::format("Popular support: {}%", STATE.popular_support), { 200, 500 }, font_size);
+	UI.EndLayout();
 
 }
 
