@@ -25,8 +25,8 @@
 
 #include "Atlas.h"
 
-#include <set>
 #include <algorithm>
+#include <set>
 
 void GLAPIENTRY
 MessageCallback(GLenum source,
@@ -45,7 +45,7 @@ MessageCallback(GLenum source,
 int main(int argc, char* argv[])
 {
     if (!STATE.window.Init()) {
-		printf("ERROR: Failed to initialize WindowManager\n");
+        printf("ERROR: Failed to initialize WindowManager\n");
         return -1;
     }
 
@@ -68,29 +68,25 @@ int main(int argc, char* argv[])
 
     stbi_set_flip_vertically_on_load(true);
 
-	RM.LoadRequiredResources();
+    RM.LoadRequiredResources();
 
     u8 size = 36;
     TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
     TR.UseFont("oswald.ttf");
-	
-	R.Init();
+
+    R.Init();
 
 #if DEBUG_LINES
     std::vector<Line> lines;
 #endif
-	
-	UI.Stack(Direction::Vertical, 10, { 20, GetScreenSize().y - 200 });
-		auto ui_oblast_control = UI.DrawLabel("Control: 100.00%");
-		UI.DrawLabel(std::format("{} {}", GetMonth(), GetYear()));
-	UI.EndLayout();
 
-    UI.DrawBtn("Increase control", size, { 200, 200 }, []() { ChangeControl(0.1); });
-    UI.DrawBtn("Decrease control", size, { 200, 250 }, []() { ChangeControl(-0.1); });
+    TextInBuffer   ui_popular_support, ui_reserve, ui_date;
+    ButtonInBuffer ui_turn_btn;
 
-	AddMap();
-	AddSupportingCountries(size);
-    AddResources(size);
+    AddMap();
+    AddSupportingCountries(size);
+    AddResources(size, ui_popular_support, ui_reserve);
+    AddTurnUI(ui_date, ui_turn_btn);
 
     while (!STATE.window.IsClosing()) {
         STATE.window.onBeginOfTheLoop();
@@ -98,6 +94,11 @@ int main(int argc, char* argv[])
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        if (STATE.turn_changed) {
+			ui_turn_btn.UpdateBg(RED);
+			ui_date.ChangeText(GetDateStr());
+        }
 
         E.Update();
         R.Update();
@@ -114,7 +115,7 @@ int main(int argc, char* argv[])
                     auto entity = E.GetEntityById(c.box.child_id);
                     if (entity->type == EntityType::Oblast) {
                         f32 region_control = entity->oblast.ukrainian_control;
-                        //ui_oblast_control.ChangeText(std::format("Control: {:.2f}%", region_control*100), size, { 20, GetScreenSize().y - 250 });
+                        // ui_oblast_control.ChangeText(std::format("Control: {:.2f}%", region_control*100), size, { 20, GetScreenSize().y - 250 });
                     }
                     break;
                 }
@@ -131,6 +132,8 @@ int main(int argc, char* argv[])
 #endif
 
         printf("Camera: %f %f %f | %f %f\r", camera->position.x, camera->position.y, camera->position.z, camera->yaw, camera->pitch);
+
+        STATE.turn_changed = false;
 
         glfwSwapBuffers(window->window);
     }

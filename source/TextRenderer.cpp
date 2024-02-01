@@ -183,7 +183,7 @@ void TextInBuffer::ChangeText(std::string text, u8 size, v2 pos)
     auto atlas = RM.GetTexture(font.path);
 
     // TODO: sucks
-    assert(text.size() <= length);
+    assert(text.size() <= this->length);
 
     for (size_t i = pos_in_buffer; i < pos_in_buffer + length; i++) {
         GlyphInfo glyph;
@@ -202,4 +202,9 @@ void TextInBuffer::ChangeText(std::string text, u8 size, v2 pos)
         R.font_buffer.UpdateTexturedRect(i, &texture_info, atlas, pos);
         pos.x += glyph.w;
     }
+}
+
+void TextInBuffer::ChangeText(std::string text)
+{
+	this->ChangeText(text, this->last_size, this->last_pos);
 }

@@ -54,16 +54,23 @@ struct GameState {
 
 	u8 current_turn = 1;
 	u8 max_turn     = 12 * 3; //Three years, 12 months per year 3 years
+
+	bool turn_changed = false;
 	
 };
 
 const char* GetMonth();
+std::string GetDateStr();
 std::string GetYear();
 
 Oblast* GetOblast(OblastCode code);
 
 v2 GetScreenSize();
 void ChangeControl(f32 by);
+void GoToNextPhase();
+void GoToNextTurn();
+void ComputerPhase();
+void DrawEndScreen();
 
 extern GameState STATE;
 

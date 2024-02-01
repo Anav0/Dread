@@ -36,7 +36,16 @@ std::vector<MeshInBuffer> AddModel(v3 position, std::string model_name, v4 color
 
 constexpr u16 top_offset = 80;
 
-void AddResources(u8 font_size)
+
+
+void AddTurnUI(TextInBuffer& ui_date, ButtonInBuffer& ui_button_in_buffer) {
+	UI.Stack(Direction::Vertical, 10, { 20, GetScreenSize().y - 200 });
+		ui_date             = UI.DrawLabel(GetDateStr());
+		ui_button_in_buffer = UI.DrawBtn("Next Turn", 36, []() { GoToNextPhase(); });
+	UI.EndLayout();
+}
+
+void AddResources(u8 font_size, TextInBuffer& ui_popular_support, TextInBuffer& ui_reserve)
 {
     IconParams sword_icon, megaphone_icon;
     sword_icon.size = v2(64);
@@ -51,10 +60,9 @@ void AddResources(u8 font_size)
 	auto x = STATE.window.screen_size.x - 600;
 
 	UI.Stack(Direction::Horizontal, 10, { x, y });
-		UI.DrawIconAndLabel(sword_icon, std::format("Reserve: {}", STATE.reserve), { 200, 400 }, font_size);
-		UI.DrawIconAndLabel(megaphone_icon, std::format("Popular support: {}%", STATE.popular_support), { 200, 500 }, font_size);
+		ui_reserve         = UI.DrawIconAndLabel(sword_icon, std::format("Reserve: {}", STATE.reserve), { 200, 400 }, font_size);
+		ui_popular_support = UI.DrawIconAndLabel(megaphone_icon, std::format("Popular support: {}%", STATE.popular_support), { 200, 500 }, font_size);
 	UI.EndLayout();
-
 }
 
 std::vector<MeshInBuffer> AddModel(v3 position, v3 size, std::string model_name, v4 color = { 0.0f, 0.0f, 0.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f)

@@ -2,6 +2,7 @@
 #define TextRenderer_H
 
 #include "shader.h"
+#include "Constants.h"
 
 #include <map>
 #include <vector>
@@ -31,11 +32,14 @@ enum class BakeMode {
 };
 
 struct TextInBuffer {
+	v2 last_pos;
+	u8 last_size;
     u32 pos_in_buffer = 0;
     u32 length = 0;
 
     void ChangeColor(v4 color);
     void ChangeText(std::string text, u8 size, v2 pos);
+	void ChangeText(std::string text);
 };
 
 class SeanTextRenderer {

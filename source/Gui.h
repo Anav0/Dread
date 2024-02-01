@@ -32,14 +32,16 @@ constexpr TextStyle default_style {
 	36
 };
 
-struct ButtonInfo {
+struct ButtonInBuffer {
     TextInBuffer text_info;
     u32 bg_index_in_ui_buffer;
     v2 pos, size;
     void (*on_click)(void);
     bool was_hovered = false;
 
-    ButtonInfo(TextInBuffer text_info, u32 bg_index_in_ui_buffer, v2 pos, v2 size, void (*on_click)(void))
+    ButtonInBuffer() { }
+
+    ButtonInBuffer(TextInBuffer text_info, u32 bg_index_in_ui_buffer, v2 pos, v2 size, void (*on_click)(void))
     {
         this->text_info = text_info;
         this->bg_index_in_ui_buffer = bg_index_in_ui_buffer;
@@ -47,6 +49,10 @@ struct ButtonInfo {
         this->size = size;
         this->on_click = on_click;
     }
+
+	void UpdateBg(v4 color) {
+		R.font_buffer.UpdateColor(bg_index_in_ui_buffer, color);
+	}
 
     void Update()
     {
@@ -105,16 +111,14 @@ struct Layout {
     void PositionChild(v2& pos, v2 child_size);
 };
 
-class TextInBuffer;
-
 class Gui {
     const std::string ui_atlas = "ui_atlas";
     std::deque<Layout> layouts;
 
 public:
-    void DrawIconAndLabel(IconParams params, std::string label, v2 pos, u8 font_size);
-	TextInBuffer DrawLabel(std::string text, v2 pos = { 0, 0 }, TextStyle style = default_style, bool use_layout = true);
-    void DrawBtn(const char* text, u8 font_size, v2 pos, void on_click());
+    TextInBuffer   DrawIconAndLabel(IconParams params, std::string label, v2 pos, u8 font_size);
+	TextInBuffer   DrawLabel(std::string text, v2 pos = { 0, 0 }, TextStyle style = default_style, bool use_layout = true);
+	ButtonInBuffer DrawBtn(const char* text, u8 font_size, void on_click(), v2 pos = { 0, 0 });
     void Stack(Direction layout, u8 spacing = 20, v2 pos = { 0, 0 });
     void EndLayout();
 };

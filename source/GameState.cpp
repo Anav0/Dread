@@ -16,9 +16,33 @@ void ChangeControl(f32 by)
     }
 }
 
+void ComputerPhase() {
+}
+
+void GoToNextPhase() {
+	//TODO: Disable the UI
+	ComputerPhase();
+	GoToNextTurn();
+}
+
+void DrawEndScreen() {}
+
+void GoToNextTurn() {
+	if (STATE.current_turn + 1 == STATE.max_turn) {
+		DrawEndScreen();
+	}
+
+	STATE.current_turn += 1;
+	STATE.turn_changed = true;
+}
+
 v2 GetScreenSize()
 {
     return STATE.window.screen_size;
+}
+
+std::string GetDateStr() {
+	return std::format("{} {}", GetMonth(), GetYear());
 }
 
 const char* GetMonth() {
