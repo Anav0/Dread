@@ -101,6 +101,8 @@ TextInBuffer AddText(u8 size, v2 pos, v4 color, u8 font_size)
     return handle;
 }
 
+constexpr u16 top_offset = 80;
+
 void AddResources(u8 font_size)
 {
     IconParams sword_icon, megaphone_icon;
@@ -112,7 +114,7 @@ void AddResources(u8 font_size)
     megaphone_icon.index = MEGAPHONE;
     sword_icon.index    = SWORD;
 
-	auto y = STATE.window.screen_size.y - 80;
+	auto y = STATE.window.screen_size.y - top_offset;
 	auto x = STATE.window.screen_size.x - 600;
 
 	UI.Stack(Direction::Horizontal, 10, { x, y });
@@ -142,6 +144,30 @@ std::vector<MeshInBuffer> AddModel(v3 position, v3 size, std::string model_name,
     assert(meshes.size() > 0);
 
     return meshes;
+}
+
+void AddSupportingCountries(u8 font_size) {
+	STATE.countries.push_back(Country(CountryCode::FR, "France", 0.7, 1));
+	STATE.countries.push_back(Country(CountryCode::DE, "Germany", 0.856, 2));
+	STATE.countries.push_back(Country(CountryCode::PL, "Poland", 1.0, 3));
+	STATE.countries.push_back(Country(CountryCode::USA, "United States", 1.0, 4));
+	STATE.countries.push_back(Country(CountryCode::UK, "United Kingdom", 0.95, 0));
+
+	auto y = STATE.window.screen_size.y - top_offset;
+	auto x = 20;
+
+	UI.Stack(Direction::Horizontal, 20, { x, y });
+		for (auto& country : STATE.countries) {
+			IconParams icon;
+			icon.size = v2(64);
+			icon.scale = 0.6;
+			icon.padding = 25;
+
+			icon.index = country.index_in_atlas;
+
+			UI.DrawIconAndLabel(icon, std::format("{}: {}%", country.name, country.support*100), { 200, 400 }, font_size);
+		}
+	UI.EndLayout();
 }
 
 void AddMap() {

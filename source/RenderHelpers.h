@@ -16,6 +16,7 @@ TextInBuffer AddText(std::string text, v2 pos, v4 color = BLACK, u8 font_size = 
 TextInBuffer AddText(u8 size, v2 pos, v4 color = BLACK, u8 font_size = 48);
 
 void AddResources(u8 font_size);
+void AddSupportingCountries(u8 font_size);
 void AddMap();
 
 #endif

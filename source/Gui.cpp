@@ -75,11 +75,10 @@ void Gui::DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos, u8
         parent.PositionChild(pos, icon_params.size + TR.GetTextSize(label.c_str(), font_size));
     }
 
-    auto icon_index = icon_params.index;
-    auto icon_size = icon_params.size;
+    auto icon_size  = icon_params.size;
 
     auto atlas = RM.GetTexture("icons");
-    auto info = GetTextureInfoByIndex(icon_index, icon_size, "icons");
+    auto info = GetTextureInfoByIndex(icon_params.index, icon_size, "icons");
     info.scale = v2(icon_params.scale);
 
     R.icons_buffer.AddTexturedRect(&info, atlas, pos, icon_size);

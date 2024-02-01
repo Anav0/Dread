@@ -80,12 +80,13 @@ int main(int argc, char* argv[])
     std::vector<Line> lines;
 #endif
 
-    auto ui_oblast_control = AddText(std::string("Control: 100.00%").size(), { 20, GetScreenSize().y - 50 }, WHITE, size);
+    auto ui_oblast_control = AddText(std::string("Control: 100.00%").size(), { 20, GetScreenSize().y - 250 }, WHITE, size);
 
     UI.DrawBtn("Increase control", size, { 200, 200 }, []() { ChangeControl(0.1); });
     UI.DrawBtn("Decrease control", size, { 200, 250 }, []() { ChangeControl(-0.1); });
 
 	AddMap();
+	AddSupportingCountries(size);
     AddResources(size);
 
     while (!STATE.window.IsClosing()) {
@@ -110,7 +111,7 @@ int main(int argc, char* argv[])
                     auto entity = E.GetEntityById(c.box.child_id);
                     if (entity->type == EntityType::Oblast) {
                         f32 region_control = entity->oblast.ukrainian_control;
-                        ui_oblast_control.ChangeText(std::format("Control: {:.2f}%", region_control*100), size, { 20, GetScreenSize().y - 50 });
+                        ui_oblast_control.ChangeText(std::format("Control: {:.2f}%", region_control*100), size, { 20, GetScreenSize().y - 250 });
                     }
                     break;
                 }

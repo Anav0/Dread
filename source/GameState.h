@@ -35,6 +35,9 @@ struct GameState {
     f32 popular_support = 0.8;
     u64 reserve         = 600'000;
 
+	std::vector<Country> countries;
+
+
 };
 
 Oblast* GetOblast(OblastCode code);

@@ -70,8 +70,8 @@ struct ButtonInfo {
 };
 
 // TODO: move
-constexpr u16 SWORD = 10;
-constexpr u16 MEGAPHONE = 11;
+constexpr u16 SWORD = 12;
+constexpr u16 MEGAPHONE = 5;
 
 struct IconParams {
     u16 index;

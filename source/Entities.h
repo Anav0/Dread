@@ -131,30 +131,19 @@ enum class CountryCode {
     FI,
 };
 
-const std::map<CountryCode, const char*> COUNTRY_NAMES = {
-    { CountryCode::USA, "United States" },
-    { CountryCode::DE, "Germany" },
-    { CountryCode::UK, "Britain" },
-    { CountryCode::PL, "Poland" },
-    { CountryCode::FR, "France" },
-    { CountryCode::SP, "Spain" },
-    { CountryCode::SE, "Sweden" },
-    { CountryCode::CZ, "Czechia" },
-    { CountryCode::HU, "Hungry" },
-    { CountryCode::FI, "Finland" },
-};
-
 struct Country {
-    CountryCode code = CountryCode::UK;
-    const char* name = "";
-    f32 support = 0.0f;
+    CountryCode code;
+    const char* name;
+    f32 support;
+	u8 index_in_atlas;
 
     Country() { }
-    Country(CountryCode code, const char* name, f32 support)
+    Country(CountryCode code, const char* name, f32 support, u8 index_in_atlas)
     {
         this->code = code;
         this->name = name;
         this->support = support;
+		this->index_in_atlas = index_in_atlas;
     }
 };
 
