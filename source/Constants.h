@@ -29,6 +29,29 @@ typedef glm::mat4 m4;
 typedef glm::mat3 m3;
 typedef glm::mat2 m2;
 
+#define MemCopy(dst, src, size)    memmove((dst), (src), (size))
+#define MemSet(dst, byte, size)    memset((dst), (byte), (size))
+#define MemCompare(a, b, size)     memcmp((a), (b), (size))
+#define MemStrlen(ptr)             strlen(ptr)
+
+#define MemCopyStruct(d,s)  MemCopy((d),(s),sizeof(*(d)))
+#define MemCopyArray(d,s)   MemCopy((d),(s),sizeof(d))
+#define MemCopyTyped(d,s,c) MemCopy((d),(s),sizeof(*(d))*(c))
+
+#define MemZero(s,z)       memset((s),0,(z))
+#define MemZeroStruct(s)   MemZero((s),sizeof(*(s)))
+#define MemZeroArray(a)    MemZero((a),sizeof(a))
+#define MemZeroTyped(m,c)  MemZero((m),sizeof(*(m))*(c))
+
+#define KB(n)  (((U64)(n)) << 10)
+#define MB(n)  (((U64)(n)) << 20)
+#define GB(n)  (((U64)(n)) << 30)
+#define TB(n)  (((U64)(n)) << 40)
+#define Thousand(n)   ((n)*1000)
+#define Million(n)    ((n)*1000000)
+#define Billion(n)    ((n)*1000000000)
+
+//TODO: move to colors.h
 constexpr v4 RUSSIAN_COLOR = v4(0.96f, 0.34f, 0.38f, 1.0f);
 constexpr v4 UKRAINE_COLOR = v4(0.16f, 0.41f, 0.75f, 1.0f);
 constexpr v4 YELLOW = v4(0.96f, 0.76f, 0.47f, 1.0f);
