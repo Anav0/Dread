@@ -7,6 +7,46 @@
 
 Gui UI;
 
+TextInBuffer Gui::DrawLabel(std::string text, v2 pos, TextStyle style, bool use_layout) {
+	FontInfo font = TR.GetCurrentFont(style.font_size);
+
+    Texture* font_atlas = RM.GetTexture(font.path);
+    if (font_atlas == nullptr)
+        font_atlas = RM.LoadTexture(font.path, font.path, true, true);
+
+    R.font_buffer.texture_key = font.path;
+
+	if (use_layout && !layouts.empty()) {
+        Layout& parent = layouts.back();
+        parent.PositionChild(pos, TR.GetTextSize(text.c_str(), style.font_size));
+    }
+
+    f32 base_y = pos.y;
+    TextInBuffer handle {};
+    handle.pos_in_buffer = R.font_buffer.GetCurrentIndex();
+
+    for (size_t i = 0; i < text.size(); i++) {
+        char c = text[i];
+
+        GlyphInfo glyph = font.glyphs[c];
+
+        if (c != ' ') {
+            AtlasTextureInfo texture_info;
+            texture_info.position = v2(glyph.x, glyph.y);
+            texture_info.scale = v2(1.0f, 1.0f);
+            texture_info.size = v2(glyph.w, glyph.h);
+            R.font_buffer.AddTexturedRect(&texture_info, font_atlas, pos, texture_info.size, 0, style.color);
+        }
+
+        // pos.x += glyph.advance;
+        pos.x += glyph.w;
+        pos.y = base_y;
+        handle.length += 1;
+    }
+
+    return handle;
+}
+
 void Gui::DrawBtn(const char* text, u8 font_size, v2 pos, void on_click())
 {
     auto mouse_x = STATE.window.mouse_x;
@@ -31,7 +71,9 @@ void Gui::DrawBtn(const char* text, u8 font_size, v2 pos, void on_click())
     auto parent_size = v2(transform.size);
     auto parent_pos = v2(transform.position);
     CenterChildInParent(&parent_pos, &parent_size, &pos, &text_size);
-    auto text_info = AddText(text, pos, WHITE, font_size);
+	TextStyle style = default_style;
+	style.font_size = font_size;
+    auto text_info = Gui::DrawLabel(text, pos, style, false);
     auto rect_index = R.font_buffer.AddRect(rect);
 
     E.entities[E.ROLLING_INDEX].button = ButtonInfo(text_info, rect_index, parent_pos, parent_size, on_click);
@@ -86,7 +128,10 @@ void Gui::DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos, u8
     pos.x += icon_size.x * icon_params.scale + icon_params.padding;
     pos.y += (icon_size.y * icon_params.scale) / 2;
 
-    AddText(label, pos, WHITE, font_size);
+	TextStyle style = default_style;
+	style.font_size = font_size;
+    
+	Gui::DrawLabel(label, pos, style, false);
 }
 
 void Gui::Stack(Direction dir, u8 spacing, v2 pos)

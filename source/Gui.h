@@ -22,12 +22,14 @@ struct TextStyle {
     u16 ch_max_width = 0;
     u16 ch_max_height = 0;
     v4 color = WHITE;
+	u8 font_size = 36;
 };
 
 constexpr TextStyle default_style {
     96,
     0,
     WHITE,
+	36
 };
 
 struct ButtonInfo {
@@ -103,13 +105,15 @@ struct Layout {
     void PositionChild(v2& pos, v2 child_size);
 };
 
+class TextInBuffer;
+
 class Gui {
     const std::string ui_atlas = "ui_atlas";
     std::deque<Layout> layouts;
 
 public:
     void DrawIconAndLabel(IconParams params, std::string label, v2 pos, u8 font_size);
-    void DrawLabel(std::string text, v2 pos, v4 color, TextStyle style = default_style);
+	TextInBuffer DrawLabel(std::string text, v2 pos = { 0, 0 }, TextStyle style = default_style, bool use_layout = true);
     void DrawBtn(const char* text, u8 font_size, v2 pos, void on_click());
     void Stack(Direction layout, u8 spacing = 20, v2 pos = { 0, 0 });
     void EndLayout();

@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
                     auto entity = E.GetEntityById(c.box.child_id);
                     if (entity->type == EntityType::Oblast) {
                         f32 region_control = entity->oblast.ukrainian_control;
-                        ui_oblast_control.ChangeText(std::format("Control: {:.2f}%", region_control*100), size, { 20, GetScreenSize().y - 250 });
+                        //ui_oblast_control.ChangeText(std::format("Control: {:.2f}%", region_control*100), size, { 20, GetScreenSize().y - 250 });
                     }
                     break;
                 }
