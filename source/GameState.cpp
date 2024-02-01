@@ -20,3 +20,12 @@ v2 GetScreenSize()
 {
     return STATE.window.screen_size;
 }
+
+const char* GetMonth() {
+	u16 month_index = STATE.current_turn % 12;
+	return MONTHS[month_index];
+}
+
+std::string GetYear() {
+	return std::to_string(2022 + STATE.current_turn / 12);
+}

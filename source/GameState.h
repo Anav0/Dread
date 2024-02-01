@@ -24,6 +24,21 @@ constexpr bool HIDE_ALPHA  = true;
 constexpr bool DEBUG_LINES = false;
 constexpr bool CULLING     = true;
 
+constexpr const char* MONTHS[] = {
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+};
+
 struct GameState {
     // Other
     WindowManager window;
@@ -37,8 +52,13 @@ struct GameState {
 
 	std::vector<Country> countries;
 
-
+	u8 current_turn = 1;
+	u8 max_turn     = 12 * 3; //Three years, 12 months per year 3 years
+	
 };
+
+const char* GetMonth();
+std::string GetYear();
 
 Oblast* GetOblast(OblastCode code);
 

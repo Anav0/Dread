@@ -79,8 +79,11 @@ int main(int argc, char* argv[])
 #if DEBUG_LINES
     std::vector<Line> lines;
 #endif
-
-    auto ui_oblast_control = AddText(std::string("Control: 100.00%").size(), { 20, GetScreenSize().y - 250 }, WHITE, size);
+	
+	UI.Stack(Direction::Vertical, 10, { 20, GetScreenSize().y - 200 });
+		auto ui_oblast_control = UI.DrawLabel("Control: 100.00%");
+		UI.DrawLabel(std::format("{} {}", GetMonth(), GetYear()));
+	UI.EndLayout();
 
     UI.DrawBtn("Increase control", size, { 200, 200 }, []() { ChangeControl(0.1); });
     UI.DrawBtn("Decrease control", size, { 200, 250 }, []() { ChangeControl(-0.1); });
