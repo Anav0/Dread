@@ -22,24 +22,25 @@ class Renderer {
 public:
     std::vector<BoundingBox> boxes;
     std::vector<InstancedMeshBuffer> buffers;
+
     TexturedQuadBuffer font_buffer;
     TexturedQuadBuffer icons_buffer;
 
     m4 projection;
     m4 ortho_projection;
 
-    Shader* object_shader;
-
     // Model index by bounding boxes
     std::map<std::string, u32> mesh_by_buffor_index;
 
-    Renderer();
+	void Init();
     void Draw();
     void Update();
+
     InstancedMeshBuffer* GetBuffer(std::string mesh_name);
     InstancedMeshBuffer* GetBufferByIndex(u32 index);
     InstancedMeshBuffer* CreateBuffer(Mesh mesh);
 };
 
 extern Renderer R;
+
 #endif

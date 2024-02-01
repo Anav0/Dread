@@ -25,9 +25,8 @@
 
 #include "Atlas.h"
 
-#include <algorithm>
 #include <set>
-#include <windows.h>
+#include <algorithm>
 
 void GLAPIENTRY
 MessageCallback(GLenum source,
@@ -45,23 +44,20 @@ MessageCallback(GLenum source,
 
 int main(int argc, char* argv[])
 {
-    // STATE = GameState();
-    STATE.window = WindowManager();
-    STATE.window.camera = Camera(v3(0.22f, 22.0f, 10.0f), -84.0f, -67.0f);
-
     if (!STATE.window.Init()) {
+		printf("ERROR: Failed to initialize WindowManager\n");
         return -1;
     }
 
-    WindowManager* window = &STATE.window;
-    Camera* camera = &STATE.window.camera;
+    auto window = &STATE.window;
+    auto camera = &STATE.window.camera;
 
     glViewport(0, 0, window->screen_size.x, window->screen_size.y);
 
-    /*
+#if CULLING
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    */
+#endif
 
     glEnable(GL_BLEND);
     glEnable(GL_DEBUG_OUTPUT);
@@ -72,59 +68,25 @@ int main(int argc, char* argv[])
 
     stbi_set_flip_vertically_on_load(true);
 
-    u8 size = 36;
-    // TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
-    // TR.UseFont("oswald.ttf");
-    TR.BakeFont("noto.ttf", "noto", { size }, BakeMode::WriteIfNoneExist);
-    TR.UseFont("noto.ttf");
-
 	RM.LoadRequiredResources();
-  
-	R.object_shader = RM.GetShader("object");
 
-    RM.LoadModel("map/map.obj", "map");
-    RM.LoadModel("sphere/sphere.obj", "sphere");
+    u8 size = 36;
+    TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
+    TR.UseFont("oswald.ttf");
+	
+	R.Init();
 
-    auto map_buffer_data = AddModel({ 0, 0, 0 }, "map", GREY, 0, 1);
-
-    // TODO: move to some place better
-    R.font_buffer.Allocate();
-    R.icons_buffer.Allocate();
-    R.icons_buffer.texture_key = "icons";
-
-    std::vector<MeshInBuffer> meshes;
-
-    int i = 0;
-
-#if 1
-    for (auto& mesh : map_buffer_data) {
-        if (i > NUMBER_OF_OBLASTS - 1)
-            continue;
-
-        auto code = static_cast<OblastCode>(i);
-        auto control = INITIAL_CONTROL.at(code);
-
-        ID id = E.CreateOblast(Oblast(mesh, static_cast<OblastCode>(i), OBLAST_NAMES.at(code), control));
-        SetupBoundingBox(mesh, id);
-
-        i++;
-    }
-#endif
-
-    m4 projection = glm::perspective(glm::radians(camera->zoom), (f32)STATE.window.screen_size.x / (f32)STATE.window.screen_size.y, 0.1f, 1000.0f);
-    m4 ortho_projection = glm::ortho(0.0f, (f32)STATE.window.screen_size.x, 0.0f, (f32)STATE.window.screen_size.y);
-
-    R.projection = projection;
-    R.ortho_projection = ortho_projection;
-
+#if DEBUG_LINES
     std::vector<Line> lines;
+#endif
 
     auto ui_oblast_control = AddText(std::string("Control: 100.00%").size(), { 20, GetScreenSize().y - 50 }, WHITE, size);
 
     UI.DrawBtn("Increase control", size, { 200, 200 }, []() { ChangeControl(0.1); });
     UI.DrawBtn("Decrease control", size, { 200, 250 }, []() { ChangeControl(-0.1); });
 
-    DrawResources(size);
+	AddMap();
+    AddResources(size);
 
     while (!STATE.window.IsClosing()) {
         STATE.window.onBeginOfTheLoop();
@@ -137,9 +99,11 @@ int main(int argc, char* argv[])
         R.Update();
 
         if (STATE.window.buttonAction == MouseAction::PRESSED && STATE.window.buttonType == MouseButton::LEFT) {
-            Ray ray = GetRayFromEyes(&projection);
+            Ray ray = GetRayFromEyes(&R.projection);
+#if DEBUG_LINES
             lines.push_back(Line(ray.position, ray.position + ray.direction * 1000.0f));
-            Collision c = CheckRayCollision(ray, projection);
+#endif
+            Collision c = CheckRayCollision(ray, R.projection);
             if (c.hit_something) {
                 switch (c.what_was_hit) {
                 case EntityType::BoundingBox:
@@ -157,7 +121,7 @@ int main(int argc, char* argv[])
 
         R.Draw();
 
-#if 0
+#if DEBUG_LINES
         for (auto& line : lines)
             line.Draw(line_shader, &projection);
 #endif

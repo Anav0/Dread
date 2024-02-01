@@ -24,6 +24,9 @@ void ResourceManager::LoadRequiredResources() {
 	LoadShader("debug.vert", "debug.frag", "debug");
 	LoadShader("mesh.vert", "mesh.frag", "mesh");
 	LoadShader("line.vert", "line.frag", "line");
+
+	LoadModel("map/map.obj", "map");
+	LoadModel("sphere/sphere.obj", "sphere");
 }
 
 void ResourceManager::LoadAllResources()

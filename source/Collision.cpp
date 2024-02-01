@@ -252,7 +252,7 @@ Collision CheckTriangleCollision(Ray* ray, v3 p1, v3 p2, v3 p3)
     return collision;
 }
 
-void SetupBoundingBox(MeshInBuffer mesh, ID child_id)
+void AddBoundingBox(MeshInBuffer mesh, ID child_id)
 {
     auto buffer = R.GetBufferByIndex(mesh.buffer_index);
 

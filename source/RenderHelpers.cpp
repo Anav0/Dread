@@ -101,7 +101,7 @@ TextInBuffer AddText(u8 size, v2 pos, v4 color, u8 font_size)
     return handle;
 }
 
-void DrawResources(u8 font_size)
+void AddResources(u8 font_size)
 {
     IconParams sword_icon, megaphone_icon;
     sword_icon.size = v2(64);
@@ -142,4 +142,19 @@ std::vector<MeshInBuffer> AddModel(v3 position, v3 size, std::string model_name,
     assert(meshes.size() > 0);
 
     return meshes;
+}
+
+void AddMap() {
+	int i = 0;
+	for (auto& mesh : AddModel({ 0, 0, 0 }, "map", GREY, 0, 1)) {
+		if (i > NUMBER_OF_OBLASTS - 1)
+			continue;
+
+		auto code = static_cast<OblastCode>(i);
+		auto control = INITIAL_CONTROL.at(code);
+
+		ID id = E.CreateOblast(Oblast(mesh, static_cast<OblastCode>(i), OBLAST_NAMES.at(code), control));
+		AddBoundingBox(mesh, id);
+		i++;
+	}
 }

@@ -17,10 +17,12 @@ enum class RenderMode {
     NORMAL,
 };
 
-constexpr static u8 NUMBER_OF_OBLASTS = 25;
+constexpr static u8 NUMBER_OF_OBLASTS    = 25;
 constexpr static u8 NUMBER_OF_SUPPORTERS = 10;
 
-constexpr bool HIDE_ALPHA = true;
+constexpr bool HIDE_ALPHA  = true;
+constexpr bool DEBUG_LINES = false;
+constexpr bool CULLING     = true;
 
 struct GameState {
     // Other

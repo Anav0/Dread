@@ -38,6 +38,8 @@ void WindowManager::onMouseClicked(GLFWwindow* window, int button, int action, i
 
 bool WindowManager::Init()
 {
+	camera = Camera(v3(0.22f, 22.0f, 10.0f), -84.0f, -67.0f);
+
     screen_size.x = 1920;
     screen_size.y = 1080;
 

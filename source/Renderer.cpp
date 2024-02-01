@@ -2,8 +2,15 @@
 #include "Buffers.h"
 #include "Model.h"
 
-Renderer::Renderer()
-{
+#include <glad/glad.h>
+
+void Renderer::Init() {
+	projection       = glm::perspective(glm::radians(STATE.window.camera.zoom), (f32)STATE.window.screen_size.x / (f32)STATE.window.screen_size.y, 0.1f, 1000.0f);
+	ortho_projection = glm::ortho(0.0f, (f32)STATE.window.screen_size.x, 0.0f, (f32)STATE.window.screen_size.y);
+
+	font_buffer.Allocate();
+	icons_buffer.Allocate();
+	icons_buffer.texture_key = "icons";
 }
 
 void Renderer::Update()
@@ -13,7 +20,7 @@ void Renderer::Update()
 void Renderer::Draw()
 {
     // TODO: temp
-    auto shader = RM.GetShader("object");
+    auto shader         = RM.GetShader("object");
     auto texture_shader = RM.GetShader("texture");
 
     font_buffer.Draw(texture_shader, &ortho_projection);

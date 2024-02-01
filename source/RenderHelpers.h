@@ -15,6 +15,7 @@ std::vector<MeshInBuffer> AddModel(v3 position, std::string model_name, v4 color
 TextInBuffer AddText(std::string text, v2 pos, v4 color = BLACK, u8 font_size = 48);
 TextInBuffer AddText(u8 size, v2 pos, v4 color = BLACK, u8 font_size = 48);
 
-void DrawResources(u8 font_size);
+void AddResources(u8 font_size);
+void AddMap();
 
 #endif
