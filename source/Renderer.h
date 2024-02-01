@@ -24,7 +24,7 @@ public:
     std::vector<InstancedMeshBuffer> buffers;
 
     TexturedQuadBuffer font_buffer;
-    TexturedQuadBuffer icons_buffer;
+    TexturedQuadBuffer ui_buffer;
 
     m4 projection;
     m4 ortho_projection;

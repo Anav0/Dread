@@ -10,6 +10,7 @@
 
 #include <queue>
 #include <string>
+#include <vector>
 
 class Texture;
 
@@ -22,37 +23,60 @@ struct TextStyle {
     u16 ch_max_width = 0;
     u16 ch_max_height = 0;
     v4 color = WHITE;
-	u8 font_size = 36;
+    u8 font_size = 36;
 };
 
 constexpr TextStyle default_style {
     96,
     0,
     WHITE,
-	36
+    36
+};
+
+struct LabelHandle {
+    friend class Gui;
+private:
+    u32 index;
+public:
+    void UpdateColor(v4 color);
+    void UpdateText(std::string label);
+};
+
+struct ButtonHandle {
+    friend class Gui;
+private:
+    u32 index;
+	LabelHandle label_handle;
+
+public:
+    void UpdateBg(v4 color);
+    void UpdateText(std::string label);
 };
 
 struct ButtonInBuffer {
-    TextInBuffer text_info;
+    LabelHandle text_handle;
     u32 bg_index_in_ui_buffer;
     v2 pos, size;
     void (*on_click)(void);
     bool was_hovered = false;
+	v4 color = UI_BTN_BG;
 
     ButtonInBuffer() { }
 
-    ButtonInBuffer(TextInBuffer text_info, u32 bg_index_in_ui_buffer, v2 pos, v2 size, void (*on_click)(void))
+    ButtonInBuffer(LabelHandle text_handle, u32 bg_index_in_ui_buffer, v2 pos, v2 size, void (*on_click)(void))
     {
-        this->text_info = text_info;
+        this->text_handle = text_handle;
         this->bg_index_in_ui_buffer = bg_index_in_ui_buffer;
         this->pos = pos;
         this->size = size;
         this->on_click = on_click;
     }
 
-	void UpdateBg(v4 color) {
-		R.font_buffer.UpdateColor(bg_index_in_ui_buffer, color);
-	}
+    void UpdateBg(v4 color)
+    {
+		this->color = color;
+        R.ui_buffer.UpdateColor(bg_index_in_ui_buffer, color);
+    }
 
     void Update()
     {
@@ -62,7 +86,7 @@ struct ButtonInBuffer {
 
         if (mouse_over) {
             if (!was_hovered)
-                R.font_buffer.UpdateColor(bg_index_in_ui_buffer, UI_BTN_HOVER_BG);
+                R.ui_buffer.UpdateColor(bg_index_in_ui_buffer, UI_BTN_HOVER_BG);
 
             was_hovered = true;
             if (STATE.window.buttonAction == MouseAction::PRESSED && STATE.window.buttonType == MouseButton::LEFT) {
@@ -70,7 +94,7 @@ struct ButtonInBuffer {
             }
         } else {
             if (was_hovered) {
-                R.font_buffer.UpdateColor(bg_index_in_ui_buffer, UI_BTN_BG);
+                R.ui_buffer.UpdateColor(bg_index_in_ui_buffer, this->color);
             }
             was_hovered = false;
         }
@@ -111,16 +135,34 @@ struct Layout {
     void PositionChild(v2& pos, v2 child_size);
 };
 
+enum class UIElementType {
+    Button,
+    Label
+};
+
+class UIElement {
+public:
+    UIElementType type;
+    union {
+        ButtonInBuffer button;
+        TextInBuffer label;
+    };
+};
+
 class Gui {
-    const std::string ui_atlas = "ui_atlas";
+    friend class LabelHandle;
+    friend class ButtonHandle;
+
     std::deque<Layout> layouts;
+    std::vector<UIElement> elements;
 
 public:
-    TextInBuffer   DrawIconAndLabel(IconParams params, std::string label, v2 pos, u8 font_size);
-	TextInBuffer   DrawLabel(std::string text, v2 pos = { 0, 0 }, TextStyle style = default_style, bool use_layout = true);
-	ButtonInBuffer DrawBtn(const char* text, u8 font_size, void on_click(), v2 pos = { 0, 0 });
+    LabelHandle DrawIconAndLabel(IconParams params, std::string label, v2 pos, u8 font_size);
+    LabelHandle DrawLabel(std::string label, v2 pos = { 0, 0 }, TextStyle style = default_style, bool use_layout = true);
+    ButtonHandle DrawBtn(const char* label, u8 font_size, void on_click(), v2 pos = { 0, 0 }, bool use_layout = true);
     void Stack(Direction layout, u8 spacing = 20, v2 pos = { 0, 0 });
     void EndLayout();
+    void Update();
 };
 
 extern Gui UI;

@@ -80,28 +80,32 @@ int main(int argc, char* argv[])
     std::vector<Line> lines;
 #endif
 
-    TextInBuffer   ui_popular_support, ui_reserve, ui_date;
-    ButtonInBuffer ui_turn_btn;
+    LabelHandle  ui_popular_support, ui_reserve, ui_date;
+    ButtonHandle ui_turn_btn;
 
     AddMap();
     AddSupportingCountries(size);
     AddResources(size, ui_popular_support, ui_reserve);
     AddTurnUI(ui_date, ui_turn_btn);
 
+	ui_turn_btn.UpdateBg(RED);
+
     while (!STATE.window.IsClosing()) {
         STATE.window.onBeginOfTheLoop();
         glfwPollEvents();
+
+		UI.Update();
+        E.Update();
+        R.Update();
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (STATE.turn_changed) {
-			ui_turn_btn.UpdateBg(RED);
-			ui_date.ChangeText(GetDateStr());
+			ui_turn_btn.UpdateBg(YELLOW);
+			auto next_date = GetDateStr();
+			ui_date.UpdateText(next_date);
         }
-
-        E.Update();
-        R.Update();
 
         if (STATE.window.buttonAction == MouseAction::PRESSED && STATE.window.buttonType == MouseButton::LEFT) {
             Ray ray = GetRayFromEyes(&R.projection);

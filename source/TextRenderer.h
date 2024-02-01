@@ -33,13 +33,13 @@ enum class BakeMode {
 
 struct TextInBuffer {
 	v2 last_pos;
-	u8 last_size;
+	u8 font_size;
     u32 pos_in_buffer = 0;
     u32 length = 0;
 
     void ChangeColor(v4 color);
-    void ChangeText(std::string text, u8 size, v2 pos);
-	void ChangeText(std::string text);
+    void ChangeText(std::string label, u8 size, v2 pos);
+	void ChangeText(std::string label);
 };
 
 class SeanTextRenderer {
@@ -50,7 +50,7 @@ public:
     void BakeFont(std::string font, std::string output_file_name, std::vector<u8> sizes, BakeMode mode = BakeMode::WriteIfNoneExist);
     void UseFont(std::string font_name);
     FontInfo GetCurrentFont(u8 font_size);
-    v2 GetTextSize(const char* text, u8 font_size);
+    v2 GetTextSize(const char* label, u8 font_size);
 };
 
 extern SeanTextRenderer TR;

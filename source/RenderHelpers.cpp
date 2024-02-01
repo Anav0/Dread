@@ -38,14 +38,15 @@ constexpr u16 top_offset = 80;
 
 
 
-void AddTurnUI(TextInBuffer& ui_date, ButtonInBuffer& ui_button_in_buffer) {
-	UI.Stack(Direction::Vertical, 10, { 20, GetScreenSize().y - 200 });
-		ui_date             = UI.DrawLabel(GetDateStr());
+void AddTurnUI(LabelHandle& ui_date, ButtonHandle& ui_button_in_buffer) {
+	UI.Stack(Direction::Vertical, 10, { 120, GetScreenSize().y - 300 });
+		auto initial_date = GetDateStr();
+		ui_date             = UI.DrawLabel(initial_date);
 		ui_button_in_buffer = UI.DrawBtn("Next Turn", 36, []() { GoToNextPhase(); });
 	UI.EndLayout();
 }
 
-void AddResources(u8 font_size, TextInBuffer& ui_popular_support, TextInBuffer& ui_reserve)
+void AddResources(u8 font_size, LabelHandle& ui_popular_support, LabelHandle& ui_reserve)
 {
     IconParams sword_icon, megaphone_icon;
     sword_icon.size = v2(64);

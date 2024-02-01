@@ -34,26 +34,9 @@ struct Transform {
     f32 rotation;
 };
 
-struct UiTransform {
-    v2 size, position;
-    m4* projection;
-    f32 rotation = 0.0f;
-    AlignX align_x;
-    AlignY align_y;
-
-    f32 padding[4] = { 0.0, 0.0, 0.0, 0.0 };
-    v3 scale = v3(1.0f);
-};
-
-struct UiColor {
-    v4 fg_color, fg_hover, bg_color, bg_hover;
-};
-
 enum class EntityType {
-    Rect,
     BoundingBox,
     Oblast,
-    Button,
 };
 
 class Entity {

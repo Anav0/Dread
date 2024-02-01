@@ -47,9 +47,6 @@ typedef glm::mat2 m2;
 #define MB(n)  (((U64)(n)) << 20)
 #define GB(n)  (((U64)(n)) << 30)
 #define TB(n)  (((U64)(n)) << 40)
-#define Thousand(n)   ((n)*1000)
-#define Million(n)    ((n)*1000000)
-#define Billion(n)    ((n)*1000000000)
 
 //TODO: move to colors.h
 constexpr v4 RUSSIAN_COLOR = v4(0.96f, 0.34f, 0.38f, 1.0f);
@@ -63,6 +60,6 @@ constexpr v4 GOLD   = v4(0.92f, 0.71f, 0.23f, 1.0f);
 constexpr v4 GREY   = v4(0.5f, 0.5f, 0.5f, 1.0f);
 
 constexpr v4 UI_BTN_BG = GREY;
-constexpr v4 UI_BTN_HOVER_BG = GOLD;
+constexpr v4 UI_BTN_HOVER_BG = GREY;
 
 #endif

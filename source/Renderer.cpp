@@ -9,8 +9,8 @@ void Renderer::Init() {
 	ortho_projection = glm::ortho(0.0f, (f32)STATE.window.screen_size.x, 0.0f, (f32)STATE.window.screen_size.y);
 
 	font_buffer.Allocate();
-	icons_buffer.Allocate();
-	icons_buffer.texture_key = "icons";
+	ui_buffer.Allocate();
+	ui_buffer.texture_key = "icons";
 }
 
 void Renderer::Update()
@@ -23,8 +23,8 @@ void Renderer::Draw()
     auto shader         = RM.GetShader("object");
     auto texture_shader = RM.GetShader("texture");
 
-    font_buffer.Draw(texture_shader, &ortho_projection);
-    icons_buffer.Draw(texture_shader, &ortho_projection);
+	font_buffer.Draw(texture_shader, &ortho_projection);
+    ui_buffer.Draw(texture_shader, &ortho_projection);
 
     for (auto& buffer : buffers) {
         buffer.Draw(shader, &projection, nullptr);

@@ -7,10 +7,10 @@
 
 Gui UI;
 
-TextInBuffer Gui::DrawLabel(std::string text, v2 pos, TextStyle style, bool use_layout) {
-	FontInfo font = TR.GetCurrentFont(style.font_size);
-
+LabelHandle Gui::DrawLabel(std::string label, v2 pos, TextStyle style, bool use_layout) {
+	FontInfo font       = TR.GetCurrentFont(style.font_size);
     Texture* font_atlas = RM.GetTexture(font.path);
+
     if (font_atlas == nullptr)
         font_atlas = RM.LoadTexture(font.path, font.path, true, true);
 
@@ -18,16 +18,17 @@ TextInBuffer Gui::DrawLabel(std::string text, v2 pos, TextStyle style, bool use_
 
 	if (use_layout && !layouts.empty()) {
         Layout& parent = layouts.back();
-        parent.PositionChild(pos, TR.GetTextSize(text.c_str(), style.font_size));
+        parent.PositionChild(pos, TR.GetTextSize(label.c_str(), style.font_size));
     }
 
     f32 base_y = pos.y;
-    TextInBuffer handle {};
-    handle.pos_in_buffer = R.font_buffer.GetCurrentIndex();
-	handle.last_size     = style.font_size;
-	handle.last_pos      = pos;
-    for (size_t i = 0; i < text.size(); i++) {
-        char c = text[i];
+    TextInBuffer text {};
+    text.pos_in_buffer = R.font_buffer.GetCurrentIndex();
+	text.font_size     = style.font_size;
+	text.last_pos      = pos;
+
+    for (size_t i = 0; i < label.size(); i++) {
+        char c = label[i];
 
         GlyphInfo glyph = font.glyphs[c];
 
@@ -42,46 +43,59 @@ TextInBuffer Gui::DrawLabel(std::string text, v2 pos, TextStyle style, bool use_
         // pos.x += glyph.advance;
         pos.x += glyph.w;
         pos.y = base_y;
-        handle.length += 1;
-		
+        text.length += 1;
     }
 
-    return handle;
+    UIElement el {};
+    el.type = UIElementType::Label;
+    el.label = text;
+	this->elements.push_back(el);
+
+	LabelHandle handle2 {};
+	handle2.index = this->elements.size()-1;
+	return handle2;
 }
 
-ButtonInBuffer Gui::DrawBtn(const char* text, u8 font_size, void on_click(), v2 pos)
+ButtonHandle Gui::DrawBtn(const char* label, u8 font_size, void on_click(), v2 pos, bool use_layout)
 {
     auto mouse_x = STATE.window.mouse_x;
     auto mouse_y = STATE.window.mouse_y;
 
-    v2 text_size = TR.GetTextSize(text, font_size);
+    v2 text_size = TR.GetTextSize(label, font_size);
 
     u8 padding_x = 30;
     u8 padding_y = 20;
 
     Transform transform {};
-    transform.size = v3(text_size.x + padding_x, text_size.y + padding_y, 0.0);
-    transform.position = v3(pos.x, pos.y, 0.0);
+    transform.size     = v3(text_size.x + padding_x, text_size.y + padding_y, 0.0);
+    transform.scale    = v3(1.0);
     transform.rotation = 0.0;
-    transform.scale = v3(1.0);
+
+	if (use_layout && !layouts.empty()) {
+        Layout& parent = layouts.back();
+        parent.PositionChild(pos, transform.size);
+    }
+    transform.position = v3(pos.x, pos.y, 0.0);
 
     Rectangle rect = Rectangle(transform, UI_BTN_BG);
-
-    E.entities[E.ROLLING_INDEX].id = E.ROLLING_INDEX;
-    E.entities[E.ROLLING_INDEX].type = EntityType::Button;
 
     auto parent_size = v2(transform.size);
     auto parent_pos = v2(transform.position);
     CenterChildInParent(&parent_pos, &parent_size, &pos, &text_size);
 	TextStyle style = default_style;
 	style.font_size = font_size;
-    auto text_info = Gui::DrawLabel(text, pos, style, false);
-    auto rect_index = R.font_buffer.AddRect(rect);
+    auto rect_index = R.ui_buffer.AddRect(rect);
 
-    E.entities[E.ROLLING_INDEX].button = ButtonInBuffer(text_info, rect_index, parent_pos, parent_size, on_click);
-    E.ROLLING_INDEX++;
+    UIElement el {};
+    el.type = UIElementType::Button;
+	LabelHandle label_handle = Gui::DrawLabel(label, pos, style, false);
+    el.button = ButtonInBuffer(label_handle, rect_index, parent_pos, parent_size, on_click);
+	this->elements.push_back(el);
 
-	return E.entities[E.ROLLING_INDEX-1].button;
+	ButtonHandle handle {};
+	handle.label_handle = label_handle;
+	handle.index = this->elements.size()-1;
+	return handle;
 }
 
 void StackLayout::PositionChild(v2 own_pos, v2& pos, v2 child_size, u16 child_index)
@@ -114,7 +128,7 @@ void Layout::PositionChild(v2& pos, v2 child_size)
     number_of_children++;
 }
 
-TextInBuffer Gui::DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos, u8 font_size)
+LabelHandle Gui::DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos, u8 font_size)
 {
     if (!layouts.empty()) {
         Layout& parent = layouts.back();
@@ -127,7 +141,7 @@ TextInBuffer Gui::DrawIconAndLabel(IconParams icon_params, std::string label, v2
     auto info = GetTextureInfoByIndex(icon_params.index, icon_size, "icons");
     info.scale = v2(icon_params.scale);
 
-    R.icons_buffer.AddTexturedRect(&info, atlas, pos, icon_size);
+    R.ui_buffer.AddTexturedRect(&info, atlas, pos, icon_size);
 
     pos.x += icon_size.x * icon_params.scale + icon_params.padding;
     pos.y += (icon_size.y * icon_params.scale) / 2;
@@ -158,4 +172,34 @@ void Gui::Stack(Direction dir, u8 spacing, v2 pos)
 void Gui::EndLayout()
 {
     layouts.pop_back();
+}
+
+void Gui::Update()
+{
+	for (auto & e : elements) {
+		switch (e.type) {
+			case UIElementType::Button:
+				e.button.Update();
+				break;
+		}
+	}
+}
+
+void LabelHandle::UpdateColor(v4 color) {
+	auto el = &UI.elements[index];
+	el->label.ChangeColor(color);
+}
+
+void ButtonHandle::UpdateBg(v4 color) { 
+	auto el = &UI.elements[index];
+	el->button.UpdateBg(color);
+}
+
+void LabelHandle::UpdateText(std::string label){
+	auto el = &UI.elements[index];
+	el->label.ChangeText(label);
+}
+
+void ButtonHandle::UpdateText(std::string label){
+	label_handle.UpdateText(label);
 }

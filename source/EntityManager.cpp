@@ -18,12 +18,7 @@ void EntityManager::Update()
         auto e = &entities[i];
 
         switch (e->type) {
-        case EntityType::Rect:
-            break;
         case EntityType::BoundingBox:
-            break;
-        case EntityType::Button:
-            e->button.Update();
             break;
         case EntityType::Oblast:
             break;

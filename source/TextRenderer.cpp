@@ -151,11 +151,11 @@ FontInfo SeanTextRenderer::GetCurrentFont(u8 font_size)
     return fonts[0];
 }
 
-v2 SeanTextRenderer::GetTextSize(const char* text, u8 font_size)
+v2 SeanTextRenderer::GetTextSize(const char* label, u8 font_size)
 {
     v2 size = { 0, 0 };
     auto font = GetCurrentFont(font_size);
-    const char* c = &text[0];
+    const char* c = &label[0];
     while (*c != '\0') {
         auto& glyph = font.glyphs.at(*c);
 
@@ -177,34 +177,38 @@ void TextInBuffer::ChangeColor(v4 color)
     }
 }
 
-void TextInBuffer::ChangeText(std::string text, u8 size, v2 pos)
+void TextInBuffer::ChangeText(std::string label, u8 size, v2 pos)
 {
-    auto font = TR.GetCurrentFont(size);
+    auto font  = TR.GetCurrentFont(size);
     auto atlas = RM.GetTexture(font.path);
 
     // TODO: sucks
-    assert(text.size() <= this->length);
+    assert(label.size() <= this->length);
 
+    u8 counter = 0;
     for (size_t i = pos_in_buffer; i < pos_in_buffer + length; i++) {
         GlyphInfo glyph;
-        if (i >= text.size()) {
+		v2 pos_to_use = pos;
+        if (counter >= label.size()) {
             glyph = font.glyphs.at(' ');
+			pos_to_use = v2(-1, -1);
         } else {
-            char c = text[i];
+            char c = label[counter];
             glyph = font.glyphs.at(c);
         }
 
         AtlasTextureInfo texture_info;
         texture_info.position = v2(glyph.x, glyph.y);
-        texture_info.scale = v2(1.0f, 1.0f);
-        texture_info.size = v2(glyph.w, glyph.h);
+        texture_info.scale    = v2(1.0f, 1.0f);
+        texture_info.size     = v2(glyph.w, glyph.h);
 
-        R.font_buffer.UpdateTexturedRect(i, &texture_info, atlas, pos);
+        R.font_buffer.UpdateTexturedRect(i, &texture_info, atlas, pos_to_use);
         pos.x += glyph.w;
+        counter++;
     }
 }
 
-void TextInBuffer::ChangeText(std::string text)
+void TextInBuffer::ChangeText(std::string label)
 {
-	this->ChangeText(text, this->last_size, this->last_pos);
+	this->ChangeText(label, this->font_size, this->last_pos);
 }
