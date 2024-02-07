@@ -145,7 +145,7 @@ public:
     UIElementType type;
     union {
         ButtonInBuffer button;
-        TextInBuffer label;
+        TextInBuffer   label;
     };
 };
 
@@ -153,12 +153,12 @@ class Gui {
     friend class LabelHandle;
     friend class ButtonHandle;
 
-    std::deque<Layout> layouts;
+    std::deque<Layout>     layouts;
     std::vector<UIElement> elements;
 
 public:
     LabelHandle DrawIconAndLabel(IconParams params, std::string label, v2 pos, u8 font_size);
-    LabelHandle DrawLabel(std::string label, v2 pos = { 0, 0 }, TextStyle style = default_style, bool use_layout = true);
+    LabelHandle DrawLabel(std::string label, u8 max_chars = 0, v2 pos = { 0, 0 }, TextStyle style = default_style, bool use_layout = true);
     ButtonHandle DrawBtn(const char* label, u8 font_size, void on_click(), v2 pos = { 0, 0 }, bool use_layout = true);
     void Stack(Direction layout, u8 spacing = 20, v2 pos = { 0, 0 });
     void EndLayout();

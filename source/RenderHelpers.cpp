@@ -39,9 +39,9 @@ constexpr u16 top_offset = 80;
 
 
 void AddTurnUI(LabelHandle& ui_date, ButtonHandle& ui_button_in_buffer) {
-	UI.Stack(Direction::Vertical, 10, { 120, GetScreenSize().y - 300 });
-		auto initial_date = GetDateStr();
-		ui_date             = UI.DrawLabel(initial_date);
+	UI.Stack(Direction::Horizontal, 10, { GetScreenSize().x - 350, GetScreenSize().y - 125 });
+		auto initial_date   = GetDateStr();
+		ui_date             = UI.DrawLabel(initial_date, 24);
 		ui_button_in_buffer = UI.DrawBtn("Next Turn", 36, []() { GoToNextPhase(); });
 	UI.EndLayout();
 }

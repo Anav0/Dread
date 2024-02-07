@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 
     glEnable(GL_BLEND);
     glEnable(GL_DEBUG_OUTPUT);
-    glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDebugMessageCallback(MessageCallback, 0);
@@ -102,7 +102,6 @@ int main(int argc, char* argv[])
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (STATE.turn_changed) {
-			ui_turn_btn.UpdateBg(YELLOW);
 			auto next_date = GetDateStr();
 			ui_date.UpdateText(next_date);
         }
@@ -124,7 +123,7 @@ int main(int argc, char* argv[])
                     break;
                 }
             } else {
-                printf("Nothing!\n");
+                printf("Nothing hit with mouse ray!\n");
             }
         }
 
@@ -135,7 +134,7 @@ int main(int argc, char* argv[])
             line.Draw(line_shader, &projection);
 #endif
 
-        printf("Camera: %f %f %f | %f %f\r", camera->position.x, camera->position.y, camera->position.z, camera->yaw, camera->pitch);
+        //printf("Camera: %f %f %f | %f %f\r", camera->position.x, camera->position.y, camera->position.z, camera->yaw, camera->pitch);
 
         STATE.turn_changed = false;
 

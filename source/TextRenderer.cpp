@@ -172,37 +172,43 @@ v2 SeanTextRenderer::GetTextSize(const char* label, u8 font_size)
 
 void TextInBuffer::ChangeColor(v4 color)
 {
-    for (size_t i = pos_in_buffer; i < pos_in_buffer + length; i++) {
+	u8 to = pos_in_buffer + length;
+    for (size_t i = pos_in_buffer; i < to; i++) {
         R.font_buffer.UpdateColor(i, color);
     }
 }
 
-void TextInBuffer::ChangeText(std::string label, u8 size, v2 pos)
+void TextInBuffer::ChangeText(std::string label, u8 font_size, v2 pos)
 {
-    auto font  = TR.GetCurrentFont(size);
+    auto font  = TR.GetCurrentFont(font_size);
     auto atlas = RM.GetTexture(font.path);
 
     // TODO: sucks
     assert(label.size() <= this->length);
 
     u8 counter = 0;
-    for (size_t i = pos_in_buffer; i < pos_in_buffer + length; i++) {
+    u8 to = pos_in_buffer + length;
+    for (size_t i = pos_in_buffer; i < to; i++) {
         GlyphInfo glyph;
-		v2 pos_to_use = pos;
+        v4 color = this->last_color;
         if (counter >= label.size()) {
             glyph = font.glyphs.at(' ');
-			pos_to_use = v2(-1, -1);
         } else {
             char c = label[counter];
             glyph = font.glyphs.at(c);
         }
+
+		if (glyph.character == ' ') {
+			color = TRANSPARENT;
+		}
 
         AtlasTextureInfo texture_info;
         texture_info.position = v2(glyph.x, glyph.y);
         texture_info.scale    = v2(1.0f, 1.0f);
         texture_info.size     = v2(glyph.w, glyph.h);
 
-        R.font_buffer.UpdateTexturedRect(i, &texture_info, atlas, pos_to_use);
+		R.font_buffer.UpdateColor(i, color);
+        R.font_buffer.UpdateTexturedRect(i, &texture_info, atlas, pos);
         pos.x += glyph.w;
         counter++;
     }

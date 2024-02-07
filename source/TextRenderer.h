@@ -33,6 +33,7 @@ enum class BakeMode {
 
 struct TextInBuffer {
 	v2 last_pos;
+    v4 last_color;
 	u8 font_size;
     u32 pos_in_buffer = 0;
     u32 length = 0;
