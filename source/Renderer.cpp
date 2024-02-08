@@ -37,6 +37,11 @@ void Renderer::Draw()
     }
 }
 
+void Renderer::Reset() {
+	ui_buffer.Reset();
+	font_buffer.Reset();
+}
+
 InstancedMeshBuffer* Renderer::CreateBuffer(Mesh mesh)
 {
     buffers.push_back(InstancedMeshBuffer(mesh));

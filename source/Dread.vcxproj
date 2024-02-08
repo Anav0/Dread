@@ -178,6 +178,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="RenderHelpers.h" />
+    <ClInclude Include="Weapons.h" />
     <ClInclude Include="WindowManager.h" />
     <ClInclude Include="Misc.h" />
     <ClInclude Include="Renderer.h" />

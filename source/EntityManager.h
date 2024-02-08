@@ -19,7 +19,6 @@ struct GameEntity {
         Rectangle rect;
         BoundingBox box;
         Oblast oblast;
-        ButtonInBuffer button;
     };
 };
 

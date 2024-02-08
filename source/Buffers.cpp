@@ -144,7 +144,7 @@ u32 TexturedQuadBuffer::AddRect(const Rectangle rect)
     assert(rolling_index >= 0);
     assert(rolling_index <= MAX_CAPACITY);
 
-    this->colors[rolling_index] = rect.color;
+    this->colors[rolling_index]   = rect.color;
     this->matrices[rolling_index] = GetTransformMatrix(rect.transform.position, rect.transform.size, rect.transform.rotation);
 
     int coords_index = rolling_index * 4;
@@ -238,4 +238,9 @@ void TexturedQuadBuffer::Allocate()
 u16 TexturedQuadBuffer::GetCurrentIndex()
 {
     return rolling_index;
+}
+
+void TexturedQuadBuffer::Reset() {
+	//This should be enough
+	rolling_index = 0;
 }

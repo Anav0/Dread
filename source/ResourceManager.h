@@ -54,4 +54,5 @@ AtlasTextureInfo GetTextureInfoByIndex(u16 index, v2 icon_size, std::string atla
 
 extern ResourceManager RM;
 
+
 #endif

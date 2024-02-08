@@ -23,8 +23,8 @@ public:
     std::vector<BoundingBox> boxes;
     std::vector<InstancedMeshBuffer> buffers;
 
-    TexturedQuadBuffer font_buffer;
-    TexturedQuadBuffer ui_buffer;
+	TexturedQuadBuffer font_buffer;
+	TexturedQuadBuffer ui_buffer;
 
     m4 projection;
     m4 ortho_projection;
@@ -35,6 +35,7 @@ public:
 	void Init();
     void Draw();
     void Update();
+	void Reset();
 
     InstancedMeshBuffer* GetBuffer(std::string mesh_name);
     InstancedMeshBuffer* GetBufferByIndex(u32 index);

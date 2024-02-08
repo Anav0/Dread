@@ -14,6 +14,7 @@
 #include "ResourceManager.h"
 #include "TextRenderer.h"
 #include "WindowManager.h"
+#include "Weapons.h"
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -79,32 +80,32 @@ int main(int argc, char* argv[])
 #if DEBUG_LINES
     std::vector<Line> lines;
 #endif
+	AddMap();
+	AddSupportingCountries();
 
-    LabelHandle  ui_popular_support, ui_reserve, ui_date;
-    ButtonHandle ui_turn_btn;
+	SupportPackage p1 {
+		"Polish support",
+		0,
+		3,
+		CountryCode::PL
+	};
 
-    AddMap();
-    AddSupportingCountries(size);
-    AddResources(size, ui_popular_support, ui_reserve);
-    AddTurnUI(ui_date, ui_turn_btn);
+	p1.weapons.push_back(GetBmp1());
+	p1.weapons.push_back(GetT72());
 
-	ui_turn_btn.UpdateBg(RED);
+	PromiseSupport(p1);
 
     while (!STATE.window.IsClosing()) {
         STATE.window.onBeginOfTheLoop();
         glfwPollEvents();
+		
+		//------------------------------------------------------------------------
 
-		UI.Update();
         E.Update();
         R.Update();
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        if (STATE.turn_changed) {
-			auto next_date = GetDateStr();
-			ui_date.UpdateText(next_date);
-        }
 
         if (STATE.window.buttonAction == MouseAction::PRESSED && STATE.window.buttonType == MouseButton::LEFT) {
             Ray ray = GetRayFromEyes(&R.projection);
@@ -126,6 +127,10 @@ int main(int argc, char* argv[])
                 printf("Nothing hit with mouse ray!\n");
             }
         }
+		
+		//------------------------------------------------------------------------
+
+		DrawUI();
 
         R.Draw();
 
@@ -136,10 +141,17 @@ int main(int argc, char* argv[])
 
         //printf("Camera: %f %f %f | %f %f\r", camera->position.x, camera->position.y, camera->position.z, camera->yaw, camera->pitch);
 
+		//printf("UI buffer index: %i\n", R.ui_buffer.rolling_index);
+		//printf("Font buffer index: %i\n", R.font_buffer.rolling_index);
+
+		R.Reset();
+		UI.Reset();
+
         STATE.turn_changed = false;
 
         glfwSwapBuffers(window->window);
     }
+
 
     glfwTerminate();
     return 0;

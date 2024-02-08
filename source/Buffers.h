@@ -104,13 +104,16 @@ class TexturedQuadBuffer {
     v2 textures_coords[MAX_CAPACITY * 4];
     v4 colors[MAX_CAPACITY];
 
-    u16 rolling_index = 0;
 
 public:
     // TODO: make better.
     std::string texture_key;
+	//TODO: make private
+    u16 rolling_index = 0;
 
     void Allocate();
+
+	void Reset();
 
     u16 GetCurrentIndex();
 

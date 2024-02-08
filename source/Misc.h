@@ -35,6 +35,11 @@ inline void Rotate(m4* model, const f32 degs)
     *model = glm::rotate(*model, glm::radians(degs), v3(0.0f, 0.0f, 1.0f));
 }
 
+template <typename T>
+inline void Append(std::vector<T>& a, std::vector<T>& b) {
+	a.insert(std::end(a), std::begin(b), std::end(b));
+}
+
 inline v4 lerp(v4 a, v4 b, f32 progress)
 {
     v4 output;
@@ -68,6 +73,7 @@ inline m4 GetTransformMatrix(v3 position, v3 size, f32 rotate = 0.0, v3 scale = 
     model = glm::scale(model, v3(finalSize.x, finalSize.y, 1.0f));
     return model;
 }
+
 
 inline m4 GetTransformMatrix(v3 position, f32 rotate = 0.0, v3 scale = v3(1.0, 1.0, 1.0))
 {

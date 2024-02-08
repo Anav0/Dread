@@ -17,22 +17,53 @@ void ChangeControl(f32 by)
 }
 
 void ComputerPhase() {
+
 }
 
 void GoToNextPhase() {
-	//TODO: Disable the UI
 	ComputerPhase();
 	GoToNextTurn();
 }
 
 void DrawEndScreen() {}
 
-void GoToNextTurn() {
-	if (STATE.current_turn + 1 == STATE.max_turn) {
-		DrawEndScreen();
-	}
+std::vector<WeaponSystem> GetOnlyDeliveredSystems(SupportPackage& package) {
+	return package.weapons;
+}
 
+void PromiseSupport(SupportPackage package) {
+	STATE.promised_support.push_back(package);
+}
+
+void DeliverSupport() {
+	for (SupportPackage& package : STATE.promised_support) {
+		if (package.fully_delivered) continue;
+		if (package.delivered_on_turn == STATE.current_turn) {
+			std::vector<WeaponSystem> systems_delivered = GetOnlyDeliveredSystems(package);
+			Append(STATE.weapons_in_reserve, systems_delivered);
+			
+			#ifdef DEBUG
+			printf("Package delivered: {}\n", package.name);
+			#endif
+
+			package.fully_delivered = true;
+		}
+	}
+}
+
+Country& GetCountryByCode(CountryCode code) {
+	for (Country& country : STATE.countries) {
+		if (country.code == code) return country;
+	}
+	assert(false);
+	return STATE.countries[0];
+}
+
+void GoToNextTurn() {
 	STATE.current_turn += 1;
+
+	DeliverSupport();
+
 	STATE.turn_changed = true;
 }
 

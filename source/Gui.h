@@ -33,74 +33,6 @@ constexpr TextStyle default_style {
     36
 };
 
-struct LabelHandle {
-    friend class Gui;
-private:
-    u32 index;
-public:
-    void UpdateColor(v4 color);
-    void UpdateText(std::string label);
-};
-
-struct ButtonHandle {
-    friend class Gui;
-private:
-    u32 index;
-	LabelHandle label_handle;
-
-public:
-    void UpdateBg(v4 color);
-    void UpdateText(std::string label);
-};
-
-struct ButtonInBuffer {
-    LabelHandle text_handle;
-    u32 bg_index_in_ui_buffer;
-    v2 pos, size;
-    void (*on_click)(void);
-    bool was_hovered = false;
-	v4 color = UI_BTN_BG;
-
-    ButtonInBuffer() { }
-
-    ButtonInBuffer(LabelHandle text_handle, u32 bg_index_in_ui_buffer, v2 pos, v2 size, void (*on_click)(void))
-    {
-        this->text_handle = text_handle;
-        this->bg_index_in_ui_buffer = bg_index_in_ui_buffer;
-        this->pos = pos;
-        this->size = size;
-        this->on_click = on_click;
-    }
-
-    void UpdateBg(v4 color)
-    {
-		this->color = color;
-        R.ui_buffer.UpdateColor(bg_index_in_ui_buffer, color);
-    }
-
-    void Update()
-    {
-        auto mouse_x = STATE.window.mouse_x;
-        auto mouse_y = STATE.window.mouse_y;
-        auto mouse_over = isPointInRect(pos, size, mouse_x, mouse_y);
-
-        if (mouse_over) {
-            if (!was_hovered)
-                R.ui_buffer.UpdateColor(bg_index_in_ui_buffer, UI_BTN_HOVER_BG);
-
-            was_hovered = true;
-            if (STATE.window.buttonAction == MouseAction::PRESSED && STATE.window.buttonType == MouseButton::LEFT) {
-                on_click();
-            }
-        } else {
-            if (was_hovered) {
-                R.ui_buffer.UpdateColor(bg_index_in_ui_buffer, this->color);
-            }
-            was_hovered = false;
-        }
-    }
-};
-
 // TODO: move
 constexpr u16 SWORD = 12;
 constexpr u16 MEGAPHONE = 5;
@@ -124,7 +56,6 @@ struct StackLayout {
 };
 
 struct Layout {
-    i16 parent_id = -1; //-1 means global canvas that - just like god - exists only in my head
     v2 pos = { -1, -1 };
     LayoutType type;
     u16 number_of_children = 0;
@@ -135,34 +66,33 @@ struct Layout {
     void PositionChild(v2& pos, v2 child_size);
 };
 
-enum class UIElementType {
-    Button,
-    Label
+struct ButtonStyle {
+	v4 bg_color;
+	v4 fg_color;
+	v2 padding;
+	u8 font_size;
 };
 
-class UIElement {
-public:
-    UIElementType type;
-    union {
-        ButtonInBuffer button;
-        TextInBuffer   label;
-    };
+constexpr ButtonStyle DEFAULT_BTN_SYTLE {
+	RED,
+	WHITE,
+	v2(30,20),
+	36,
 };
+
 
 class Gui {
-    friend class LabelHandle;
-    friend class ButtonHandle;
-
-    std::deque<Layout>     layouts;
-    std::vector<UIElement> elements;
+    std::deque<Layout> layouts;
 
 public:
-    LabelHandle DrawIconAndLabel(IconParams params, std::string label, v2 pos, u8 font_size);
-    LabelHandle DrawLabel(std::string label, u8 max_chars = 0, v2 pos = { 0, 0 }, TextStyle style = default_style, bool use_layout = true);
-    ButtonHandle DrawBtn(const char* label, u8 font_size, void on_click(), v2 pos = { 0, 0 }, bool use_layout = true);
     void Stack(Direction layout, u8 spacing = 20, v2 pos = { 0, 0 });
     void EndLayout();
-    void Update();
+	void Reset();
+
+	bool DrawButton(const char* label, v2 pos = { 0, 0 }, ButtonStyle style = DEFAULT_BTN_SYTLE);
+	void DrawLabel(std::string label, u8 max_chars = 0, v2 pos = { 0, 0 }, TextStyle style = default_style, bool use_layout = true);
+	void DrawIcon(IconParams params, v2 pos = { 0, 0 });
+	void DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos = { 0, 0 }, TextStyle style = default_style);
 };
 
 extern Gui UI;
