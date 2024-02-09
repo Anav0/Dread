@@ -9,6 +9,7 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "TextRenderer.h"
+#include "Entities.h"
 
 #include "stb_truetype.h"
 
@@ -171,15 +172,23 @@ void AddMap()
     }
 }
 
+void DrawOblastInfo() {
+	Oblast* oblast = GetOblast(STATE.selected_oblast);
+	UI.DrawLabel(std::format("{} - {:.2f}%", oblast->name, oblast->ukrainian_control * 100));
+}
+
 void DrawUI() {
-	auto y = STATE.window.screen_size.y - top_offset - 200;
-    auto x = 20;
+	u32 y = STATE.window.screen_size.y - top_offset - 200;
+    constexpr u32 x = 20;
 
 	DrawSupportingCountries();
+	
 	UI.Stack(Direction::Vertical, 100, {x, y});
 		DrawDeliveriesUI();
 		DrawWeaponsInReserve();
+		DrawOblastInfo();
 	UI.EndLayout();
+
 	DrawResources();
 	DrawTurnUI();
 }

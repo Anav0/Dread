@@ -86,7 +86,7 @@ struct GameState {
     RenderMode mode = RenderMode::NORMAL;
     bool show_collisions = false;
 
-    Oblast* selected_oblast = nullptr;
+    OblastCode selected_oblast;
 
     f32 popular_support = 0.8;
     u64 reserve         = 600'000;

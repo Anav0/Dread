@@ -5,6 +5,13 @@
 
 GameState STATE;
 
+Oblast* GetOblast(OblastCode code) {
+	for (GameEntity& e : E.entities) {
+		if (e.type == EntityType::Oblast && e.oblast.code == code) return &e.oblast;
+	}
+	return nullptr;
+}
+
 void ChangeControl(f32 by)
 {
     for (auto& e : E.entities) {

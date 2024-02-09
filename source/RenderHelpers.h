@@ -26,5 +26,6 @@ void DrawSupportingCountries();
 void DrawDeliveriesUI();
 void DrawTurnUI();
 void DrawSupportPackage(SupportPackage& package);
+void DrawOblastInfo();
 
 #endif
