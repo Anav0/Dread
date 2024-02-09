@@ -89,7 +89,7 @@ std::vector<MeshInBuffer> AddModel(v3 position, v3 size, std::string model_name,
     return meshes;
 }
 
-void DrawSupportElement(SupportPackage& package, u32 package_index)
+void DrawSupportPackage(SupportPackage& package, u32 package_index)
 {
     Country& country = GetCountryByCode(package.origin);
     IconParams icon;
@@ -99,23 +99,31 @@ void DrawSupportElement(SupportPackage& package, u32 package_index)
     icon.padding = 0;
 
 	UI.Stack(Direction::Horizontal, 20);
-		UI.DrawLabel(std::format("Delivery in: {} turns", package.delivered_on_turn - STATE.current_turn));
-		for (WeaponSystem& weapon : package.weapons) {
-			UI.DrawLabel(weapon.name);
+		UI.DrawLabel(std::format("Delivery in {} turns", package.delivered_on_turn - STATE.current_turn));
+		for (Delivery& d : package.delivery) {
+			UI.DrawLabel(std::format("{}x {}", d.n, d.system.name));
 		}
 		UI.DrawIcon(icon);
     UI.EndLayout();
 }
 
+void DrawWeaponsInReserve() {
+	if (STATE.weapons_in_reserve.size() == 0) return;
+
+	UI.Stack(Direction::Vertical, 20);
+		for (Delivery& d : STATE.weapons_in_reserve) {
+			UI.DrawLabel(std::format("{}x {} {}/{}", d.n, d.system.name, d.system.attack, d.system.defence));
+		}
+	UI.EndLayout();
+}
+
 void DrawDeliveriesUI()
 {
-    auto y = STATE.window.screen_size.y - top_offset - 100;
-    auto x = 20;
     u32  i = 0;
-    UI.Stack(Direction::Vertical, 20, { x, y });
+    UI.Stack(Direction::Vertical, 60);
 		for (SupportPackage& package : STATE.promised_support) {
 			if (package.fully_delivered) continue;
-			DrawSupportElement(package, i);
+			DrawSupportPackage(package, i);
 			i++;
 		}
     UI.EndLayout();
@@ -164,28 +172,14 @@ void AddMap()
 }
 
 void DrawUI() {
+	auto y = STATE.window.screen_size.y - top_offset - 200;
+    auto x = 20;
+
 	DrawSupportingCountries();
-	DrawDeliveriesUI();
+	UI.Stack(Direction::Vertical, 100, {x, y});
+		DrawDeliveriesUI();
+		DrawWeaponsInReserve();
+	UI.EndLayout();
 	DrawResources();
 	DrawTurnUI();
-}
-
-void DrawTestUI() {
-
-	IconParams icon_params{};
-	icon_params.index = STATE.test.icon;
-	icon_params.size = v2(64);
-	icon_params.scale = 1.0;
-	icon_params.padding = 0;
-	
-	UI.Stack(Direction::Vertical, STATE.test.spacing, { 200, 200 });
-		if (UI.DrawButton("Change")) {
-			STATE.test.spacing += 5;
-		}
-		UI.DrawLabel(STATE.test.label_1, STATE.test.label_1.size() * 10);
-		UI.DrawLabel("Test 2");
-		UI.DrawLabel("Test 3");
-		UI.DrawIcon(icon_params);
-
-	UI.EndLayout();
 }

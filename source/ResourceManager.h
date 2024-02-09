@@ -5,6 +5,7 @@
 
 #include <map>
 #include <string>
+#include <algorithm>
 
 #include "Mesh.h"
 #include "Model.h"

@@ -8,21 +8,23 @@
 
 WeaponSystem GetBmp1()
 {
-    WeaponSystem bmp;
-    bmp.name = "BMP-1";
-    bmp.image_pos_on_atlas = 0;
-    bmp.cost_in_dollars = 50'000;
+    WeaponSystem vehicle;
+	vehicle.type = WeaponSystemType::BMP1;
+    vehicle.name = "BMP-1";
+    vehicle.image_pos_on_atlas = 0;
+    vehicle.cost_in_dollars = 50'000;
 
-    bmp.attack = 2;
-    bmp.defence = 1;
-    bmp.state = 0.7;
+    vehicle.attack = 2;
+    vehicle.defence = 1;
+    vehicle.state = 0.7;
 
-    return bmp;
+    return vehicle;
 }
 
 WeaponSystem GetT72()
 {
     WeaponSystem vehicle;
+	vehicle.type = WeaponSystemType::Twardy;
     vehicle.name = "T72 Twardy";
     vehicle.image_pos_on_atlas = 0;
     vehicle.cost_in_dollars = 100'000;

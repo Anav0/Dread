@@ -25,6 +25,6 @@ void DrawResources();
 void DrawSupportingCountries();
 void DrawDeliveriesUI();
 void DrawTurnUI();
-void DrawSupportElement(SupportPackage& package);
+void DrawSupportPackage(SupportPackage& package);
 
 #endif

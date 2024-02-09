@@ -42,6 +42,7 @@ constexpr const char* MONTHS[] = {
 };
 
 enum class WeaponSystemType {
+	Twardy,
 	BMP1,
 	BMP2,
 	BMP3,
@@ -57,6 +58,7 @@ enum class WeaponSystemType {
 };
 
 struct WeaponSystem {
+	WeaponSystemType type;
 	std::string name;
 	u16 image_pos_on_atlas;
 	u32 cost_in_dollars;
@@ -66,19 +68,17 @@ struct WeaponSystem {
 	f32 state = 1.0;
 };
 
+struct Delivery {
+	u16 n;
+	WeaponSystem system;
+};
+
 struct SupportPackage {
 	std::string name;
-	u32 cash;
 	u32 delivered_on_turn;
 	CountryCode origin;
 	bool fully_delivered = false;
-	std::vector<WeaponSystem> weapons;
-};
-
-struct Test {
-	std::string label_1 = "Test 1";
-	u16 icon = 12;
-	u8 spacing = 10;
+	std::vector<Delivery> delivery;
 };
 
 struct GameState {
@@ -94,10 +94,7 @@ struct GameState {
 	std::vector<Country> countries;
 
 	std::vector<SupportPackage> promised_support;
-
-	std::vector<WeaponSystem>   weapons_in_reserve;
-
-	Test test;
+	std::vector<Delivery>       weapons_in_reserve;
 
 	u8 current_turn = 1;
 	u8 max_turn     = 12 * 3; //Three years, 12 months per year 3 years
@@ -120,7 +117,7 @@ void ComputerPhase();
 void DrawEndScreen();
 void PromiseSupport(SupportPackage);
 Country& GetCountryByCode(CountryCode code);
-
+Delivery* GetDeliveryByType(WeaponSystemType type);
 extern GameState STATE;
 
 #endif

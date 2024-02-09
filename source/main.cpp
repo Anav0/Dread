@@ -85,15 +85,25 @@ int main(int argc, char* argv[])
 
 	SupportPackage p1 {
 		"Polish support",
-		0,
 		3,
 		CountryCode::PL
 	};
 
-	p1.weapons.push_back(GetBmp1());
-	p1.weapons.push_back(GetT72());
+	p1.delivery.push_back( { 10, GetBmp1() });
+	p1.delivery.push_back( { 20, GetT72() });
 
 	PromiseSupport(p1);
+
+	SupportPackage p2 {
+		"USA support",
+		4,
+		CountryCode::USA
+	};
+
+	p2.delivery.push_back( { 5, GetBmp1() });
+	p2.delivery.push_back( { 5, GetT72() });
+
+	PromiseSupport(p2);
 
     while (!STATE.window.IsClosing()) {
         STATE.window.onBeginOfTheLoop();

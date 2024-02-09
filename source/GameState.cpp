@@ -27,8 +27,15 @@ void GoToNextPhase() {
 
 void DrawEndScreen() {}
 
-std::vector<WeaponSystem> GetOnlyDeliveredSystems(SupportPackage& package) {
-	return package.weapons;
+std::vector<Delivery> GetOnlyDeliveredSystems(SupportPackage& package) {
+	return package.delivery;
+}
+
+Delivery* GetDeliveryByType(WeaponSystemType type) {
+	for (Delivery& d : STATE.weapons_in_reserve) {
+		if (d.system.type == type) return &d;
+	}
+	return nullptr;
 }
 
 void PromiseSupport(SupportPackage package) {
@@ -39,8 +46,16 @@ void DeliverSupport() {
 	for (SupportPackage& package : STATE.promised_support) {
 		if (package.fully_delivered) continue;
 		if (package.delivered_on_turn == STATE.current_turn) {
-			std::vector<WeaponSystem> systems_delivered = GetOnlyDeliveredSystems(package);
-			Append(STATE.weapons_in_reserve, systems_delivered);
+			std::vector<Delivery> systems_delivered = GetOnlyDeliveredSystems(package);
+			
+			for (Delivery& delivery : systems_delivered) {
+				Delivery* matching_delivery = GetDeliveryByType(delivery.system.type);
+				if (matching_delivery == nullptr) {
+					STATE.weapons_in_reserve.push_back(delivery);
+				} else {
+					matching_delivery->n += delivery.n;
+				}
+			}
 			
 			#ifdef DEBUG
 			printf("Package delivered: {}\n", package.name);
