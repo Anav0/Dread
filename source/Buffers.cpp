@@ -119,6 +119,7 @@ u32 TexturedQuadBuffer::AddTexturedRect(const AtlasTextureInfo* texture_info, co
 
     this->colors[rolling_index] = color;
     this->matrices[rolling_index] = GetTransformMatrix(pos, size_to_use, rotation, texture_info->scale);
+	this->size[rolling_index] = size;
 
     float subtex_w = texture_info->size.x / atlas->Width;
     float subtex_h = texture_info->size.y / atlas->Height;
@@ -139,6 +140,28 @@ u32 TexturedQuadBuffer::AddTexturedRect(const AtlasTextureInfo* texture_info, co
     return tmp;
 }
 
+//u32 TexturedQuadBuffer::AddRect(v4 tl_color, v4 tr_color, v4 bl_color, v4 br_color)
+//{
+//    assert(rolling_index >= 0);
+//    assert(rolling_index <= MAX_CAPACITY);
+//
+//    this->colors[rolling_index]   = rect.color;
+//    this->matrices[rolling_index] = GetTransformMatrix(rect.transform.position, rect.transform.size, rect.transform.rotation);
+//
+//    int coords_index = rolling_index * 4;
+//
+//    textures_coords[coords_index] = { -1, -1 };
+//    textures_coords[coords_index + 1] = { -1, -1 };
+//    textures_coords[coords_index + 2] = { -1, -1 };
+//    textures_coords[coords_index + 3] = { -1, -1 };
+//
+//    UpdateBufferSection(rolling_index);
+//
+//    const int tmp = rolling_index;
+//    rolling_index += 1;
+//    return tmp;
+//}
+
 u32 TexturedQuadBuffer::AddRect(const Rectangle rect)
 {
     assert(rolling_index >= 0);
@@ -149,10 +172,12 @@ u32 TexturedQuadBuffer::AddRect(const Rectangle rect)
 
     int coords_index = rolling_index * 4;
 
-    textures_coords[coords_index] = { -1, -1 };
+    textures_coords[coords_index]     = { -1, -1 };
     textures_coords[coords_index + 1] = { -1, -1 };
     textures_coords[coords_index + 2] = { -1, -1 };
     textures_coords[coords_index + 3] = { -1, -1 };
+	
+	this->size[rolling_index] = rect.transform.size;
 
     UpdateBufferSection(rolling_index);
 
@@ -196,6 +221,7 @@ void TexturedQuadBuffer::Allocate()
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(matrices), &matrices[0]);
     glBufferSubData(GL_ARRAY_BUFFER, sizeof(matrices), sizeof(textures_coords), &textures_coords[0]);
     glBufferSubData(GL_ARRAY_BUFFER, sizeof(matrices) + sizeof(textures_coords), sizeof(colors), &colors[0]);
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(matrices) + sizeof(textures_coords) + sizeof(colors), sizeof(size), &size[0]);
 
     // vec3 position
     std::size_t vec4Size = sizeof(v4);
@@ -220,17 +246,20 @@ void TexturedQuadBuffer::Allocate()
     glVertexAttribPointer(10, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(sizeof(matrices) + 6 * sizeof(float)));
     glEnableVertexAttribArray(11);
     glVertexAttribPointer(11, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(sizeof(matrices) + sizeof(textures_coords)));
+	glEnableVertexAttribArray(12);
+    glVertexAttribPointer(12, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)(sizeof(matrices) + sizeof(textures_coords) + sizeof(colors)));
 
-    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(3, 1); //Matrices
     glVertexAttribDivisor(4, 1);
     glVertexAttribDivisor(5, 1);
-    glVertexAttribDivisor(6, 1);
+    glVertexAttribDivisor(6, 1); //----------
 
     glVertexAttribDivisor(7, 1); // Tex coords
     glVertexAttribDivisor(8, 1); // Tex coords
     glVertexAttribDivisor(9, 1); // Tex coords
     glVertexAttribDivisor(10, 1); // Tex coords
     glVertexAttribDivisor(11, 1); // color
+	glVertexAttribDivisor(12, 1); // size
 
     glBindVertexArray(0);
 }

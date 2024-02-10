@@ -8,6 +8,7 @@ void Renderer::Init() {
 	projection       = glm::perspective(glm::radians(STATE.window.camera.zoom), (f32)STATE.window.screen_size.x / (f32)STATE.window.screen_size.y, 0.1f, 1000.0f);
 	ortho_projection = glm::ortho(0.0f, (f32)STATE.window.screen_size.x, 0.0f, (f32)STATE.window.screen_size.y);
 
+	gradient_buffer.Allocate();
 	font_buffer.Allocate();
 	ui_buffer.Allocate();
 	ui_buffer.texture_key = "icons";
@@ -20,11 +21,13 @@ void Renderer::Update()
 void Renderer::Draw()
 {
     // TODO: temp
-    auto shader         = RM.GetShader("object");
-    auto texture_shader = RM.GetShader("texture");
+    auto shader          = RM.GetShader("object");
+    auto texture_shader  = RM.GetShader("texture");
+	auto gradient_shader = RM.GetShader("gradient");
 
 	ui_buffer.Draw(texture_shader, &ortho_projection);
 	font_buffer.Draw(texture_shader, &ortho_projection);
+	gradient_buffer.Draw(gradient_shader, &ortho_projection);
 
     for (auto& buffer : buffers) {
         buffer.Draw(shader, &projection, nullptr);
@@ -40,6 +43,7 @@ void Renderer::Draw()
 void Renderer::Reset() {
 	ui_buffer.Reset();
 	font_buffer.Reset();
+	gradient_buffer.Reset();
 }
 
 InstancedMeshBuffer* Renderer::CreateBuffer(Mesh mesh)

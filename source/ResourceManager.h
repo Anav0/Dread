@@ -46,6 +46,7 @@ public:
     vector<std::string> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, const string typeName, const string& directory);
     Texture*            LoadTexture(std::string file_path, std::string resource_key, bool absolute_path = false, bool alpha = false);
     Shader*             LoadShader(std::string vs, std::string fs, const std::string resource_key, std::string gs = "");
+	void                HotReloadShaders();
     Texture*            GetTextureByKey(std::string);
                     
 };

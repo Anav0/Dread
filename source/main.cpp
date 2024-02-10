@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 #if DEBUG_LINES
     std::vector<Line> lines;
 #endif
-	AddMap();
+	//AddMap();
 	AddSupportingCountries();
 
 	SupportPackage p1 {
@@ -104,12 +104,24 @@ int main(int argc, char* argv[])
 	p2.delivery.push_back( { 5, GetT72() });
 
 	PromiseSupport(p2);
+	
+	Rectangle rect{};
+	rect.color = RED;
+	f32 h = 96;
+	rect.transform.position = v3(0, STATE.window.screen_size.y - h, 1);
+	rect.transform.size     = v3(STATE.window.screen_size.x, h, 0);
+	//rect.transform.position = v3(400, 400, 1);
+	//rect.transform.size     = v3(400, 400, 0);
+	rect.transform.scale    = v3(1.0);
+	rect.transform.rotation = 0;
 
     while (!STATE.window.IsClosing()) {
         STATE.window.onBeginOfTheLoop();
         glfwPollEvents();
 		
 		//------------------------------------------------------------------------
+
+		RM.HotReloadShaders();
 
         E.Update();
         R.Update();
@@ -139,7 +151,9 @@ int main(int argc, char* argv[])
 		
 		//------------------------------------------------------------------------
 
-		DrawUI();
+		//DrawUI();
+
+		R.gradient_buffer.AddRect(rect);
 
         R.Draw();
 

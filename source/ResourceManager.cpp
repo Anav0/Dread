@@ -12,26 +12,38 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
+#include <chrono>
+#include <filesystem>
+#include <format>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
+
 ResourceManager RM;
 
-void ResourceManager::LoadRequiredResources() {
-	LoadTexture("atlas.png", "atlas", false, true);
-	LoadTexture("icons.png", "icons", false, true);
+using namespace std::filesystem;
 
-	LoadShader("rekt.vert", "rekt.frag", "rect");
-	LoadShader("texture.vert", "texture.frag", "texture");
-	LoadShader("object.vert", "object.frag", "object");
-	LoadShader("debug.vert", "debug.frag", "debug");
-	LoadShader("mesh.vert", "mesh.frag", "mesh");
-	LoadShader("line.vert", "line.frag", "line");
+void ResourceManager::LoadRequiredResources()
+{
+    LoadTexture("atlas.png", "atlas", false, true);
+    LoadTexture("icons.png", "icons", false, true);
 
-	LoadModel("map/map.obj", "map");
-	LoadModel("sphere/sphere.obj", "sphere");
+    LoadShader("rekt.vert", "rekt.frag", "rect");
+    LoadShader("texture.vert", "texture.frag", "texture");
+    LoadShader("object.vert", "object.frag", "object");
+    LoadShader("debug.vert", "debug.frag", "debug");
+    LoadShader("mesh.vert", "mesh.frag", "mesh");
+    LoadShader("line.vert", "line.frag", "line");
+    LoadShader("gradient.vert", "gradient.frag", "gradient");
+
+    LoadModel("map/map.obj", "map");
+    LoadModel("sphere/sphere.obj", "sphere");
 }
 
 void ResourceManager::LoadAllResources()
 {
-    for (const auto& entry : std::filesystem::recursive_directory_iterator(ASSETS_PATH)) {
+    for (const auto& entry : recursive_directory_iterator(ASSETS_PATH)) {
         auto path = entry.path();
         if (entry.is_regular_file()) {
             auto ext = path.extension();
@@ -172,7 +184,8 @@ vector<std::string> ResourceManager::LoadMaterialTextures(aiMaterial* mat, aiTex
     return keys;
 }
 
-Model* ResourceManager::GetModel(std::string resource_key) {
+Model* ResourceManager::GetModel(std::string resource_key)
+{
 
     if (loaded_models.contains(resource_key))
         return &loaded_models[resource_key];
@@ -193,7 +206,7 @@ void ResourceManager::LoadModel(std::string file_path, std::string resource_key,
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         printf("ERROR::ASSIMP:: %s\n", importer.GetErrorString());
         assert(false);
-        return; 
+        return;
     }
 
     const string directory = path.substr(0, path.find_last_of('/'));
@@ -232,7 +245,7 @@ Shader* ResourceManager::LoadShader(std::string vs, std::string fs, const std::s
         assert(false);
     }
 
-    Shader shader = *new Shader(vs_path.c_str(), fs_path.c_str(), gs_path);
+    Shader shader = *new Shader(vs_path.c_str(), fs_path.c_str());
 
     loaded_shaders.insert(std::pair(resource_key, shader));
 
@@ -255,4 +268,38 @@ AtlasTextureInfo GetTextureInfoByIndex(u16 index, v2 icon_size, std::string atla
     info.scale = v3(1.0);
 
     return info;
+}
+
+void ResourceManager::HotReloadShaders()
+{
+    for (auto& pair : loaded_shaders) {
+        Shader& shader = pair.second;
+
+        auto vertex_last_written   = last_write_time(shader.vertexPath);
+        auto fragment_last_written = last_write_time(shader.fragmentPath);
+
+        bool was_vertex_updated   = vertex_last_written > shader.vertex_last_written;
+        bool was_fragment_updated = fragment_last_written > shader.fragment_last_written;
+
+        if (was_fragment_updated || was_vertex_updated) {
+            u32 new_shader_program_id = glCreateProgram();
+            u32 v_id, f_id;
+
+            bool v_success = shader.Load(new_shader_program_id, shader.vertexPath, GL_VERTEX_SHADER, "VERTEX", v_id);
+            bool f_success = shader.Load(new_shader_program_id, shader.fragmentPath, GL_FRAGMENT_SHADER, "FRAGMENT", f_id);
+
+			shader.vertex_last_written   = vertex_last_written;
+            shader.fragment_last_written = fragment_last_written;
+
+            if (!v_success || !f_success) return;
+
+            glDeleteProgram(shader.ID);
+            shader.ID = new_shader_program_id;
+
+            glLinkProgram(shader.ID);
+
+            glDeleteShader(f_id);
+            glDeleteShader(v_id);
+        } 
+    }
 }

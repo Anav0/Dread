@@ -103,6 +103,7 @@ class TexturedQuadBuffer {
     m4 matrices[MAX_CAPACITY];
     v2 textures_coords[MAX_CAPACITY * 4];
     v4 colors[MAX_CAPACITY];
+	v2 size[MAX_CAPACITY];
 
 
 public:
@@ -197,7 +198,7 @@ public:
         shader->setInt("imageSampler", 0);
         shader->setBool("hideAlpha", HIDE_ALPHA);
         shader->setMat4("projection", *projection);
-
+		shader->setVec2("resolution", STATE.window.screen_size);
         auto atlas = RM.GetTexture(this->texture_key);
 
         if (atlas != nullptr) {
