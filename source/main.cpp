@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
 	
 	Rectangle rect{};
 	rect.color = RED;
-	f32 h = 96;
+	f32 h = 64;
 	rect.transform.position = v3(0, STATE.window.screen_size.y - h, 1);
 	rect.transform.size     = v3(STATE.window.screen_size.x, h, 0);
 	//rect.transform.position = v3(400, 400, 1);
