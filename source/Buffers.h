@@ -103,8 +103,6 @@ class TexturedQuadBuffer {
     m4 matrices[MAX_CAPACITY];
     v2 textures_coords[MAX_CAPACITY * 4];
     v4 colors[MAX_CAPACITY];
-	v2 size[MAX_CAPACITY];
-
 
 public:
     // TODO: make better.

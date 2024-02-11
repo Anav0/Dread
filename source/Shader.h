@@ -82,7 +82,8 @@ public:
 		setInt("imageSampler", 0);
     }
 
-#pragma region MyRegion
+#pragma region Setters
+
 // activate the shader
     // ------------------------------------------------------------------------
     void Use()
