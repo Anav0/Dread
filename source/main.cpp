@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 #if DEBUG_LINES
     std::vector<Line> lines;
 #endif
-	//AddMap();
+	AddMap();
 	AddSupportingCountries();
 
 	SupportPackage p1 {
@@ -149,10 +149,10 @@ int main(int argc, char* argv[])
 		
 		//------------------------------------------------------------------------
 
-		//DrawUI();
-
 	    rect.transform.position = v3(0, STATE.window.screen_size.y - h, 1);
 		R.gradient_buffer.AddRect(rect);
+
+		DrawUI();
 
         R.Draw();
 

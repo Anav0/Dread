@@ -29,9 +29,9 @@ void Renderer::Draw()
     auto texture_shader  = RM.GetShader("texture");
 	auto gradient_shader = RM.GetShader("gradient");
 
+	gradient_buffer.Draw(gradient_shader, &ortho_projection);
 	ui_buffer.Draw(texture_shader, &ortho_projection);
 	font_buffer.Draw(texture_shader, &ortho_projection);
-	gradient_buffer.Draw(gradient_shader, &ortho_projection);
 
     for (auto& buffer : buffers) {
         buffer.Draw(shader, &projection, nullptr);

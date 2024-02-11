@@ -10,6 +10,7 @@
 #include "ResourceManager.h"
 #include "TextRenderer.h"
 #include "Entities.h"
+#include "Atlas.h"
 
 #include "stb_truetype.h"
 
@@ -42,7 +43,7 @@ void DrawTurnUI()
     UI.Stack(Direction::Horizontal, 10, { GetScreenSize().x - 350, GetScreenSize().y - 125 });
     	auto initial_date = GetDateStr();
     	UI.DrawLabel(initial_date, 24);
-		if (UI.DrawButton("Next Turn")) {
+		if (UI.DrawIcon(END_TURN_ICON)) {
 			GoToNextPhase();
 		}
     UI.EndLayout();

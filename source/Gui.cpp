@@ -161,11 +161,29 @@ bool Gui::DrawButton(const char* label, v2 pos, ButtonStyle style)
     return is_mouse_over && STATE.window.buttonType == MouseButton::LEFT && STATE.window.buttonAction == MouseAction::RELEASED;
 }
 
-void Gui::DrawIcon(IconParams icon_params, v2 pos)
+bool Gui::DrawIcon(AtlasTextureInfo info, v2 pos)
 {
     if (!layouts.empty()) {
         Layout& parent = layouts.back();
-        parent.PositionChild(pos, icon_params.size);
+        parent.PositionChild(pos, info.size * info.scale);
+    }
+
+    auto atlas = RM.GetTexture("icons");
+
+    R.ui_buffer.AddTexturedRect(&info, atlas, pos, info.size);
+
+	auto mouse_x = STATE.window.mouse_x;
+    auto mouse_y = STATE.window.mouse_y;
+	bool is_mouse_over = isPointInRect(pos, info.size, mouse_x, mouse_y);
+
+	return is_mouse_over && STATE.window.buttonType == MouseButton::LEFT && STATE.window.buttonAction == MouseAction::RELEASED;
+}
+
+bool Gui::DrawIcon(IconParams icon_params, v2 pos)
+{
+    if (!layouts.empty()) {
+        Layout& parent = layouts.back();
+        parent.PositionChild(pos, icon_params.size * icon_params.scale);
     }
 
     auto icon_size = icon_params.size;
@@ -175,6 +193,12 @@ void Gui::DrawIcon(IconParams icon_params, v2 pos)
     info.scale = v2(icon_params.scale);
 
     R.ui_buffer.AddTexturedRect(&info, atlas, pos, icon_size);
+
+	auto mouse_x = STATE.window.mouse_x;
+    auto mouse_y = STATE.window.mouse_y;
+	bool is_mouse_over = isPointInRect(pos, icon_size * icon_params.scale, mouse_x, mouse_y);
+
+	return is_mouse_over && STATE.window.buttonType == MouseButton::LEFT && STATE.window.buttonAction == MouseAction::RELEASED;
 }
 
 void Gui::DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos, TextStyle style)
