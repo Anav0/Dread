@@ -195,7 +195,7 @@ public:
             return;
 
         shader->Use();
-        shader->setInt("imageSampler", 0);
+        //shader->setInt("imageSampler", 0);
         shader->setBool("hideAlpha", HIDE_ALPHA);
         shader->setMat4("projection", *projection);
 		shader->setVec2("resolution", STATE.window.screen_size);

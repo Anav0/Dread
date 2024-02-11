@@ -78,6 +78,8 @@ public:
 
         glDeleteShader(vertex);
         glDeleteShader(fragment);
+
+		setInt("imageSampler", 0);
     }
 
 #pragma region MyRegion
