@@ -1,5 +1,6 @@
 #include "WindowManager.h"
 #include "GameState.h"
+#include "Renderer.h"
 
 void WindowManager::onBeginOfTheLoop()
 {
@@ -81,12 +82,19 @@ bool WindowManager::Init()
         static_cast<WindowManager*>(glfwGetWindowUserPointer(w))->ProcessInput();
     };
 
+	auto framebuffer_size_lambda = [](GLFWwindow* w, int width, int height)
+	{
+		glViewport(0, 0, width, height);
+        static_cast<WindowManager*>(glfwGetWindowUserPointer(w))->Resize(width, height);
+		R.UpdateProjection();
+	};
+
     glfwMakeContextCurrent(window);
 
     glfwSetMouseButtonCallback(window, mouse_click_lambda);
     glfwSetCursorPosCallback(window, mouse_move_lambda);
     glfwSetScrollCallback(window, scroll_lambda);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_lambda);
     glfwSetKeyCallback(window, keypress_lambda);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -100,6 +108,12 @@ bool WindowManager::Init()
 bool WindowManager::IsClosing()
 {
     return glfwWindowShouldClose(window);
+}
+
+void WindowManager::Resize(u32 width, u32 height)
+{
+    screen_size.x = width;
+    screen_size.y = height;
 }
 
 void WindowManager::ProcessInput()

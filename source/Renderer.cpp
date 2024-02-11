@@ -5,13 +5,17 @@
 #include <glad/glad.h>
 
 void Renderer::Init() {
-	projection       = glm::perspective(glm::radians(STATE.window.camera.zoom), (f32)STATE.window.screen_size.x / (f32)STATE.window.screen_size.y, 0.1f, 1000.0f);
-	ortho_projection = glm::ortho(0.0f, (f32)STATE.window.screen_size.x, 0.0f, (f32)STATE.window.screen_size.y);
+	UpdateProjection();
 
 	gradient_buffer.Allocate();
 	font_buffer.Allocate();
 	ui_buffer.Allocate();
 	ui_buffer.texture_key = "icons";
+}
+
+void Renderer::UpdateProjection() {
+	projection       = glm::perspective(glm::radians(STATE.window.camera.zoom), (f32)STATE.window.screen_size.x / (f32)STATE.window.screen_size.y, 0.1f, 1000.0f);
+	ortho_projection = glm::ortho(0.0f, (f32)STATE.window.screen_size.x, 0.0f, (f32)STATE.window.screen_size.y);
 }
 
 void Renderer::Update()

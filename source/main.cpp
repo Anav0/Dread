@@ -106,12 +106,9 @@ int main(int argc, char* argv[])
 	PromiseSupport(p2);
 	
 	Rectangle rect{};
-	rect.color = RED;
 	f32 h = 64;
 	rect.transform.position = v3(0, STATE.window.screen_size.y - h, 1);
 	rect.transform.size     = v3(STATE.window.screen_size.x, h, 0);
-	//rect.transform.position = v3(400, 400, 1);
-	//rect.transform.size     = v3(400, 400, 0);
 	rect.transform.scale    = v3(1.0);
 	rect.transform.rotation = 0;
 
@@ -148,11 +145,13 @@ int main(int argc, char* argv[])
                 printf("Nothing hit with mouse ray!\n");
             }
         }
+
 		
 		//------------------------------------------------------------------------
 
 		//DrawUI();
 
+	    rect.transform.position = v3(0, STATE.window.screen_size.y - h, 1);
 		R.gradient_buffer.AddRect(rect);
 
         R.Draw();

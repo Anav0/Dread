@@ -36,6 +36,7 @@ public:
 	void Init();
     void Draw();
     void Update();
+	void UpdateProjection();
 	void Reset();
 
     InstancedMeshBuffer* GetBuffer(std::string mesh_name);

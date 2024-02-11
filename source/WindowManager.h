@@ -10,11 +10,6 @@
 #include "Misc.h"
 #include "TimeManager.h"
 
-inline void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
-
 enum class MouseButton {
     NONE,
     LEFT,
@@ -44,6 +39,7 @@ public:
 
     bool Init();
     bool IsClosing();
+    void Resize(u32 w, u32 h);
     void onMouseClicked(GLFWwindow* window, int button, int action, int mods);
     void onBeginOfTheLoop();
     void ProcessInput();
