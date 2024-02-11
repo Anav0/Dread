@@ -40,13 +40,19 @@ constexpr u16 top_offset = 80;
 
 void DrawTurnUI()
 {
-    UI.Stack(Direction::Horizontal, 10, { GetScreenSize().x - 350, GetScreenSize().y - 125 });
-    	auto initial_date = GetDateStr();
-    	UI.DrawLabel(initial_date, 24);
-		if (UI.DrawIcon(END_TURN_ICON)) {
-			GoToNextPhase();
-		}
+	auto initial_date = GetDateStr();
+	v2 size = TR.GetTextSize(initial_date.c_str(), default_style.font_size);
+	v2 pos;
+	v2 header_size = v2(0, HEADER_H);
+	v2 header_pos  = v2(0, GetScreenSize().y - HEADER_H);
+	CenterChildInParentY(&header_pos, &header_size, &pos, &size);
+    UI.Stack(Direction::Horizontal, 10, { GetScreenSize().x - 265, pos.y });
+    	UI.DrawLabel(initial_date);
     UI.EndLayout();
+
+	if (UI.DrawIcon(END_TURN_ICON, {GetScreenSize().x - 100, pos.y - 45})) {
+		GoToNextPhase();
+	}
 }
 
 void DrawResources()
@@ -182,7 +188,7 @@ void DrawUI() {
 	u32 y = STATE.window.screen_size.y - top_offset - 200;
     constexpr u32 x = 20;
 
-	DrawSupportingCountries();
+	//DrawSupportingCountries();
 	
 	UI.Stack(Direction::Vertical, 100, {x, y});
 		DrawDeliveriesUI();
@@ -190,6 +196,6 @@ void DrawUI() {
 		DrawOblastInfo();
 	UI.EndLayout();
 
-	DrawResources();
+	//DrawResources();
 	DrawTurnUI();
 }

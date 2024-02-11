@@ -14,6 +14,8 @@
 
 class Texture;
 
+constexpr u32 HEADER_H = 64;
+
 enum class Direction {
     Vertical,
     Horizontal,
@@ -30,7 +32,7 @@ constexpr TextStyle default_style {
     96,
     0,
     WHITE,
-    36
+    38
 };
 
 // TODO: move

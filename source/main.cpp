@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 
     RM.LoadRequiredResources();
 
-    u8 size = 36;
+    u8 size = 38;
     TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
     TR.UseFont("oswald.ttf");
 
@@ -106,9 +106,8 @@ int main(int argc, char* argv[])
 	PromiseSupport(p2);
 	
 	Rectangle rect{};
-	f32 h = 64;
-	rect.transform.position = v3(0, STATE.window.screen_size.y - h, 1);
-	rect.transform.size     = v3(STATE.window.screen_size.x, h, 0);
+	rect.transform.position = v3(0, STATE.window.screen_size.y - HEADER_H, 1);
+	rect.transform.size     = v3(STATE.window.screen_size.x, HEADER_H, 0);
 	rect.transform.scale    = v3(1.0);
 	rect.transform.rotation = 0;
 
@@ -149,7 +148,7 @@ int main(int argc, char* argv[])
 		
 		//------------------------------------------------------------------------
 
-	    rect.transform.position = v3(0, STATE.window.screen_size.y - h, 1);
+	    rect.transform.position = v3(0, STATE.window.screen_size.y - HEADER_H, 1);
 		R.gradient_buffer.AddRect(rect);
 
 		DrawUI();
