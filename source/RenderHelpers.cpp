@@ -64,14 +64,16 @@ void DrawResources()
     megaphone_icon = sword_icon;
 
     megaphone_icon.index = MEGAPHONE;
-    sword_icon.index = SWORD;
+    sword_icon.index     = SWORD;
 
-    auto y = STATE.window.screen_size.y - top_offset;
-    auto x = STATE.window.screen_size.x - 600;
+    //auto y = STATE.window.screen_size.y;
+	u32 y = CenterChildInParentY(GetScreenSize().y - HEADER_H, HEADER_H, sword_icon.size.y);
+    auto x = 10;
 
     UI.Stack(Direction::Horizontal, 10, { x, y });
-		UI.DrawIconAndLabel(sword_icon, std::format("Reserve: {}", STATE.reserve));
-		UI.DrawIconAndLabel(megaphone_icon, std::format("Popular support: {}%", STATE.popular_support));
+		UI.DrawIcon(UKRAINE_EMBLEM, { 0, 0 }, {0, -75});
+	    UI.DrawIconAndLabel(sword_icon, std::format("Reserve: {}", STATE.reserve));
+	    UI.DrawIconAndLabel(megaphone_icon, std::format("Popular support: {}%", STATE.popular_support));
     UI.EndLayout();
 }
 
@@ -196,6 +198,6 @@ void DrawUI() {
 		DrawOblastInfo();
 	UI.EndLayout();
 
-	//DrawResources();
+	DrawResources();
 	DrawTurnUI();
 }

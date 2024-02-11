@@ -11,3 +11,8 @@ constexpr AtlasTextureInfo END_TURN_ICON {
     v2(82.0, 82.0),  //Size
     v2(1.0) 		   // Scale
 };
+constexpr AtlasTextureInfo UKRAINE_EMBLEM {
+    v2(0.0, 512.0), //Pos
+    v2(96.0, 134.0),  //Size
+    v2(1.0) 		   // Scale
+};

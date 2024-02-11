@@ -93,8 +93,8 @@ public:
 
 	bool DrawButton(const char* label, v2 pos = { 0, 0 }, ButtonStyle style = DEFAULT_BTN_SYTLE);
 	void DrawLabel(std::string label, u8 max_chars = 0, v2 pos = { 0, 0 }, TextStyle style = default_style, bool use_layout = true);
-	bool DrawIcon(IconParams params, v2 pos = { 0, 0 });
-	bool DrawIcon(AtlasTextureInfo info, v2 pos = { 0, 0 });
+	bool DrawIcon(IconParams params, v2 pos = { 0, 0 }, v2 offset = { 0, 0 });
+	bool DrawIcon(AtlasTextureInfo info, v2 pos = { 0, 0 }, v2 offset = { 0, 0 });
 	void DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos = { 0, 0 }, TextStyle style = default_style);
 };
 

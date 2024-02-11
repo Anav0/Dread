@@ -161,12 +161,14 @@ bool Gui::DrawButton(const char* label, v2 pos, ButtonStyle style)
     return is_mouse_over && STATE.window.buttonType == MouseButton::LEFT && STATE.window.buttonAction == MouseAction::RELEASED;
 }
 
-bool Gui::DrawIcon(AtlasTextureInfo info, v2 pos)
+bool Gui::DrawIcon(AtlasTextureInfo info, v2 pos, v2 offset)
 {
     if (!layouts.empty()) {
         Layout& parent = layouts.back();
         parent.PositionChild(pos, info.size * info.scale);
     }
+
+	pos += offset;
 
     auto atlas = RM.GetTexture("icons");
 
@@ -179,12 +181,13 @@ bool Gui::DrawIcon(AtlasTextureInfo info, v2 pos)
 	return is_mouse_over && STATE.window.buttonType == MouseButton::LEFT && STATE.window.buttonAction == MouseAction::RELEASED;
 }
 
-bool Gui::DrawIcon(IconParams icon_params, v2 pos)
+bool Gui::DrawIcon(IconParams icon_params, v2 pos, v2 offset)
 {
     if (!layouts.empty()) {
         Layout& parent = layouts.back();
         parent.PositionChild(pos, icon_params.size * icon_params.scale);
     }
+	pos += offset;
 
     auto icon_size = icon_params.size;
 

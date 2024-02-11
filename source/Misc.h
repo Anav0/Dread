@@ -102,6 +102,11 @@ inline void CenterChildInParentY(v2* parent_pos, const v2* parent_size, v2* chil
     child_pos->y = (parent_pos->y + parent_size->y / 2.0) - (child_size->y / 2.0);
 }
 
+inline u32 CenterChildInParentY(u32 parent_y, u32 parent_h, u32 child_h)
+{
+    return (parent_y + parent_h / 2.0) - (child_h / 2.0);
+}
+
 inline void CenterChildInParent(v2* parent_pos, const v2* parent_size, v2* child_pos,
     v2* child_size)
 {
