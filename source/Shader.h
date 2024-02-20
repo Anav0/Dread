@@ -67,10 +67,17 @@ public:
         ID = glCreateProgram();
 
         u32 vertex, fragment;
-        Load(ID, vertexPath, GL_VERTEX_SHADER, "VERTEX", vertex);
-        Load(ID, fragmentPath, GL_FRAGMENT_SHADER, "FRAGMENT", fragment);
+        bool v_success = Load(ID, vertexPath, GL_VERTEX_SHADER, "VERTEX", vertex);
+        bool f_success = Load(ID, fragmentPath, GL_FRAGMENT_SHADER, "FRAGMENT", fragment);
 
-        vertex_last_written   = last_write_time(vertexPath);
+        if (!v_success) {
+            printf("ERROR: %s shader failed to compile!\n", vertexPath);
+        }
+        if (!f_success) {
+            printf("ERROR: %s shader failed to compile!\n", fragmentPath);
+        }
+
+        vertex_last_written = last_write_time(vertexPath);
         fragment_last_written = last_write_time(fragmentPath);
 
         glLinkProgram(ID);

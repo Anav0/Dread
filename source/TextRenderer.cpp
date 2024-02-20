@@ -37,7 +37,7 @@ void SeanTextRenderer::BakeFont(std::string font, std::string output_file_name, 
         stbtt_fontinfo info;
 
         if (!stbtt_InitFont(&info, fontBuffer, 0)) {
-            printf("failed\n");
+            printf("ERROR: Failed to initalized font: '%s'\n", font);
         }
 
         int b_w = 0; // Padding
