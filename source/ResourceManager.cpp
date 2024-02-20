@@ -26,19 +26,16 @@ using namespace std::filesystem;
 
 void ResourceManager::LoadRequiredResources()
 {
-    LoadTexture("atlas.png", "atlas", false, true);
     LoadTexture("icons.png", "icons", false, true);
 
-    LoadShader("rekt.vert", "rekt.frag", "rect");
     LoadShader("texture.vert", "texture.frag", "texture");
-    LoadShader("object.vert", "object.frag", "object");
+    LoadShader("gradient.vert", "gradient.frag", "gradient");
+    
+	LoadShader("object.vert", "object.frag", "object");
     LoadShader("debug.vert", "debug.frag", "debug");
     LoadShader("mesh.vert", "mesh.frag", "mesh");
-    LoadShader("line.vert", "line.frag", "line");
-    LoadShader("gradient.vert", "gradient.frag", "gradient");
 
     LoadModel("map/map.obj", "map");
-    LoadModel("sphere/sphere.obj", "sphere");
 }
 
 void ResourceManager::LoadAllResources()
