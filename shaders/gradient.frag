@@ -2,16 +2,18 @@
 
 uniform vec2 resolution;
 
-in vec4 ourColor;
-in vec2 ourSize;
-
-vec4 colorA = vec4(0.8, 0.10, 0.18, 1.0);
-vec4 colorB = vec4(0,0,0, 1.0);
-vec4 colorC = vec4(0.18, 0.26, 0.65, 1.0);
+in vec4 ourColorA;
+in vec4 ourColorB;
+in vec4 ourColorC;
 
 vec2 middle = vec2(0.3, 0.65);
 
 void main() {
+
+	vec4 colorA = ourColorA;
+	vec4 colorB = ourColorB;
+	vec4 colorC = ourColorC;
+
     vec2 st = gl_FragCoord.xy / resolution.xy;
     vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
     

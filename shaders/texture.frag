@@ -16,7 +16,7 @@ void main()
     else {
         vec4 texColor = texture(imageSampler, ourTextureCoords);
         if(hideAlpha && texColor.a < 0.1)
-         discard;
+			discard;
 
         color = texColor * ourColor;
     }
