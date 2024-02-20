@@ -15,6 +15,7 @@
 #include "TextRenderer.h"
 #include "WindowManager.h"
 #include "Weapons.h"
+#include "HotReload.h"
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -69,7 +70,7 @@ int main(int argc, char* argv[])
 
     stbi_set_flip_vertically_on_load(true);
 
-    RM.LoadRequiredResources();
+	GameCode game = LoadGameCode();
 
     u8 size = 38;
     TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);

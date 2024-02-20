@@ -80,3 +80,5 @@ build/Testing
 build/CMakeFiles
 build
 /source/.vs/Dread
+GameCode/x64
+Debug captures
