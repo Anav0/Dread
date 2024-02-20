@@ -5,6 +5,48 @@
 
 GameState STATE;
 
+u32 GameState::GetDataSizeForLayout(std::string name) {
+	if (name == "gradients")
+		return render_data.gradient_rects_n;
+	if (name == "quads")
+		return render_data.texture_rects_n;
+	if (name == "fonts")
+		return render_data.font_rects_n;
+}
+
+void* GameState::GetDataForLayout(std::string name, u32& size) {
+	if (name == "gradients") {
+		if (render_data.gradient_rects_n == 0) {
+			size = 0;
+			return &render_data.gradient_rects;
+		}
+
+		size = render_data.gradient_rects_n * sizeof(render_data.gradient_rects[0]);
+		return &render_data.gradient_rects;
+	}
+	if (name == "quads") {
+		if (render_data.texture_rects_n == 0) {
+			size = 0;
+			return &render_data.texture_rects;
+		}
+
+		size = render_data.texture_rects_n * sizeof(render_data.texture_rects[0]);
+		return &render_data.texture_rects;
+	}
+
+	if (name == "fonts") {
+		if (render_data.font_rects_n == 0) {
+			size = 0;
+			return &render_data.font_rects;
+		}
+
+		size = render_data.font_rects_n * sizeof(render_data.font_rects[0]);
+		return &render_data.font_rects;
+	}
+
+	return nullptr;
+}
+
 Oblast* GetOblast(OblastCode code) {
 	for (GameEntity& e : E.entities) {
 		if (e.type == EntityType::Oblast && e.oblast.code == code) return &e.oblast;
@@ -105,4 +147,10 @@ const char* GetMonth() {
 
 std::string GetYear() {
 	return std::to_string(2022 + STATE.current_turn / 12);
+}
+
+void GameState::Reset() {
+	this->render_data.texture_rects_n  = 0;
+	this->render_data.gradient_rects_n = 0;
+	STATE.turn_changed = false;
 }

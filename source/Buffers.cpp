@@ -63,7 +63,7 @@ void InstancedMeshBuffer::Draw(Shader* shader, m4* projection, Texture* atlas)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     shader->Use();
-    //shader->setInt("imageSampler", 0);
+    shader->setInt("imageSampler", 0);
     shader->setBool("hideAlpha", HIDE_ALPHA);
     shader->setMat4("projection", *projection);
     shader->setMat4("view", STATE.window.camera.GetViewMatrix());
@@ -138,28 +138,6 @@ u32 TexturedQuadBuffer::AddTexturedRect(const AtlasTextureInfo* texture_info, co
     rolling_index += 1;
     return tmp;
 }
-
-//u32 TexturedQuadBuffer::AddRect(v4 tl_color, v4 tr_color, v4 bl_color, v4 br_color)
-//{
-//    assert(rolling_index >= 0);
-//    assert(rolling_index <= MAX_CAPACITY);
-//
-//    this->colors[rolling_index]   = rect.color;
-//    this->matrices[rolling_index] = GetTransformMatrix(rect.transform.position, rect.transform.size, rect.transform.rotation);
-//
-//    int coords_index = rolling_index * 4;
-//
-//    textures_coords[coords_index] = { -1, -1 };
-//    textures_coords[coords_index + 1] = { -1, -1 };
-//    textures_coords[coords_index + 2] = { -1, -1 };
-//    textures_coords[coords_index + 3] = { -1, -1 };
-//
-//    UpdateBufferSection(rolling_index);
-//
-//    const int tmp = rolling_index;
-//    rolling_index += 1;
-//    return tmp;
-//}
 
 u32 TexturedQuadBuffer::AddRect(const Rectangle rect)
 {
@@ -265,4 +243,60 @@ u16 TexturedQuadBuffer::GetCurrentIndex()
 void TexturedQuadBuffer::Reset() {
 	//This should be enough
 	rolling_index = 0;
+}
+
+GLenum BufferElementTypeToOpenGLType(BufferElementType type)
+{
+	switch (type) {
+		case BufferElementType::Float:     return GL_FLOAT;
+		case BufferElementType::VFloat2:   return GL_FLOAT;
+		case BufferElementType::VFloat3:   return GL_FLOAT;
+		case BufferElementType::VFloat4:   return GL_FLOAT;
+		case BufferElementType::Int:       return GL_INT;
+		case BufferElementType::VInt2:     return GL_INT;
+		case BufferElementType::VInt3:     return GL_INT;
+		case BufferElementType::VInt4:     return GL_INT;
+		case BufferElementType::Bool:      return GL_BOOL;
+	}
+	return 0;
+}
+
+u8 GetBufferElementSize(BufferElementType type) {
+	switch (type) {
+		case BufferElementType::Bool: return 1;
+		case BufferElementType::VBool2: return 2;
+		case BufferElementType::VBool3: return 3;
+		case BufferElementType::VBool4: return 4;
+		     
+		case BufferElementType::Float:
+		case BufferElementType::Int: return 4;
+		     
+		case BufferElementType::VFloat2:
+		case BufferElementType::VInt2: return 4*2;
+		     
+		case BufferElementType::VFloat3:
+		case BufferElementType::VInt3: return 4*3;
+		     
+		case BufferElementType::VFloat4:
+		case BufferElementType::VInt4: return 4*4;
+	}
+}
+
+u8 GetBufferElementTypeLength(BufferElementType type) {
+	switch (type) {
+		case BufferElementType::Bool: return 1;
+		case BufferElementType::VBool2: return 2;
+		case BufferElementType::VBool3: return 3;
+		case BufferElementType::VBool4: return 4;
+
+		case BufferElementType::Int: return 1;
+		case BufferElementType::VInt2: return 2;
+		case BufferElementType::VInt3: return 3;
+		case BufferElementType::VInt4: return 4;
+
+		case BufferElementType::Float: return 1;
+		case BufferElementType::VFloat2: return 2;
+		case BufferElementType::VFloat3: return 3;
+		case BufferElementType::VFloat4: return 4;
+	}
 }

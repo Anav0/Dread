@@ -81,6 +81,34 @@ struct SupportPackage {
 	std::vector<Delivery> delivery;
 };
 
+//------------------------------------------------------------------------
+
+struct TextureShaderData {
+	m4 matrices;
+	v2 textures_coords[4];
+	v4 colors;
+};
+
+struct GradientShaderData {
+	m4 matrices;
+	v4 colorA, colorB, colorC;
+};
+
+constexpr u32 MAX_GRADIENT_RECTS = 128;
+constexpr u32 MAX_TEXTURED_RECTS = 2048;
+
+struct RenderData {
+    TextureShaderData  texture_rects [MAX_TEXTURED_RECTS];
+	TextureShaderData  font_rects    [MAX_TEXTURED_RECTS];
+    GradientShaderData gradient_rects[MAX_GRADIENT_RECTS];
+
+    u32 texture_rects_n  = 0;
+    u32 gradient_rects_n = 0;
+	u32 font_rects_n     = 0;
+};
+
+//------------------------------------------------------------------------
+
 struct GameState {
     WindowManager window;
     RenderMode mode = RenderMode::NORMAL;
@@ -101,6 +129,11 @@ struct GameState {
 
 	bool turn_changed = false;
 
+	RenderData render_data;
+
+	void* GetDataForLayout(std::string name, u32& size);
+	u32 GetDataSizeForLayout(std::string name);
+	void Reset();
 };
 
 const char* GetMonth();

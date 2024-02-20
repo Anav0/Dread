@@ -16,8 +16,161 @@
 
 class Mesh;
 class Model;
-class ModelInBuffer;
 class MeshInBuffer;
+
+static constexpr int MAX_CAPACITY = 2048;
+
+enum class BufferElementType {
+	Bool,
+	VBool2,
+	VBool3,
+	VBool4,
+
+	Int,
+	VInt2,
+	VInt3,
+	VInt4,
+
+	Float,
+	VFloat2,
+	VFloat3,
+	VFloat4,
+};
+
+GLenum BufferElementTypeToOpenGLType(BufferElementType type);
+u8 GetBufferElementSize(BufferElementType type);
+u8 GetBufferElementTypeLength(BufferElementType type);
+
+struct BufferElement {
+	BufferElementType type;
+	std::string name;
+	u64         size;
+	u8          length;
+	u64         offset;
+
+	BufferElement(BufferElementType type, std::string name) {
+		this->type = type;
+		this->name = name;
+		size   = GetBufferElementSize(type);
+		length = GetBufferElementTypeLength(type);
+	}
+};
+
+struct BufferLayout {
+	std::vector<BufferElement> elements;
+	u64 size = 0;
+
+    BufferLayout() { }
+	BufferLayout(std::initializer_list<BufferElement> items) : elements(items){
+		CalculateStrideAndTotalSize();
+	}
+
+	void CalculateStrideAndTotalSize() {
+		u64 offset = 0;
+		for (BufferElement& el : elements) {
+			el.offset  = offset;
+			this->size += el.size;
+			offset     += el.size;
+		}
+	}
+};
+
+
+class UniversalBuffer {
+    public:
+	std::string  buffer_name, shader_name, texture_name;
+        BufferLayout layout;
+
+        UniversalBuffer() {}
+        UniversalBuffer(std::string buffer_name, std::string shader_name, std::string texture_name, BufferLayout layout)
+        {
+			this->buffer_name  = buffer_name;
+			this->shader_name  = shader_name;
+			this->texture_name = texture_name;
+			this->layout = layout;
+        }
+
+        virtual void SetData(void* data, u32 size) {};
+        virtual void Bind() {};
+        virtual void Unbind() {};
+        virtual BufferLayout& GetLayout() = 0;
+};
+
+class OpenGlBuffer : public UniversalBuffer {
+    unsigned int VAO, VBO, EBO, instanced_VBO;
+
+public:
+	OpenGlBuffer(u32 buffer_size, std::string buffer_name, std::string shader_name, std::string texture_name, BufferLayout layout) : UniversalBuffer(buffer_name, shader_name, texture_name, layout) { 
+
+		constexpr f32 vertices[] = {
+			0.5f, 0.5f, 0.0f, // top right
+			0.5f, -0.5f, 0.0f, // bottom right
+			-0.5f, -0.5f, 0.0f, // bottom left
+			-0.5f, 0.5f, 0.0f // top left
+		};
+
+		constexpr u32 indices[] = {
+			// note that we start from 0!
+			0, 1, 3, // first triangle
+			1, 2, 3 // second triangle
+		};
+
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+		glGenBuffers(1, &EBO);
+		glGenBuffers(1, &instanced_VBO);
+
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
+		glBufferData(GL_ARRAY_BUFFER, buffer_size, NULL, GL_DYNAMIC_DRAW);
+
+		u8 position = 3;
+		for (BufferElement& el : layout.elements) {
+			GLenum gl_type = BufferElementTypeToOpenGLType(el.type);
+			printf("glEnableVertexAttribArray(%i)\n", position);
+			printf("glVertexAttribPointer(%i, %i, %i, GL_FALSE, %u, (void*)%u);\n", position, el.length, gl_type, layout.size, el.offset);
+			printf("glVertexAttribDivisor(%i, 1)\n", position);
+			printf("\n");
+			
+			glEnableVertexAttribArray(position);
+			glVertexAttribPointer(position, el.length, gl_type, GL_FALSE, layout.size, (void*)el.offset);
+			glVertexAttribDivisor(position, 1);
+			position++;
+		}
+
+		Unbind();
+	}
+
+	virtual BufferLayout& GetLayout() {
+		return layout;
+	}
+
+	virtual void SetData(void* data, u32 size) {
+		Bind();
+		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+		Unbind();
+	};
+
+	virtual void Bind() {
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
+	};
+
+	virtual void Unbind() {
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	};
+
+};
+
+//------------------------------------------------------------------------
 
 class InstancedMeshBuffer {
 
@@ -93,9 +246,6 @@ public:
     MeshInBuffer AddMesh(v3 position, v3 size, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f);
     MeshInBuffer AddMesh(v3 position, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f);
 };
-
-// TODO: change to std::vector
-static constexpr int MAX_CAPACITY = 2048;
 
 class TexturedQuadBuffer {
     unsigned int VAO, VBO, EBO, instanced_VBO;
@@ -193,7 +343,7 @@ public:
             return;
 
         shader->Use();
-        //shader->setInt("imageSampler", 0);
+        shader->setInt("imageSampler", 0);
         shader->setBool("hideAlpha", HIDE_ALPHA);
         shader->setMat4("projection", *projection);
 		shader->setVec2("resolution", STATE.window.screen_size);
