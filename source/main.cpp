@@ -144,9 +144,10 @@ int main(int argc, char* argv[])
 		
 		//------------------------------------------------------------------------
 
-		R.gradient_buffer.AddQuad( { 0, STATE.window.screen_size.y - HEADER_H }, {STATE.window.screen_size.x, HEADER_H}, WHITE);
-
+		//R.gradient_buffer.AddQuad( { 0, STATE.window.screen_size.y - HEADER_H }, {STATE.window.screen_size.x, HEADER_H}, WHITE);
 		DrawUI();
+
+		R.Flush();
 
         R.Draw();
 

@@ -66,7 +66,6 @@ void DrawResources()
     megaphone_icon.index = MEGAPHONE;
     sword_icon.index     = SWORD;
 
-    //auto y = STATE.window.screen_size.y;
 	u32 y = CenterChildInParentY(GetScreenSize().y - HEADER_H, HEADER_H, sword_icon.size.y);
     auto x = 10;
 
@@ -190,7 +189,7 @@ void DrawUI() {
 	u32 y = STATE.window.screen_size.y - top_offset - 200;
     constexpr u32 x = 20;
 
-	//DrawSupportingCountries();
+	DrawSupportingCountries();
 	
 	UI.Stack(Direction::Vertical, 100, {x, y});
 		DrawDeliveriesUI();

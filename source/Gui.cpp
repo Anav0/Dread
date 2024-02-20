@@ -71,14 +71,13 @@ void Gui::EndLayout()
 
 //------------------------------------------------------------------------
 
-void Gui::DrawLabel(std::string label, u8 max_chars, v2 pos, TextStyle style, bool use_layout)
+void Gui::DrawLabel(std::string label, v2 pos, TextStyle style, bool use_layout)
 {
-    FontInfo font = TR.GetCurrentFont(style.font_size);
-    Texture* font_atlas = RM.GetTexture(font.path);
+	assert(pos.x >= 0.0);
+	assert(pos.y >= 0.0);
 
-    if (max_chars < label.size()) {
-        max_chars = label.size();
-    }
+    FontInfo font       = TR.GetCurrentFont(style.font_size);
+    Texture* font_atlas = RM.GetTexture(font.path);
 
     if (font_atlas == nullptr)
         font_atlas = RM.LoadTexture(font.path, font.path, true, true);
@@ -93,13 +92,8 @@ void Gui::DrawLabel(std::string label, u8 max_chars, v2 pos, TextStyle style, bo
     f32 base_y = pos.y;
 
     v4 color_to_use;
-    for (size_t i = 0; i < max_chars; i++) {
-        char c = ' ';
+    for (char& c : label) {
         color_to_use = style.color;
-
-        if (i < label.size()) {
-            c = label[i];
-        }
 
         if (c == ' ') {
             color_to_use = TRANSPARENT;
@@ -109,9 +103,9 @@ void Gui::DrawLabel(std::string label, u8 max_chars, v2 pos, TextStyle style, bo
 
         AtlasTextureInfo texture_info;
         texture_info.position = v2(glyph.x, glyph.y);
-        texture_info.scale = v2(1.0f, 1.0f);
+        texture_info.scale = v2(1.0f);
         texture_info.size = v2(glyph.w, glyph.h);
-        R.font_buffer.AddTexturedRect(&texture_info, font_atlas, pos, texture_info.size, 0, color_to_use);
+        R.font_buffer.AddTexturedQuad(&texture_info, font_atlas, pos, texture_info.size, 0, color_to_use);
 
         // pos.x += glyph.advance;
         pos.x += glyph.w;
@@ -152,7 +146,7 @@ bool Gui::DrawButton(const char* label, v2 pos, ButtonStyle style)
     text_style.font_size = style.font_size;
     R.ui_buffer.AddQuad(position, size, bg_color);
 
-    Gui::DrawLabel(label, 0, pos, text_style, false);
+    Gui::DrawLabel(label, pos, text_style, false);
 
     return is_mouse_over && STATE.window.buttonType == MouseButton::LEFT && STATE.window.buttonAction == MouseAction::RELEASED;
 }
@@ -168,7 +162,7 @@ bool Gui::DrawIcon(AtlasTextureInfo info, v2 pos, v2 offset)
 
     auto atlas = RM.GetTexture("icons");
 
-    R.ui_buffer.AddTexturedRect(&info, atlas, pos, info.size);
+    R.ui_buffer.AddTexturedQuad(&info, atlas, pos, info.size);
 
 	auto mouse_x = STATE.window.mouse_x;
     auto mouse_y = STATE.window.mouse_y;
@@ -191,7 +185,7 @@ bool Gui::DrawIcon(IconParams icon_params, v2 pos, v2 offset)
     auto info = GetTextureInfoByIndex(icon_params.index, icon_size, "icons");
     info.scale = v2(icon_params.scale);
 
-    R.ui_buffer.AddTexturedRect(&info, atlas, pos, icon_size);
+    R.ui_buffer.AddTexturedQuad(&info, atlas, pos, icon_size);
 
 	auto mouse_x = STATE.window.mouse_x;
     auto mouse_y = STATE.window.mouse_y;
@@ -202,6 +196,9 @@ bool Gui::DrawIcon(IconParams icon_params, v2 pos, v2 offset)
 
 void Gui::DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos, TextStyle style)
 {
+	assert(pos.x >= 0.0);
+	assert(pos.y >= 0.0);
+
     if (!layouts.empty()) {
         Layout& parent = layouts.back();
         parent.PositionChild(pos, icon_params.size + TR.GetTextSize(label.c_str(), style.font_size));
@@ -213,12 +210,12 @@ void Gui::DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos, Te
     auto info = GetTextureInfoByIndex(icon_params.index, icon_size, "icons");
     info.scale = v2(icon_params.scale);
 
-    R.ui_buffer.AddTexturedRect(&info, atlas, pos, icon_size);
+    R.ui_buffer.AddTexturedQuad(&info, atlas, pos, icon_size);
 
     pos.x += icon_size.x * icon_params.scale + icon_params.padding;
     pos.y += (icon_size.y * icon_params.scale) / 2;
 
-    Gui::DrawLabel(label, 0, pos, style, false);
+    DrawLabel(label, pos, style, false);
 }
 
 //------------------------------------------------------------------------

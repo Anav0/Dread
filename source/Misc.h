@@ -87,7 +87,6 @@ inline m4 GetTransformMatrix(v3 position, f32 rotate = 0.0, v3 scale = v3(1.0, 1
 
 struct AtlasTextureInfo {
     v2 position, size, scale;
-    const char* uniqueId;
 };
 
 inline void CenterChildInParentX(v2* parent_pos, const v2* parent_size, v2* child_pos,

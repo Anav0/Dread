@@ -7,9 +7,32 @@
 void Renderer::Init() {
 	UpdateProjection();
 
-	gradient_buffer.Allocate();
-	font_buffer.Allocate();
-	ui_buffer.Allocate();
+	BufferLayout textured_quad_layout {
+		{ BufferElementType::VFloat4, "model"},
+		{ BufferElementType::VFloat4, "model1"},
+		{ BufferElementType::VFloat4, "model2"},
+		{ BufferElementType::VFloat4, "model3"},
+		{ BufferElementType::VFloat2, "textureCoords"},
+		{ BufferElementType::VFloat2, "textureCoords1"},
+		{ BufferElementType::VFloat2, "textureCoords2"},
+		{ BufferElementType::VFloat2, "textureCoords3"},
+		{ BufferElementType::VFloat4, "color"},
+	};
+
+	BufferLayout gradient_layout {
+		{ BufferElementType::VFloat4, "model"},
+		{ BufferElementType::VFloat4, "model1"},
+		{ BufferElementType::VFloat4, "model2"},
+		{ BufferElementType::VFloat4, "model3"},
+		{ BufferElementType::VFloat4, "colorA"},
+		{ BufferElementType::VFloat4, "colorB"},
+		{ BufferElementType::VFloat4, "colorC"},
+	};
+
+	gradient_buffer.Allocate(MAX_CAPACITY, gradient_layout);
+	font_buffer.Allocate(MAX_CAPACITY, textured_quad_layout);
+	ui_buffer.Allocate(MAX_CAPACITY, textured_quad_layout);
+
 	ui_buffer.texture_key = "icons";
 }
 
@@ -44,10 +67,16 @@ void Renderer::Draw()
     }
 }
 
+void Renderer::Flush() {
+	gradient_buffer.Flush();
+	ui_buffer.Flush();
+	font_buffer.Flush();
+}
+
 void Renderer::Reset() {
+	gradient_buffer.Reset();
 	ui_buffer.Reset();
 	font_buffer.Reset();
-	gradient_buffer.Reset();
 }
 
 InstancedMeshBuffer* Renderer::CreateBuffer(Mesh mesh)

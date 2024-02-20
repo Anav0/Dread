@@ -22,28 +22,24 @@ enum class Direction {
 };
 
 struct TextStyle {
-    u16 ch_max_width = 0;
-    u16 ch_max_height = 0;
     v4 color = WHITE;
-    u8 font_size = 36;
+    u8 font_size = 38;
 };
 
 constexpr TextStyle default_style {
-    96,
-    0,
     WHITE,
     38
 };
 
 // TODO: move
-constexpr u16 SWORD = 12;
+constexpr u16 SWORD     = 12;
 constexpr u16 MEGAPHONE = 5;
 
 struct IconParams {
     u16 index;
     v2 size;
-    f32 scale;
-    f32 padding;
+    f32 scale   = 1.0f;
+    f32 padding = 0.0f;
 };
 
 enum class LayoutType {
@@ -71,7 +67,7 @@ struct Layout {
 struct ButtonStyle {
 	v4 bg_color;
 	v4 fg_color;
-	v2 padding;
+	v2 padding = v2(0);
 	u8 font_size;
 };
 
@@ -92,7 +88,7 @@ public:
 	void Reset();
 
 	bool DrawButton(const char* label, v2 pos = { 0, 0 }, ButtonStyle style = DEFAULT_BTN_SYTLE);
-	void DrawLabel(std::string label, u8 max_chars = 0, v2 pos = { 0, 0 }, TextStyle style = default_style, bool use_layout = true);
+	void DrawLabel(std::string label, v2 pos = { 0, 0 }, TextStyle style = default_style, bool use_layout = true);
 	bool DrawIcon(IconParams params, v2 pos = { 0, 0 }, v2 offset = { 0, 0 });
 	bool DrawIcon(AtlasTextureInfo info, v2 pos = { 0, 0 }, v2 offset = { 0, 0 });
 	void DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos = { 0, 0 }, TextStyle style = default_style);

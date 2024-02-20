@@ -35,6 +35,7 @@ public:
 
 	void Init();
     void Draw();
+	void Flush();
     void Update();
 	void UpdateProjection();
 	void Reset();
