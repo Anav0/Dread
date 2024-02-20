@@ -72,6 +72,8 @@ int main(int argc, char* argv[])
 
 	GameCode game = LoadGameCode();
 
+	RM.LoadRequiredResources();
+
     u8 size = 38;
     TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
     TR.UseFont("oswald.ttf");
@@ -106,51 +108,43 @@ int main(int argc, char* argv[])
 
 	PromiseSupport(p2);
 	
-	Rectangle rect{};
-	rect.transform.position = v3(0, STATE.window.screen_size.y - HEADER_H, 1);
-	rect.transform.size     = v3(STATE.window.screen_size.x, HEADER_H, 0);
-	rect.transform.scale    = v3(1.0);
-	rect.transform.rotation = 0;
-
-    while (!STATE.window.IsClosing()) {
-        STATE.window.onBeginOfTheLoop();
-        glfwPollEvents();
+	while (!STATE.window.IsClosing()) {
+		STATE.window.onBeginOfTheLoop();
+		glfwPollEvents();
 		
 		//------------------------------------------------------------------------
 
 		RM.HotReloadShaders();
 
-        E.Update();
-        R.Update();
+		E.Update();
+		R.Update();
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (STATE.window.buttonAction == MouseAction::PRESSED && STATE.window.buttonType == MouseButton::LEFT) {
-            Ray ray = GetRayFromEyes(&R.projection);
-#if DEBUG_LINES
-            lines.push_back(Line(ray.position, ray.position + ray.direction * 1000.0f));
-#endif
-            Collision c = CheckRayCollision(ray, R.projection);
-            if (c.hit_something) {
-                switch (c.what_was_hit) {
-                case EntityType::BoundingBox:
-                    auto entity = E.GetEntityById(c.box.child_id);
-                    if (entity->type == EntityType::Oblast) {
-						STATE.selected_oblast = entity->oblast.code;
-                    }
-                    break;
-                }
-            } else {
-                printf("Nothing hit with mouse ray!\n");
-            }
-        }
-
+		if (STATE.window.buttonAction == MouseAction::PRESSED && STATE.window.buttonType == MouseButton::LEFT) {
+			Ray ray = GetRayFromEyes(&R.projection);
+			#if DEBUG_LINES
+			lines.push_back(Line(ray.position, ray.position + ray.direction * 1000.0f));
+			#endif
+			Collision c = CheckRayCollision(ray, R.projection);
+			if (c.hit_something) {
+				switch (c.what_was_hit) {
+					case EntityType::BoundingBox:
+						auto entity = E.GetEntityById(c.box.child_id);
+						if (entity->type == EntityType::Oblast) {
+							STATE.selected_oblast = entity->oblast.code;
+						}
+						break;
+				}
+			} else {
+				printf("Nothing hit with mouse ray!\n");
+			}
+		}
 		
 		//------------------------------------------------------------------------
 
-	    rect.transform.position = v3(0, STATE.window.screen_size.y - HEADER_H, 1);
-		R.gradient_buffer.AddRect(rect);
+		R.gradient_buffer.AddQuad( { 0, STATE.window.screen_size.y - HEADER_H }, {STATE.window.screen_size.x, HEADER_H}, WHITE);
 
 		DrawUI();
 

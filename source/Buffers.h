@@ -266,7 +266,7 @@ public:
 
     u16 GetCurrentIndex();
 
-    u32 AddRect(const Rectangle rect);
+	u32 AddQuad(const v2 position, const v2 size, const v4 color, float rotation = 0);
 
     u32 AddTexturedRect(const AtlasTextureInfo* texture_info, const Texture* atlas, const v2 pos, const v2 size = { 0, 0 },
         const float rotation = 0, v4 color = { 1.0, 1.0, 1.0, 1.0 });

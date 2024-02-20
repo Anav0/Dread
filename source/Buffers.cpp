@@ -139,13 +139,13 @@ u32 TexturedQuadBuffer::AddTexturedRect(const AtlasTextureInfo* texture_info, co
     return tmp;
 }
 
-u32 TexturedQuadBuffer::AddRect(const Rectangle rect)
+u32 TexturedQuadBuffer::AddQuad(const v2 position, const v2 size, const v4 color, float rotation)
 {
     assert(rolling_index >= 0);
     assert(rolling_index <= MAX_CAPACITY);
 
-    this->colors[rolling_index]   = rect.color;
-    this->matrices[rolling_index] = GetTransformMatrix(rect.transform.position, rect.transform.size, rect.transform.rotation);
+    this->colors[rolling_index]   = color;
+    this->matrices[rolling_index] = GetTransformMatrix(position, size, rotation);
 
     int coords_index = rolling_index * 4;
 

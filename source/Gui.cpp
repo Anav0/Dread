@@ -129,32 +129,28 @@ bool Gui::DrawButton(const char* label, v2 pos, ButtonStyle style)
     u8 padding_x = style.padding.x;
     u8 padding_y = style.padding.y;
 
-    Transform transform {};
-    transform.size = v3(text_size.x + padding_x, text_size.y + padding_y, 0.0);
-    transform.scale = v3(1.0);
-    transform.rotation = 0.0;
+    v2 size = v2(text_size.x + padding_x, text_size.y + padding_y);
+    f32 rotation = 0.0;
 
     if (!layouts.empty()) {
         Layout& parent = layouts.back();
-        parent.PositionChild(pos, transform.size);
+        parent.PositionChild(pos, size);
     }
-    transform.position = v3(pos.x, pos.y, 0.0);
+    v2 position = v2(pos.x, pos.y);
 
     v4 bg_color = style.bg_color;
-    bool is_mouse_over = isPointInRect(transform.position, transform.size, mouse_x, mouse_y);
+    bool is_mouse_over = isPointInRect(position, size, mouse_x, mouse_y);
     if (is_mouse_over) {
         bg_color = YELLOW;
     }
 
-    Rectangle rect = Rectangle(transform, bg_color);
-
-    auto parent_size = v2(transform.size);
-    auto parent_pos = v2(transform.position);
+    auto parent_size = v2(size);
+    auto parent_pos  = v2(position);
 
     CenterChildInParent(&parent_pos, &parent_size, &pos, &text_size);
     TextStyle text_style = default_style;
     text_style.font_size = style.font_size;
-    R.ui_buffer.AddRect(rect);
+    R.ui_buffer.AddQuad(position, size, bg_color);
 
     Gui::DrawLabel(label, 0, pos, text_style, false);
 
