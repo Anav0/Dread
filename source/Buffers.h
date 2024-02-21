@@ -19,7 +19,7 @@ class Mesh;
 class Model;
 class MeshInBuffer;
 
-static constexpr int MAX_CAPACITY = 2048;
+static constexpr int MAX_CAPACITY = 512;
 
 enum class BufferElementType {
 	Bool,

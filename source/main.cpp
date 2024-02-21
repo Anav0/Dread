@@ -135,6 +135,14 @@ int main(int argc, char* argv[])
 	header_gradient.colors[0] = RED;
 	header_gradient.colors[1] = BLACK;
 	header_gradient.colors[2] = YELLOW;
+
+
+	Gradient card_gradient{};
+	card_gradient.gradient_type = GradientType::Radial;
+	card_gradient.middle = v2(0.5, 0.5);
+	card_gradient.colors[0] = RED;
+	card_gradient.colors[1] = YELLOW;
+	card_gradient.colors[2] = BLUE;
 	
 	while (!STATE.window.IsClosing()) {
 		STATE.window.onBeginOfTheLoop();
@@ -173,6 +181,9 @@ int main(int argc, char* argv[])
 		//------------------------------------------------------------------------
 
 		R.gradient_buffer.AddGradient( { 0, STATE.window.screen_size.y - HEADER_H }, {STATE.window.screen_size.x, HEADER_H}, header_gradient);
+
+		R.gradient_buffer.AddGradient( { 50, 50 }, {260, 130}, card_gradient);
+
 		DrawUI();
 
 		R.Flush();

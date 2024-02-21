@@ -31,7 +31,6 @@ void Renderer::Init() {
 		{ BufferElementType::VFloat4, "color_1"},
 		{ BufferElementType::VFloat4, "color_2"},
 		{ BufferElementType::VFloat4, "color_3"},
-		{ BufferElementType::VFloat4, "color_4"},
 	};
 
 	gradient_buffer.Allocate(MAX_CAPACITY, gradient_layout);
