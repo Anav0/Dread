@@ -25,7 +25,7 @@ public:
 
 	TexturedQuadBuffer font_buffer;
 	TexturedQuadBuffer ui_buffer;
-	TexturedQuadBuffer gradient_buffer;
+	GradientBuffer     gradient_buffer;
 
     m4 projection;
     m4 ortho_projection;

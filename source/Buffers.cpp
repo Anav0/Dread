@@ -308,3 +308,104 @@ void TexturedQuadBuffer::Reset() {
 	//This should be enough
 	rolling_index = 0;
 }
+
+u32 GradientBuffer::AddGradient(const v2 pos, const v2 size, const Gradient gradient)
+{
+    assert(rolling_index >= 0);
+    assert(rolling_index+1 <= MAX_CAPACITY);
+		
+	GradientBufferElement el { };
+
+    el.matrices = GetTransformMatrix(pos, size, 0);
+    el.colorA = gradient.colorA;
+	el.colorB = gradient.colorB;
+	el.colorC = gradient.colorC;
+
+	elements[rolling_index] = el;
+
+    const int tmp = rolling_index;
+    rolling_index += 1;
+    return tmp;
+}
+
+void GradientBuffer::Allocate(u32 buffer_size, BufferLayout layout)
+{
+	constexpr f32 vertices[] = {
+		0.5f, 0.5f, 0.0f, // top right
+		0.5f, -0.5f, 0.0f, // bottom right
+		-0.5f, -0.5f, 0.0f, // bottom left
+		-0.5f, 0.5f, 0.0f // top left
+	};
+
+	constexpr u32 indices[] = {
+		// note that we start from 0!
+		0, 1, 3, // first triangle
+		1, 2, 3 // second triangle
+	};
+
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+	glGenBuffers(1, &instanced_VBO);
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		
+	glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
+	glBufferData(GL_ARRAY_BUFFER, buffer_size * sizeof(GradientBufferElement), NULL, GL_DYNAMIC_DRAW);
+
+	u8 position = 3;
+	for (BufferElement& el : layout.elements) {
+		GLenum gl_type = BufferElementTypeToOpenGLType(el.type);
+		printf("glEnableVertexAttribArray(%i)\n", position);
+		printf("glVertexAttribPointer(%i, %i, %i, GL_FALSE, %u, (void*)%u);\n", position, el.length, gl_type, layout.size, el.offset);
+		printf("glVertexAttribDivisor(%i, 1)\n", position);
+		printf("\n");
+			
+		glEnableVertexAttribArray(position);
+		glVertexAttribPointer(position, el.length, gl_type, GL_FALSE, layout.size, (void*)el.offset);
+		glVertexAttribDivisor(position, 1);
+		position++;
+	}
+
+	glBindVertexArray(0);
+}
+
+void GradientBuffer::Flush() { 
+	if (rolling_index == 0) return;
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
+
+	u64 size = rolling_index * sizeof(GradientBufferElement);
+	
+	assert(size > 0);
+
+	glBufferSubData(GL_ARRAY_BUFFER, 0, size, &elements[0]);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+void GradientBuffer::Draw(Shader* shader, m4* projection)
+{
+	if (rolling_index == 0) return;
+
+	shader->Use();
+	shader->setMat4("projection", *projection);
+	shader->setVec2("resolution", STATE.window.screen_size);
+
+	glBindVertexArray(VAO);
+	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, rolling_index);
+	glBindVertexArray(0);
+}
+
+void GradientBuffer::Reset() {
+	//This should be enough
+	rolling_index = 0;
+}

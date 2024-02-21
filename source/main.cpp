@@ -107,6 +107,11 @@ int main(int argc, char* argv[])
 	p2.delivery.push_back( { 5, GetT72() });
 
 	PromiseSupport(p2);
+
+	Gradient header_gradient{};
+	header_gradient.colorA = RED;
+	header_gradient.colorB = BLACK;
+	header_gradient.colorC = YELLOW;
 	
 	while (!STATE.window.IsClosing()) {
 		STATE.window.onBeginOfTheLoop();
@@ -144,7 +149,7 @@ int main(int argc, char* argv[])
 		
 		//------------------------------------------------------------------------
 
-		//R.gradient_buffer.AddQuad( { 0, STATE.window.screen_size.y - HEADER_H }, {STATE.window.screen_size.x, HEADER_H}, WHITE);
+		R.gradient_buffer.AddGradient( { 0, STATE.window.screen_size.y - HEADER_H }, {STATE.window.screen_size.x, HEADER_H}, header_gradient);
 		DrawUI();
 
 		R.Flush();

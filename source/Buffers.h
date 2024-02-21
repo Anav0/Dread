@@ -152,9 +152,33 @@ public:
     MeshInBuffer AddMesh(v3 position, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f);
 };
 
+struct GradientBufferElement {
+	m4 matrices;
+    v4 colorA, colorB, colorC;
+};
+
+struct Gradient {
+	v4 colorA; v4 colorB; v4 colorC;
+};
+
+class GradientBuffer {
+    unsigned int VAO, VBO, EBO, instanced_VBO;
+
+	GradientBufferElement elements[MAX_CAPACITY];
+
+public:
+    u16 rolling_index = 0;
+
+    void Allocate(u32 buffer_size, BufferLayout);
+	void Flush();
+	void Draw(Shader* shader, m4* projection);
+	void Reset();
+	
+	u32 AddGradient(const v2 pos, const v2 size, const Gradient gradient);
+};
+
 struct TexturedQuadBufferElement {
 	m4 matrices;
-	//Texture coords for each vertex
 	v2 textures_coords[4];
     v4 color;
 };
@@ -165,9 +189,7 @@ class TexturedQuadBuffer {
 	TexturedQuadBufferElement elements[MAX_CAPACITY];
 
 public:
-    // TODO: make better.
     std::string texture_key;
-	//TODO: make private
     u16 rolling_index = 0;
 
     void Allocate(u32 buffer_size, BufferLayout);
@@ -175,10 +197,7 @@ public:
 	void Draw(Shader* shader, m4* projection);
 	void Reset();
 	
-	//------------------------------------------------------------------------
-
 	u32 AddQuad(const v2 position, const v2 size, const v4 color, float rotation = 0);
-
     u32 AddTexturedQuad(const AtlasTextureInfo* texture_info, const Texture* atlas, const v2 pos, const v2 size = { 0, 0 },
         const float rotation = 0, v4 color = WHITE);
 
