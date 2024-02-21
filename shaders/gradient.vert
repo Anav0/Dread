@@ -10,7 +10,7 @@ uniform mat4 projection;
 
 out vec4 ourColors[4];
 out vec2 ourMiddle;
-out int ourGradientType;
+flat out int ourGradientType;
 
 void main()
 {

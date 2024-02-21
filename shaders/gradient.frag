@@ -1,15 +1,19 @@
+#version 420 core
+
 #define PI 3.14159265359
 
 uniform vec2 resolution;
 
 in vec4 ourColors[4];
 in vec4 ourMiddle;
-in int ourGradientType;
+flat in int ourGradientType;
+
+out vec4 myOutputColor;
 
 void radial(vec2 st, vec4 bg, vec4 radial, vec2 pos, float factor = 1.0) {
 	float pct = distance(st, pos) * factor;
 
-	gl_FragColor = mix(bg, radial, pct);
+	myOutputColor = mix(bg, radial, pct);
 }
 
 void three_color(vec2 st) {
@@ -33,18 +37,19 @@ void three_color(vec2 st) {
     if(v > middle_l && v < middle_h)
         color = ourColors[1];
     
-    gl_FragColor = color;
+    myOutputColor = color;
 }
 
 void main() {
     vec2 st = gl_FragCoord.xy / resolution.xy;
 
-	if (ourGradientType == 0) {
-		radial(st, ourColors[0], ourColors[1], vec2(0.5, 0.5), 1.2);
-	}
-
-	if (ourGradientType == 1) {
-		three_color(st);
+	switch (ourGradientType) {
+		case 0:
+			radial(st, ourColors[0], ourColors[1], vec2(0.5, 0.5), 1.35);
+			break;
+		case 1:
+			three_color(st);
+			break;
 	}
    
 }
