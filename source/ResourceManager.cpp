@@ -236,10 +236,10 @@ Shader* ResourceManager::LoadShader(std::string vs, std::string fs, const std::s
     if (!gs.empty())
         gs_path = ResourceManager::SHADERS_PATH + gs;
 
-    assert(!loaded_shaders.contains(resource_key));
     if (loaded_shaders.contains(resource_key)) {
         std::cout << "ERROR::SHADER: Shader with such resource key already exists" << std::endl;
         assert(false);
+        return nullptr;
     }
 
     Shader shader = *new Shader(vs_path.c_str(), fs_path.c_str());

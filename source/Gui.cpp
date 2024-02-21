@@ -96,7 +96,7 @@ void Gui::DrawLabel(std::string label, v2 pos, TextStyle style, bool use_layout)
         color_to_use = style.color;
 
         if (c == ' ') {
-            color_to_use = TRANSPARENT;
+            color_to_use = TRANS;
         }
 
         GlyphInfo glyph = font.glyphs[c];
@@ -133,7 +133,8 @@ bool Gui::DrawButton(const char* label, v2 pos, ButtonStyle style)
     v2 position = v2(pos.x, pos.y);
 
     v4 bg_color = style.bg_color;
-    bool is_mouse_over = isPointInRect(position, size, mouse_x, mouse_y);
+    bool is_mouse_over = isPointInRect(position, size, mouse_x, 
+                                       mouse_y);
     if (is_mouse_over) {
         bg_color = YELLOW;
     }

@@ -1,7 +1,7 @@
+#pragma once
+
 #ifndef EntityManager_H
 #define EntityManager_H
-
-#pragma once
 
 #include "Base.h"
 #include "BoundingBox.h"
@@ -16,7 +16,6 @@ struct GameEntity {
     bool is_dirty;
 
     union {
-        Rectangle rect;
         BoundingBox box;
         Oblast oblast;
     };

@@ -287,5 +287,6 @@ void AddBoundingBox(MeshInBuffer mesh, ID child_id)
     v3 max = TransformV3({ max_x, max_y, max_z }, mesh.GetMatrix());
 
     auto box = BoundingBox(min, max, child_id);
+    box.Init();
     R.boxes.push_back(box);
 }

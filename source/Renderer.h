@@ -1,7 +1,7 @@
+#pragma once
+
 #ifndef Renderer_H
 #define Renderer_H
-
-#pragma once
 
 #include "BoundingBox.h"
 #include "Buffers.h"
@@ -9,7 +9,6 @@
 
 #include <array>
 
-class Texture;
 class Shader;
 
 typedef int ID;

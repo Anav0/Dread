@@ -49,7 +49,7 @@ typedef glm::mat2 m2;
 #define TB(n)  (((U64)(n)) << 40)
 
 //TODO: move to colors.h
-constexpr v4 TRANSPARENT   = v4(0.0f, 0.00f, 0.0f, 0.0f);
+constexpr v4 TRANS   = v4(0.0f, 0.00f, 0.0f, 0.0f);
 
 constexpr v4 RUSSIAN_COLOR = v4(0.96f, 0.34f, 0.38f, 1.0f);
 constexpr v4 UKRAINE_COLOR = v4(0.16f, 0.41f, 0.75f, 1.0f);

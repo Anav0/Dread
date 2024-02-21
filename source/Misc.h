@@ -3,6 +3,8 @@
 #include "Constants.h"
 #include <glm/ext/matrix_transform.hpp>
 
+#include <vector>
+
 inline void convertToOpenglCoordSystem(f64 x, f64 y, f64* ox, f64* oy, int maxWidth, int maxHeight)
 {
     *ox = 2 * x / maxWidth - 1;

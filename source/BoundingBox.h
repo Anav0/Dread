@@ -23,10 +23,12 @@ public:
 
     ID child_id;
 
-    BoundingBox()
+    void Init() 
     {
         this->shader = RM.GetShader("debug");
     }
+
+    BoundingBox() { }
 
     BoundingBox(v3 min, v3 max, ID child_id)
     {

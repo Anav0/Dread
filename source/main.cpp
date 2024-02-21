@@ -16,6 +16,28 @@
 #include "WindowManager.h"
 #include "Weapons.h"
 #include "HotReload.h"
+#include "Atlas.h"
+
+#include "EntityManager.cpp"
+#include "GameState.cpp"
+#include "Animator.cpp"
+#include "Gui.cpp"
+#include "Renderer.cpp"
+#include "RenderHelpers.cpp"
+#include "ResourceManager.cpp"
+#include "TextRenderer.cpp"
+#include "Texture.cpp"
+#include "WindowManager.cpp"
+#include "BoundingBox.cpp"
+#include "Buffers.cpp"
+#include "Collision.cpp"
+#include "Entities.cpp"
+#include "HotReload.cpp"
+#include "Line.cpp"
+#include "Mesh.cpp"
+#include "Model.cpp"
+#include "Mouse.cpp"
+#include "glad.c"
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -24,8 +46,6 @@
 #include "stb_image.h"
 #include "stb_image_write.h"
 #include "stb_truetype.h"
-
-#include "Atlas.h"
 
 #include <algorithm>
 #include <set>

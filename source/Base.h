@@ -44,19 +44,3 @@ public:
     Transform transform;
     virtual bool Update() = 0;
 };
-
-class Rectangle : public Entity {
-public:
-    v4 color;
-
-    Rectangle() { }
-
-    Rectangle(Transform transform, v4 color = { 1.0, 1.0, 1.0, 1.0 })
-    {
-        this->color = color;
-        this->transform = transform;
-    }
-
-    // Inherited via Entity
-    bool Update() override;
-};
