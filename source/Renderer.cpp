@@ -4,6 +4,7 @@
 
 #include <glad/glad.h>
 
+
 void Renderer::Init() {
 	UpdateProjection();
 
@@ -20,13 +21,17 @@ void Renderer::Init() {
 	};
 
 	BufferLayout gradient_layout {
-		{ BufferElementType::VFloat4, "model"},
-		{ BufferElementType::VFloat4, "model1"},
-		{ BufferElementType::VFloat4, "model2"},
-		{ BufferElementType::VFloat4, "model3"},
-		{ BufferElementType::VFloat4, "colorA"},
-		{ BufferElementType::VFloat4, "colorB"},
-		{ BufferElementType::VFloat4, "colorC"},
+		{ BufferElementType::VFloat4, "model_0"},
+		{ BufferElementType::VFloat4, "model_1"},
+		{ BufferElementType::VFloat4, "model_2"},
+		{ BufferElementType::VFloat4, "model_3"},
+		{ BufferElementType::Int,     "gradient_type"},
+		{ BufferElementType::VFloat2, "middle"},
+		{ BufferElementType::VFloat4, "color_0"},
+		{ BufferElementType::VFloat4, "color_1"},
+		{ BufferElementType::VFloat4, "color_2"},
+		{ BufferElementType::VFloat4, "color_3"},
+		{ BufferElementType::VFloat4, "color_4"},
 	};
 
 	gradient_buffer.Allocate(MAX_CAPACITY, gradient_layout);

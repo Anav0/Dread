@@ -169,6 +169,10 @@ GLenum BufferElementTypeToOpenGLType(BufferElementType type)
 		case BufferElementType::VFloat3:   return GL_FLOAT;
 		case BufferElementType::VFloat4:   return GL_FLOAT;
 		case BufferElementType::Int:       return GL_INT;
+		case BufferElementType::UInt:      return GL_UNSIGNED_INT;
+		case BufferElementType::VUInt2:    return GL_UNSIGNED_INT;
+		case BufferElementType::VUInt3:    return GL_UNSIGNED_INT;
+		case BufferElementType::VUInt4:    return GL_UNSIGNED_INT;
 		case BufferElementType::VInt2:     return GL_INT;
 		case BufferElementType::VInt3:     return GL_INT;
 		case BufferElementType::VInt4:     return GL_INT;
@@ -188,12 +192,15 @@ u8 GetBufferElementSize(BufferElementType type) {
 		case BufferElementType::Int: return 4;
 		     
 		case BufferElementType::VFloat2:
+		case BufferElementType::VUInt2:
 		case BufferElementType::VInt2: return 4*2;
 		     
 		case BufferElementType::VFloat3:
+		case BufferElementType::VUInt3:
 		case BufferElementType::VInt3: return 4*3;
 		     
 		case BufferElementType::VFloat4:
+		case BufferElementType::VUInt4:
 		case BufferElementType::VInt4: return 4*4;
 	}
 }
@@ -259,7 +266,12 @@ void TexturedQuadBuffer::Allocate(u32 buffer_size, BufferLayout layout)
 		printf("\n");
 			
 		glEnableVertexAttribArray(position);
-		glVertexAttribPointer(position, el.length, gl_type, GL_FALSE, layout.size, (void*)el.offset);
+		if (el.IsInt()) {
+			glVertexAttribIPointer(position, el.length, gl_type, layout.size, (void*)el.offset);
+		} else {
+			glVertexAttribPointer(position, el.length, gl_type, GL_FALSE, layout.size, (void*)el.offset);
+		}
+		
 		glVertexAttribDivisor(position, 1);
 		position++;
 	}
@@ -316,10 +328,10 @@ u32 GradientBuffer::AddGradient(const v2 pos, const v2 size, const Gradient grad
 		
 	GradientBufferElement el { };
 
-    el.matrices = GetTransformMatrix(pos, size, 0);
-    el.colorA = gradient.colorA;
-	el.colorB = gradient.colorB;
-	el.colorC = gradient.colorC;
+    el.matrices      = GetTransformMatrix(pos, size, 0);
+	el.colors        = gradient.colors;
+	el.gradient_type = static_cast<u32>(gradient.gradient_type);
+	el.middle        = gradient.middle;
 
 	elements[rolling_index] = el;
 
@@ -368,7 +380,11 @@ void GradientBuffer::Allocate(u32 buffer_size, BufferLayout layout)
 		printf("\n");
 			
 		glEnableVertexAttribArray(position);
-		glVertexAttribPointer(position, el.length, gl_type, GL_FALSE, layout.size, (void*)el.offset);
+		if (el.IsInt()) {
+			glVertexAttribIPointer(position, el.length, gl_type, layout.size, (void*)el.offset);
+		} else {
+			glVertexAttribPointer(position, el.length, gl_type, GL_FALSE, layout.size, (void*)el.offset);
+		}
 		glVertexAttribDivisor(position, 1);
 		position++;
 	}

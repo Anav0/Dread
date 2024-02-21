@@ -13,6 +13,7 @@
 #include "GameState.h"
 
 #include <string>
+#include <array>
 
 class Mesh;
 class Model;
@@ -25,6 +26,11 @@ enum class BufferElementType {
 	VBool2,
 	VBool3,
 	VBool4,
+
+	UInt,
+	VUInt2,
+	VUInt3,
+	VUInt4,
 
 	Int,
 	VInt2,
@@ -53,6 +59,17 @@ struct BufferElement {
 		this->name = name;
 		size   = GetBufferElementSize(type);
 		length = GetBufferElementTypeLength(type);
+	}
+
+	bool IsInt() {
+		return type == BufferElementType::Int ||
+			   type == BufferElementType::UInt ||
+			   type == BufferElementType::VInt2 ||
+			   type == BufferElementType::VInt3 ||
+			   type == BufferElementType::VInt4 ||
+			   type == BufferElementType::VUInt2 ||
+			   type == BufferElementType::VUInt3 ||
+			   type == BufferElementType::VUInt4;
 	}
 };
 
@@ -152,13 +169,23 @@ public:
     MeshInBuffer AddMesh(v3 position, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f);
 };
 
+enum class GradientType : i32 {
+	Radial = 0,
+	ThreeColor = 1,
+};
+
+constexpr u8 GRADIENT_MAX_COLORS = 4;
 struct GradientBufferElement {
 	m4 matrices;
-    v4 colorA, colorB, colorC;
+	u32 gradient_type;
+	v2 middle;
+    std::array<v4, GRADIENT_MAX_COLORS> colors;
 };
 
 struct Gradient {
-	v4 colorA; v4 colorB; v4 colorC;
+	GradientType gradient_type;
+	v2 middle;
+    std::array<v4, GRADIENT_MAX_COLORS> colors;
 };
 
 class GradientBuffer {

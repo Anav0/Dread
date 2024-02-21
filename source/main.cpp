@@ -17,6 +17,7 @@
 #include "Weapons.h"
 #include "HotReload.h"
 #include "Atlas.h"
+#include "Buffers.h"
 
 #include "EntityManager.cpp"
 #include "GameState.cpp"
@@ -129,9 +130,11 @@ int main(int argc, char* argv[])
 	PromiseSupport(p2);
 
 	Gradient header_gradient{};
-	header_gradient.colorA = RED;
-	header_gradient.colorB = BLACK;
-	header_gradient.colorC = YELLOW;
+	header_gradient.gradient_type = GradientType::ThreeColor;
+	header_gradient.middle = v2(0.3, 0.65);
+	header_gradient.colors[0] = RED;
+	header_gradient.colors[1] = BLACK;
+	header_gradient.colors[2] = YELLOW;
 	
 	while (!STATE.window.IsClosing()) {
 		STATE.window.onBeginOfTheLoop();
