@@ -91,9 +91,9 @@ int main(int argc, char* argv[])
 
     stbi_set_flip_vertically_on_load(true);
 
-	GameCode game = LoadGameCode();
+    GameCode game = LoadGameCode();
 
-	RM.LoadRequiredResources();
+    RM.LoadRequiredResources();
 
     u8 size = 38;
     TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
@@ -136,13 +136,13 @@ int main(int argc, char* argv[])
 	header_gradient.colors[1] = BLACK;
 	header_gradient.colors[2] = YELLOW;
 
-
 	Gradient card_gradient{};
 	card_gradient.gradient_type = GradientType::Radial;
 	card_gradient.middle = v2(0.5, 0.5);
-	card_gradient.colors[0] = RED;
-	card_gradient.colors[1] = YELLOW;
-	card_gradient.colors[2] = BLUE;
+	card_gradient.colors[0] = YELLOW;
+	card_gradient.colors[1] = BLACK;
+	card_gradient.radial_position = v2(0.777, -0.56);
+	card_gradient.radial_factor = 1.00;
 	
 	while (!STATE.window.IsClosing()) {
 		STATE.window.onBeginOfTheLoop();
@@ -188,7 +188,7 @@ int main(int argc, char* argv[])
 
 		R.Flush();
 
-        R.Draw();
+				R.Draw();
 
 #if DEBUG_LINES
         for (auto& line : lines)

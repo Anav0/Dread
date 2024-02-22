@@ -328,10 +328,12 @@ u32 GradientBuffer::AddGradient(const v2 pos, const v2 size, const Gradient grad
 		
 	GradientBufferElement el { };
 
-    el.matrices      = GetTransformMatrix(pos, size, 0);
-	el.colors        = gradient.colors;
-	el.gradient_type = static_cast<u32>(gradient.gradient_type);
-	el.middle        = gradient.middle;
+  el.matrices        = GetTransformMatrix(pos, size, 0);
+	el.colors          = gradient.colors;
+	el.gradient_type   = static_cast<u32>(gradient.gradient_type);
+	el.middle          = gradient.middle;
+	el.radial_position = gradient.radial_position;
+	el.radial_factor   = gradient.radial_factor;
 
 	elements[rolling_index] = el;
 

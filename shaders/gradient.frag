@@ -6,6 +6,8 @@ uniform vec2 resolution;
 
 in vec4 ourColors[4];
 in vec4 ourMiddle;
+in vec2 ourRadialPosition;
+in float ourRadialFactor;
 flat in int ourGradientType;
 
 out vec4 myOutputColor;
@@ -45,7 +47,7 @@ void main() {
 
 	switch (ourGradientType) {
 		case 0:
-			radial(st, ourColors[0], ourColors[1], vec2(0.5, 0.5), 1.35);
+			radial(st, ourColors[0], ourColors[1], ourRadialPosition, ourRadialFactor);
 			break;
 		case 1:
 			three_color(st);

@@ -179,13 +179,17 @@ struct GradientBufferElement {
 	m4 matrices;
 	u32 gradient_type;
 	v2 middle;
-    std::array<v4, GRADIENT_MAX_COLORS> colors;
+	f32 radial_factor;
+	v2 radial_position;
+  std::array<v4, GRADIENT_MAX_COLORS> colors;
 };
 
 struct Gradient {
 	GradientType gradient_type;
 	v2 middle;
-    std::array<v4, GRADIENT_MAX_COLORS> colors;
+	v2 radial_position;
+	f32 radial_factor;
+  std::array<v4, GRADIENT_MAX_COLORS> colors;
 };
 
 class GradientBuffer {

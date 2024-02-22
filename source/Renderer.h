@@ -19,29 +19,29 @@ class MeshInBuffer;
 class Renderer {
 
 public:
-    std::vector<BoundingBox> boxes;
-    std::vector<InstancedMeshBuffer> buffers;
+  std::vector<BoundingBox> boxes;
+  std::vector<InstancedMeshBuffer> buffers;
 
 	TexturedQuadBuffer font_buffer;
 	TexturedQuadBuffer ui_buffer;
 	GradientBuffer     gradient_buffer;
 
-    m4 projection;
-    m4 ortho_projection;
+  m4 projection;
+  m4 ortho_projection;
 
-    // Model index by bounding boxes
-    std::map<std::string, u32> mesh_by_buffor_index;
+  // Model index by bounding boxes
+  std::map<std::string, u32> mesh_by_buffor_index;
 
 	void Init();
-    void Draw();
+  void Draw();
 	void Flush();
-    void Update();
+  void Update();
 	void UpdateProjection();
 	void Reset();
 
-    InstancedMeshBuffer* GetBuffer(std::string mesh_name);
-    InstancedMeshBuffer* GetBufferByIndex(u32 index);
-    InstancedMeshBuffer* CreateBuffer(Mesh mesh);
+  InstancedMeshBuffer* GetBuffer(std::string mesh_name);
+  InstancedMeshBuffer* GetBufferByIndex(u32 index);
+  InstancedMeshBuffer* CreateBuffer(Mesh mesh);
 };
 
 extern Renderer R;

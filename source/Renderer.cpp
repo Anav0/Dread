@@ -27,11 +27,14 @@ void Renderer::Init() {
 		{ BufferElementType::VFloat4, "model_3"},
 		{ BufferElementType::Int,     "gradient_type"},
 		{ BufferElementType::VFloat2, "middle"},
+		{ BufferElementType::Float,   "radial_factor"},
+		{ BufferElementType::VFloat2, "radial_position"},
 		{ BufferElementType::VFloat4, "color_0"},
 		{ BufferElementType::VFloat4, "color_1"},
 		{ BufferElementType::VFloat4, "color_2"},
 		{ BufferElementType::VFloat4, "color_3"},
 	};
+
 
 	gradient_buffer.Allocate(MAX_CAPACITY, gradient_layout);
 	font_buffer.Allocate(MAX_CAPACITY, textured_quad_layout);

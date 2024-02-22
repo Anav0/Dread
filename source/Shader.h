@@ -61,7 +61,7 @@ public:
 
     Shader(const char* vertexPath, const char* fragmentPath)
     {
-        this->vertexPath = vertexPath;
+        this->vertexPath   = vertexPath;
         this->fragmentPath = fragmentPath;
 
         ID = glCreateProgram();
