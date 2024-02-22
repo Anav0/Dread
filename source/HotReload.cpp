@@ -21,8 +21,6 @@ GameCode LoadGameCode() {
     tGameUpdateAndRender GameUpdateAndRender = (tGameUpdateAndRender) GetProcAddress(dll, "GameUpdateAndRender");
     assert(GameUpdateAndRender != NULL);
 
-	GameUpdateAndRender();
-
 	return GameCode {
 		dll,
 		GameUpdateAndRender,
