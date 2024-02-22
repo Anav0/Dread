@@ -18,6 +18,7 @@
 #include "HotReload.h"
 #include "Atlas.h"
 #include "Buffers.h"
+#include "alloc.h"
 
 #include "EntityManager.cpp"
 #include "GameState.cpp"
@@ -38,6 +39,7 @@
 #include "Mesh.cpp"
 #include "Model.cpp"
 #include "Mouse.cpp"
+#include "alloc.cpp"
 #include "glad.c"
 
 #define STB_TRUETYPE_IMPLEMENTATION

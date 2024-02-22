@@ -43,10 +43,15 @@ typedef glm::mat2 m2;
 #define MemZeroArray(a)    MemZero((a),sizeof(a))
 #define MemZeroTyped(m,c)  MemZero((m),sizeof(*(m))*(c))
 
-#define KB(n)  (((U64)(n)) << 10)
-#define MB(n)  (((U64)(n)) << 20)
-#define GB(n)  (((U64)(n)) << 30)
-#define TB(n)  (((U64)(n)) << 40)
+#define KB(n)  (((u64)(n)) << 10)
+#define MB(n)  (((u64)(n)) << 20)
+#define GB(n)  (((u64)(n)) << 30)
+#define TB(n)  (((u64)(n)) << 40)
+
+#define Min(A,B) ( ((A)<(B))?(A):(B) )
+#define Max(A,B) ( ((A)>(B))?(A):(B) )
+#define ClampTop(A,X) Min(A,X)
+#define AlignPow2(x,b) (((x) + (b) - 1)&(~((b) - 1)))
 
 //TODO: move to colors.h
 constexpr v4 TRANS   = v4(0.0f, 0.00f, 0.0f, 0.0f);
