@@ -15,7 +15,8 @@ static LPWSTR ToWeirdMicrosoftString(std::string text)
 }
 
 GameCode LoadGameCode() {
-	CopyFileA("GameCode.dll", "GameCode_tmp.dll", false);
+	bool success = CopyFileA("GameCode.dll", "GameCode_tmp.dll", false);
+    assert(success);
     HINSTANCE dll = LoadLibraryA("GameCode_tmp.dll");
     assert(dll != NULL);
 
