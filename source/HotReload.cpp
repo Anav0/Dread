@@ -29,9 +29,21 @@ GameCode LoadGameCode() {
 		dll,
 		GameUpdateAndRender,
 		card_gradient,
+		last_write_time("GameCode.dll")
 	};
 }
 
-void UnloadGameCode(GameCode game) {
-	FreeLibrary(game.dll);
+void UnloadGameCode(GameCode* game) {
+	FreeLibrary(game->dll);
+}
+
+void HotReloadGameCode(GameCode* game) {
+
+	auto dll_last_written = last_write_time("GameCode.dll");
+	bool dll_was_changed  = dll_last_written > game->dll_change_time;
+
+	if (dll_was_changed) {
+		UnloadGameCode(game);
+		*game = LoadGameCode();
+  } 
 }

@@ -148,20 +148,13 @@ int main(int argc, char* argv[])
 	card_gradient.radial_factor = 1.00;
 	*/
 	
-	u64 frame_counter=0;
 	while (!STATE.window.IsClosing()) {
 		STATE.window.onBeginOfTheLoop();
 		glfwPollEvents();
-
-		if(frame_counter++ > 165 * 4) {
-			printf("Reload!\n\n\n\n");
-			frame_counter = 0;
-			UnloadGameCode(game);
-			game = LoadGameCode();
-		}
 		
 		//------------------------------------------------------------------------
 
+		HotReloadGameCode(&game);
 		RM.HotReloadShaders();
 
 		E.Update();
