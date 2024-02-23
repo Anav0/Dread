@@ -138,6 +138,7 @@ int main(int argc, char* argv[])
 	header_gradient.colors[1] = BLACK;
 	header_gradient.colors[2] = YELLOW;
 
+	/*
 	Gradient card_gradient{};
 	card_gradient.gradient_type = GradientType::Radial;
 	card_gradient.middle = v2(0.5, 0.5);
@@ -145,10 +146,19 @@ int main(int argc, char* argv[])
 	card_gradient.colors[1] = BLACK;
 	card_gradient.radial_position = v2(0.777, -0.56);
 	card_gradient.radial_factor = 1.00;
+	*/
 	
+	u64 frame_counter=0;
 	while (!STATE.window.IsClosing()) {
 		STATE.window.onBeginOfTheLoop();
 		glfwPollEvents();
+
+		if(frame_counter++ > 165 * 4) {
+			printf("Reload!\n\n\n\n");
+			frame_counter = 0;
+			UnloadGameCode(game);
+			game = LoadGameCode();
+		}
 		
 		//------------------------------------------------------------------------
 
@@ -184,26 +194,26 @@ int main(int argc, char* argv[])
 
 		R.gradient_buffer.AddGradient( { 0, STATE.window.screen_size.y - HEADER_H }, {STATE.window.screen_size.x, HEADER_H}, header_gradient);
 
-		R.gradient_buffer.AddGradient( { 50, 50 }, {260, 130}, card_gradient);
+		R.gradient_buffer.AddGradient( { 50, 50 }, {260, 130}, *game.card_gradient);
 
 		DrawUI();
 
 		R.Flush();
 
-				R.Draw();
+		R.Draw();
 
 #if DEBUG_LINES
         for (auto& line : lines)
             line.Draw(line_shader, &projection);
 #endif
 
-        //printf("Camera: %f %f %f | %f %f\r", camera->position.x, camera->position.y, camera->position.z, camera->yaw, camera->pitch);
+    //printf("Camera: %f %f %f | %f %f\r", camera->position.x, camera->position.y, camera->position.z, camera->yaw, camera->pitch);
 
 		//printf("UI buffer index: %i\n", R.ui_buffer.rolling_index);
 		//printf("Font buffer index: %i\n", R.font_buffer.rolling_index);
 
-		R.Reset();
-		UI.Reset();
+				R.Reset();
+				UI.Reset();
 
         STATE.turn_changed = false;
 
