@@ -15,27 +15,32 @@ static LPWSTR ToWeirdMicrosoftString(std::string text)
 }
 
 GameCode LoadGameCode() {
-	bool success = CopyFileA("GameCode.dll", "GameCode_tmp.dll", false);
-    assert(success);
+	  bool success = CopyFileA("GameCode.dll", "GameCode_tmp.dll", false);
+		if(!success) { 
+			printf("Failed to copy DLL: '%i'\n", GetLastError());
+		}
+		if(success)  printf("Success to copy DLL\n");
+
     HINSTANCE dll = LoadLibraryA("GameCode_tmp.dll");
     assert(dll != NULL);
 
     tGameUpdateAndRender GameUpdateAndRender = (tGameUpdateAndRender) GetProcAddress(dll, "GameUpdateAndRender");
     assert(GameUpdateAndRender != NULL);
 
-    Gradient* card_gradient = (Gradient*) GetProcAddress(dll, "card_gradient");
-    assert(card_gradient != NULL);
+    Constants* cons = (Constants*) GetProcAddress(dll, "cons");
+    assert(cons != NULL);
 
 	return GameCode {
 		dll,
 		GameUpdateAndRender,
-		card_gradient,
+		cons,
 		last_write_time("GameCode.dll")
 	};
 }
 
 void UnloadGameCode(GameCode* game) {
 	FreeLibrary(game->dll);
+	game->dll = 0;
 }
 
 void HotReloadGameCode(GameCode* game) {

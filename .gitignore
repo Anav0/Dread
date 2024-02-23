@@ -83,3 +83,5 @@ build
 GameCode/x64
 Debug captures
 GameCode/GameCode/x64
+GameCode/GameCode
+Session.vim

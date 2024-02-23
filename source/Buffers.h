@@ -11,6 +11,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "GameState.h"
+#include "GameCode.h"
 
 #include <string>
 #include <array>
@@ -169,12 +170,6 @@ public:
     MeshInBuffer AddMesh(v3 position, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f);
 };
 
-enum class GradientType : i32 {
-	Radial = 0,
-	ThreeColor = 1,
-};
-
-constexpr u8 GRADIENT_MAX_COLORS = 4;
 struct GradientBufferElement {
 	m4 matrices;
 	u32 gradient_type;
@@ -184,6 +179,13 @@ struct GradientBufferElement {
   std::array<v4, GRADIENT_MAX_COLORS> colors;
 };
 
+/*
+ 
+enum class GradientType : i32 {
+	Radial = 0,
+	ThreeColor = 1,
+};
+constexpr u8 GRADIENT_MAX_COLORS = 4;
 struct Gradient {
 	GradientType gradient_type;
 	v2 middle;
@@ -191,6 +193,7 @@ struct Gradient {
 	f32 radial_factor;
   std::array<v4, GRADIENT_MAX_COLORS> colors;
 };
+*/
 
 class GradientBuffer {
     unsigned int VAO, VBO, EBO, instanced_VBO;

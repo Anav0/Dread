@@ -67,6 +67,7 @@ MessageCallback(GLenum source,
         type, severity, message);
 }
 
+u64 frame_counter = 0;
 int main(int argc, char* argv[])
 {
     if (!STATE.window.Init()) {
@@ -93,7 +94,8 @@ int main(int argc, char* argv[])
 
     stbi_set_flip_vertically_on_load(true);
 
-    GameCode game = LoadGameCode();
+    GameCode dll = LoadGameCode();
+		Constants* game = dll.game;
 
     RM.LoadRequiredResources();
 
@@ -131,31 +133,20 @@ int main(int argc, char* argv[])
 
 	PromiseSupport(p2);
 
-	Gradient header_gradient{};
-	header_gradient.gradient_type = GradientType::ThreeColor;
-	header_gradient.middle = v2(0.3, 0.65);
-	header_gradient.colors[0] = RED;
-	header_gradient.colors[1] = BLACK;
-	header_gradient.colors[2] = YELLOW;
-
-	/*
-	Gradient card_gradient{};
-	card_gradient.gradient_type = GradientType::Radial;
-	card_gradient.middle = v2(0.5, 0.5);
-	card_gradient.colors[0] = YELLOW;
-	card_gradient.colors[1] = BLACK;
-	card_gradient.radial_position = v2(0.777, -0.56);
-	card_gradient.radial_factor = 1.00;
-	*/
-	
+	u64 frame_counter = 0;
 	while (!STATE.window.IsClosing()) {
 		STATE.window.onBeginOfTheLoop();
 		glfwPollEvents();
 		
 		//------------------------------------------------------------------------
+		//
 
-		HotReloadGameCode(&game);
-		RM.HotReloadShaders();
+		if(frame_counter++ > 144) {
+			HotReloadGameCode(&dll);
+			RM.HotReloadShaders();
+			frame_counter=0;
+		}
+
 
 		E.Update();
 		R.Update();
@@ -184,10 +175,11 @@ int main(int argc, char* argv[])
 		}
 		
 		//------------------------------------------------------------------------
+		//
 
-		R.gradient_buffer.AddGradient( { 0, STATE.window.screen_size.y - HEADER_H }, {STATE.window.screen_size.x, HEADER_H}, header_gradient);
+		R.gradient_buffer.AddGradient( { 0, STATE.window.screen_size.y - HEADER_H }, {STATE.window.screen_size.x, HEADER_H}, game->header_gradient);
 
-		R.gradient_buffer.AddGradient( { 50, 50 }, {260, 130}, *game.card_gradient);
+		R.gradient_buffer.AddGradient( { 50, 50 }, {260, 130}, game->card_gradient);
 
 		DrawUI();
 

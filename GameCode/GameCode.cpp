@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Variables.h"
+#include "GameCode.h"
 
 void GameUpdateAndRender()
 {

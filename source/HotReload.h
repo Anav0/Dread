@@ -1,7 +1,7 @@
 #pragma once
 
-
 #include "Constants.h" 
+#include "GameCode.h" 
 
 #include <string>
 #include <array>
@@ -18,13 +18,11 @@
 
 using namespace std::filesystem;
 
-typedef void (*tGameUpdateAndRender) (void);
-
 //TODO: move to GameState.h
 struct GameCode {
 	HINSTANCE dll;
 	tGameUpdateAndRender GameUpdateAndRender;
-	Gradient* card_gradient;
+	Constants* game;
 	file_time_type dll_change_time;
 };
 

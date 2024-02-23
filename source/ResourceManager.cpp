@@ -285,7 +285,7 @@ void ResourceManager::HotReloadShaders()
             bool v_success = shader.Load(new_shader_program_id, shader.vertexPath, GL_VERTEX_SHADER, "VERTEX", v_id);
             bool f_success = shader.Load(new_shader_program_id, shader.fragmentPath, GL_FRAGMENT_SHADER, "FRAGMENT", f_id);
 
-			shader.vertex_last_written   = vertex_last_written;
+						shader.vertex_last_written   = vertex_last_written;
             shader.fragment_last_written = fragment_last_written;
 
             if (!v_success || !f_success) return;
