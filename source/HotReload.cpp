@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "HotReload.h"
 
 // Windows
@@ -5,7 +6,6 @@
 #include <stdio.h> 
 #include <cassert>
 #include <winnt.rh>
-
 
 static LPWSTR ToWeirdMicrosoftString(std::string text)
 {
