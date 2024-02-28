@@ -1,12 +1,6 @@
 #include "RenderHelpers.h"
-#include "Base.h"
-#include "BoundingBox.h"
-#include "Collision.h"
-#include "EntityManager.h"
 #include "Gui.h"
-#include "Line.h"
 #include "Model.h"
-#include "Renderer.h"
 #include "ResourceManager.h"
 #include "TextRenderer.h"
 #include "Entities.h"
@@ -66,8 +60,8 @@ void DrawResources()
     megaphone_icon.index = MEGAPHONE;
     sword_icon.index     = SWORD;
 
-	u32 y = CenterChildInParentY(GetScreenSize().y - HEADER_H, HEADER_H, sword_icon.size.y);
-    auto x = 10;
+		u32 y = CenterChildInParentY(GetScreenSize().y - HEADER_H, HEADER_H, sword_icon.size.y);
+    u32 x = 10;
 
     UI.Stack(Direction::Horizontal, 10, { x, y });
 		UI.DrawIcon(UKRAINE_EMBLEM, { 0, 0 }, {0, -75});
@@ -158,10 +152,10 @@ void DrawSupportingCountries()
 //TODO: move to STATE init();
 void AddSupportingCountries() {
 	STATE.countries.push_back(Country(CountryCode::FR, "France", 0.7, 1));
-    STATE.countries.push_back(Country(CountryCode::DE, "Germany", 0.856, 2));
-    STATE.countries.push_back(Country(CountryCode::PL, "Poland", 1.0, 3));
-    STATE.countries.push_back(Country(CountryCode::USA, "United States", 1.0, 4));
-    STATE.countries.push_back(Country(CountryCode::UK, "United Kingdom", 0.95, 0));
+  STATE.countries.push_back(Country(CountryCode::DE, "Germany", 0.856, 2));
+  STATE.countries.push_back(Country(CountryCode::PL, "Poland", 1.0, 3));
+  STATE.countries.push_back(Country(CountryCode::USA, "United States", 1.0, 4));
+  STATE.countries.push_back(Country(CountryCode::UK, "United Kingdom", 0.95, 0));
 }
 
 void AddMap()
@@ -187,7 +181,7 @@ void DrawOblastInfo() {
 
 void DrawUI() {
 	u32 y = STATE.window.screen_size.y - top_offset - 200;
-    constexpr u32 x = 20;
+  constexpr u32 x = 20;
 
 	DrawSupportingCountries();
 	

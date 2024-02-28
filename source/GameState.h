@@ -84,14 +84,14 @@ struct SupportPackage {
 //------------------------------------------------------------------------
 
 struct GameState {
-    WindowManager window;
-    RenderMode mode = RenderMode::NORMAL;
-    bool show_collisions = false;
+  WindowManager window;
+  RenderMode mode = RenderMode::NORMAL;
+  bool show_collisions = false;
 
-    OblastCode selected_oblast;
+  OblastCode selected_oblast;
 
-    f32 popular_support = 0.8;
-    u64 reserve         = 600'000;
+  f32 popular_support = 0.8;
+  u64 reserve         = 600'000;
 
 	std::vector<Country> countries;
 
@@ -121,6 +121,7 @@ void DrawEndScreen();
 void PromiseSupport(SupportPackage);
 Country& GetCountryByCode(CountryCode code);
 Delivery* GetDeliveryByType(WeaponSystemType type);
+
 extern GameState STATE;
 
 #endif
