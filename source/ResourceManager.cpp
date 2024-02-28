@@ -261,7 +261,7 @@ AtlasTextureInfo GetTextureInfoByIndex(u16 index, v2 icon_size, std::string atla
     info.position.x = (index % row_size) * icon_size.x;
     info.position.y = (atlas->Height - (index / column_size * icon_size.y)) - icon_size.y;
 
-    info.size = icon_size;
+    info.size  = icon_size;
     info.scale = v3(1.0);
 
     return info;
