@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\Engine\Animator.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Atlas.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Base.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\BoundingBox.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Buffers.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Camera.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Collision.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Constants.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Entities.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\EntityManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\GameState.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Gui.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\HotReload.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Line.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Mesh.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Misc.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Model.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Mouse.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\RenderHelpers.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Renderer.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\ResourceManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Shader.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\TextRenderer.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Texture.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\TimeManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\Weapons.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\WindowManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine\alloc.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\lib.cpp" />
+  </ItemGroup>
+</Project>

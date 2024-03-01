@@ -86,3 +86,7 @@ GameCode/GameCode/x64
 GameCode/GameCode
 Session.vim
 .cache
+Engine/obj
+bin
+Game/obj
+Window/obj
