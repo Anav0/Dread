@@ -12,6 +12,7 @@ project "Engine"
    location "Engine/"
    files { "Engine/source/**.h", "Engine/source/Engine/lib.cpp" }
 	 links {
+		"glfw3",
 		"opengl32",
 		"user32",
 		"gdi32",
@@ -57,13 +58,6 @@ project "Window"
 	 links {
 		"Engine",
 		"Game",
-		"glfw3",
-		"opengl32",
-		"user32",
-		"gdi32",
-		"shell32",
-		"freetype",
-		"assimp-vc143-mt",
 	 }
 	 libdirs { "Window/libs" }
 	 includedirs { "Window/includes", "Engine/source", "Game/source" }

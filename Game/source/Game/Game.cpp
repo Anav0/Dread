@@ -7,14 +7,11 @@
 #include "GameState.h"
 #include "EntityManager.h"
 #include "RenderHelpers.h"
-#include <glad/glad.h>
 
 #include "Entities.cpp"
 #include "GameState.cpp"
 #include "EntityManager.cpp"
 #include "RenderHelpers.cpp"
-
-#include "glad.c"
 
 void GameUpdateAndRender(WindowManager* window)
 {
