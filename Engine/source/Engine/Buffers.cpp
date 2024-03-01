@@ -109,7 +109,7 @@ MeshInBuffer InstancedMeshBuffer::AddMesh(v3 position, v4 color, f32 rotation, f
 u32 TexturedQuadBuffer::AddTexturedQuad(const AtlasTextureInfo* texture_info, const Texture* atlas, const v2 pos, const v2 size, const float rotation, v4 color)
 {
     assert(rolling_index >= 0);
-    assert(rolling_index+1 <= MAX_CAPACITY);
+    assert(rolling_index + 1 <= MAX_CAPACITY);
 	
 	TexturedQuadBufferElement el { };
 

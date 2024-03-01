@@ -10,7 +10,6 @@ project "Engine"
    language "C++"
    targetdir "bin/%{cfg.buildcfg}"
    location "Engine/"
-   files { "Engine/source/**.h", "Engine/source/Engine/lib.cpp" }
 	 links {
 		"glfw3",
 		"opengl32",
@@ -20,6 +19,7 @@ project "Engine"
 		"freetype",
 		"assimp-vc143-mt",
 	 }
+   files { "Engine/source/**.h", "Engine/source/Engine/lib.cpp" }
 	 libdirs { "Engine/libs" }
 	 includedirs { "Engine/includes" }
    filter "configurations:Debug"
@@ -36,10 +36,11 @@ project "Game"
    location "Game/"
 	 links {
 		"Engine",
+		"opengl32",
 	 }
+   files { "Game/source/**.h", "Game/source/Game/Game.cpp" }
 	 libdirs { "Game/libs" }
 	 includedirs { "Engine/source", "Engine/includes", "Game/includes" }
-   files { "Game/source/**.h", "Game/source/Game/Game.cpp" }
 
    filter "configurations:Debug"
       defines { "DEBUG" }
@@ -54,13 +55,13 @@ project "Window"
    language "C++"
    targetdir "bin/%{cfg.buildcfg}"
    location "Window/"
-   files { "Window/source/**.h", "Window/source/main.cpp" }
 	 links {
 		"Engine",
 		"Game",
 	 }
+   files { "Window/source/**.h", "Window/source/main.cpp" }
 	 libdirs { "Window/libs" }
-	 includedirs { "Window/includes", "Engine/source", "Game/source" }
+	 includedirs { "Window/includes", "Engine/source", "Engine/includes", "Game/source", "Game/includes" }
    filter "configurations:Debug"
       defines { "DEBUG" }
       symbols "On"

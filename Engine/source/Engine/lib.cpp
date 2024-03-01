@@ -20,7 +20,6 @@
 #include "TimeManager.h"
 #include "WindowManager.h"
 #include "alloc.h"
-#include "glad/glad.h"
 
 #include "Animator.cpp"
 #include "BoundingBox.cpp"

@@ -1,27 +1,25 @@
-#include "Engine/Renderer.h"
 #include "Engine/Gui.h"
+#include "Engine/Renderer.h"
 
-#include "Game.h"
 #include "Atlas.h"
 #include "Entities.h"
-#include "GameState.h"
 #include "EntityManager.h"
+#include "Game.h"
+#include "GameState.h"
 #include "RenderHelpers.h"
 
 #include "Entities.cpp"
-#include "GameState.cpp"
 #include "EntityManager.cpp"
+#include "GameState.cpp"
 #include "RenderHelpers.cpp"
 
 void GameUpdateAndRender(WindowManager* window)
 {
-    //E.Update();
-    //R.Update();
+    E.Update();
+
+    assert(glClearColor != NULL);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    return;
 
     /*
     if (STATE.window.buttonAction == MouseAction::PRESSED && STATE.window.buttonType == MouseButton::LEFT) {
@@ -61,7 +59,7 @@ void GameUpdateAndRender(WindowManager* window)
         { RED, BLACK, YELLOW },
     };
 
-    R.gradient_buffer.AddGradient({ 0, window->screen_size.y - HEADER_H }, { window->screen_size.x, HEADER_H }, header_gradient); 
+    R.gradient_buffer.AddGradient({ 0, window->screen_size.y - HEADER_H }, { window->screen_size.x, HEADER_H }, header_gradient);
     R.gradient_buffer.AddGradient({ 50, 50 }, { 260, 130 }, card_gradient);
 
     DrawUI(window);
@@ -77,14 +75,13 @@ void GameUpdateAndRender(WindowManager* window)
 
     // printf("Camera: %f %f %f | %f %f\r", camera->position.x, camera->position.y, camera->position.z, camera->yaw, camera->pitch);
 
-    R.Reset();
-    UI.Reset();
-
     STATE.turn_changed = false;
 }
 
 void GameInit(WindowManager* window)
 {
+    gladLoadGL();
+
     RM.LoadRequiredResources();
     u8 size = 38;
     TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);

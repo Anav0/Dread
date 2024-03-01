@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
     stbi_set_flip_vertically_on_load(true);
 
     GameCode game = LoadGameCode();
-    //game.GameInit(&window);
+    game.GameInit(&window);
 
 #if DEBUG_LINES
     std::vector<Line> lines;
@@ -65,16 +65,23 @@ int main(int argc, char* argv[])
 
         UI.onFrameBegin(info);
 
+        R.Update();
+
         glfwPollEvents();
 
         if (frame_counter++ > 144) {
-            //HotReloadGameCode(&game);
-            //RM.HotReloadShaders();
+            // HotReloadGameCode(&game);
+            // RM.HotReloadShaders();
             frame_counter = 0;
         }
 
         game.GameUpdateAndRender(&window);
+#if 1
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#endif
 
+        R.Reset();
+        UI.Reset();
         glfwSwapBuffers(window.window);
     }
 

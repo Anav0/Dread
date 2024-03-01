@@ -17,6 +17,8 @@
 
 using namespace std::filesystem;
 
+class WindowManager;
+
 typedef void (*tGameUpdateAndRender)(WindowManager* window);
 typedef void (*tGameInit)(WindowManager* window);
 
