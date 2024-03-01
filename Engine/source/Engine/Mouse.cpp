@@ -1,8 +1,7 @@
 #include "Mouse.h"
 #include "Collision.h"
-#include "GameState.h"
-
 #include "Renderer.h"
+
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
@@ -13,12 +12,10 @@ void to_ndc(v3* vector, f32 width, f32 height)
     vector->z = 1.0f;
 }
 
-Ray GetRayFromEyes(m4* projection)
+Ray GetRayFromEyes(WindowManager& window, Camera& camera, m4* projection)
 {
-    auto camera = STATE.window.camera;
-
-    v2 mouse = v2(STATE.window.mouse_x, STATE.window.mouse_y);
-    v2 screen = STATE.window.screen_size;
+    v2 mouse = v2(window.mouse_x, window.mouse_y);
+    v2 screen = window.screen_size;
 
     // To normalized device space
     f32 mouseX = mouse.x  / (screen.x * 0.5f) - 1.0f;

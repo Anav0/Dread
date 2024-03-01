@@ -10,7 +10,6 @@
 #include "ResourceManager.h"
 #include "Shader.h"
 #include "Texture.h"
-#include "GameState.h"
 
 #include <string>
 #include <array>
@@ -162,7 +161,7 @@ public:
         glBindVertexArray(0);
     }
 
-    void Draw(Shader* shader, m4* projection, Texture* atlas);
+    void Draw(Shader* shader, m4& projection, m4& view, Texture* atlas);
     m4 GetMatrix(u32 index);
 
     MeshInBuffer AddMesh(v3 position, v3 size, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f);
@@ -218,7 +217,7 @@ public:
 
     void Allocate(u32 buffer_size, BufferLayout);
 	void Flush();
-	void Draw(Shader* shader, m4* projection);
+	void Draw(v2 screen_size, Shader* shader, m4& projection);
 	void Reset();
 	
 	u32 AddGradient(const v2 pos, const v2 size, const Gradient gradient);
@@ -241,7 +240,7 @@ public:
 
     void Allocate(u32 buffer_size, BufferLayout);
 	void Flush();
-	void Draw(Shader* shader, m4* projection);
+	void Draw(Shader* shader, m4& projection);
 	void Reset();
 	
 	u32 AddQuad(const v2 position, const v2 size, const v4 color, float rotation = 0);

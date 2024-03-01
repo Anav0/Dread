@@ -1,8 +1,8 @@
 #include "RenderHelpers.h"
-#include "Gui.h"
-#include "Model.h"
-#include "ResourceManager.h"
-#include "TextRenderer.h"
+#include "Engine/Gui.h"
+#include "Engine/Model.h"
+#include "Engine/ResourceManager.h"
+#include "Engine/TextRenderer.h"
 #include "Entities.h"
 #include "Atlas.h"
 

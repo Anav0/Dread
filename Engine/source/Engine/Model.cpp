@@ -4,11 +4,11 @@
 #include "ResourceManager.h"
 #include "Shader.h"
 
-void Model::Draw(Shader* shader, m4* projection)
+void Model::Draw(Shader* shader, m4 projection, m4 view)
 {
     shader->Use();
     for (u32 i = 0; i < meshes.size(); i++)
-        meshes[i].Draw(shader, projection, GetTransformMatrix({ 0, 0, 0 }, { 10, 10, 10 }));
+        meshes[i].Draw(shader, projection, GetTransformMatrix({ 0, 0, 0 }, { 10, 10, 10 }), view);
 }
 
 Mesh Models::TransformMesh(aiMesh* mesh, const aiScene* scene, const string& directory)

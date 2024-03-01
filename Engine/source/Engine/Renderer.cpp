@@ -5,8 +5,8 @@
 #include <glad/glad.h>
 
 
-void Renderer::Init() {
-	UpdateProjection();
+void Renderer::Init(Camera& camera, v2 screen_size) {
+	UpdateProjection(camera, screen_size);
 
 	BufferLayout textured_quad_layout {
 		{ BufferElementType::VFloat4, "model"},
@@ -43,33 +43,36 @@ void Renderer::Init() {
 	ui_buffer.texture_key = "icons";
 }
 
-void Renderer::UpdateProjection() {
-	projection       = glm::perspective(glm::radians(STATE.window.camera.zoom), (f32)STATE.window.screen_size.x / (f32)STATE.window.screen_size.y, 0.1f, 1000.0f);
-	ortho_projection = glm::ortho(0.0f, (f32)STATE.window.screen_size.x, 0.0f, (f32)STATE.window.screen_size.y);
+void Renderer::UpdateProjection(Camera& camera, v2 screen_size) {
+	projection       = glm::perspective(glm::radians(camera.zoom), (f32)screen_size.x / (f32)screen_size.y, 0.1f, 1000.0f);
+	ortho_projection = glm::ortho(0.0f, (f32)screen_size.x, 0.0f, (f32)screen_size.y);
 }
 
 void Renderer::Update()
 {
 }
 
-void Renderer::Draw()
+void Renderer::Draw(Camera& camera, v2 screen_size)
 {
     // TODO: temp
     auto shader          = RM.GetShader("object");
     auto texture_shader  = RM.GetShader("texture");
 	auto gradient_shader = RM.GetShader("gradient");
 
-	gradient_buffer.Draw(gradient_shader, &ortho_projection);
-	ui_buffer.Draw(texture_shader, &ortho_projection);
-	font_buffer.Draw(texture_shader, &ortho_projection);
+	auto view = camera.GetViewMatrix();
+
+	gradient_buffer.Draw(screen_size, gradient_shader, ortho_projection);
+	ui_buffer.Draw(texture_shader, ortho_projection);
+	font_buffer.Draw(texture_shader, ortho_projection);
 
     for (auto& buffer : buffers) {
-        buffer.Draw(shader, &projection, nullptr);
+        buffer.Draw(shader, projection, view, nullptr);
     }
 
-    if (STATE.show_collisions) {
+	//TODO: show collisions
+    if (false) {
         for (auto& box : R.boxes) {
-            box.Draw(&projection);
+            box.Draw(projection, view);
         }
     }
 }

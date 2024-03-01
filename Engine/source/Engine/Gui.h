@@ -3,8 +3,8 @@
 
 #pragma once
 
+#include "Mouse.h"
 #include "Constants.h"
-#include "GameState.h"
 #include "Renderer.h"
 #include "TextRenderer.h"
 
@@ -81,11 +81,13 @@ constexpr ButtonStyle DEFAULT_BTN_SYTLE {
 
 class Gui {
     std::deque<Layout> layouts;
+    MouseInfo mouse;
 
 public:
     void Stack(Direction layout, u8 spacing = 20, v2 pos = { 0, 0 });
     void EndLayout();
 	void Reset();
+    void onFrameBegin(MouseInfo mouse);
 
 	bool DrawButton(const char* label, v2 pos = { 0, 0 }, ButtonStyle style = DEFAULT_BTN_SYTLE);
 	void DrawLabel(std::string label, v2 pos = { 0, 0 }, TextStyle style = default_style, bool use_layout = true);

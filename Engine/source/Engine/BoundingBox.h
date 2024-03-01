@@ -7,7 +7,6 @@
 
 #include "Base.h"
 #include "Constants.h"
-#include "GameState.h"
 #include "ResourceManager.h"
 #include "Shader.h"
 
@@ -65,21 +64,21 @@ public:
         is_dirty = false;
     }
 
-    void Draw(m4* projection)
+    void Draw(m4& projection, m4& view)
     {
         this->shader->Use();
-        this->shader->setMat4("projection", *projection);
-        this->shader->setMat4("view", STATE.window.camera.GetViewMatrix());
+        this->shader->setMat4("projection", projection);
+        this->shader->setMat4("view", view);
         this->shader->setMat4("model", model);
 
         DrawInner();
     }
 
-    void Draw(Shader* shader, m4* projection)
+    void Draw(Shader* shader, m4& projection, m4& view)
     {
         shader->Use();
-        shader->setMat4("projection", *projection);
-        shader->setMat4("view", STATE.window.camera.GetViewMatrix());
+        shader->setMat4("projection", projection);
+        shader->setMat4("view", view);
         shader->setMat4("model", model);
 
         DrawInner();

@@ -104,9 +104,6 @@
     <ClInclude Include="source\Engine\Camera.h" />
     <ClInclude Include="source\Engine\Collision.h" />
     <ClInclude Include="source\Engine\Constants.h" />
-    <ClInclude Include="source\Engine\Entities.h" />
-    <ClInclude Include="source\Engine\EntityManager.h" />
-    <ClInclude Include="source\Engine\GameState.h" />
     <ClInclude Include="source\Engine\Gui.h" />
     <ClInclude Include="source\Engine\HotReload.h" />
     <ClInclude Include="source\Engine\Line.h" />
@@ -114,14 +111,12 @@
     <ClInclude Include="source\Engine\Misc.h" />
     <ClInclude Include="source\Engine\Model.h" />
     <ClInclude Include="source\Engine\Mouse.h" />
-    <ClInclude Include="source\Engine\RenderHelpers.h" />
     <ClInclude Include="source\Engine\Renderer.h" />
     <ClInclude Include="source\Engine\ResourceManager.h" />
     <ClInclude Include="source\Engine\Shader.h" />
     <ClInclude Include="source\Engine\TextRenderer.h" />
     <ClInclude Include="source\Engine\Texture.h" />
     <ClInclude Include="source\Engine\TimeManager.h" />
-    <ClInclude Include="source\Engine\Weapons.h" />
     <ClInclude Include="source\Engine\WindowManager.h" />
     <ClInclude Include="source\Engine\alloc.h" />
   </ItemGroup>

@@ -2,8 +2,6 @@
 #include "Constants.h"
 #include "Shader.h"
 
-#include "EntityManager.h"
-#include "RenderHelpers.h"
 #include "Renderer.h"
 
 void Mesh::Update()
@@ -14,20 +12,20 @@ void Mesh::Update()
     // box->is_dirty = true;
 }
 
-void Mesh::Draw(Shader* shader, m4* projection, m4 model)
+void Mesh::Draw(Shader* shader, m4 projection, m4 model, m4 view)
 {
     u32 diffuseNr = 1;
     u32 specularNr = 1;
     u32 normalNr = 1;
     u32 heightNr = 1;
 
-    if (STATE.mode == RenderMode::WIREFRAME)
+    if (R.mode == RenderMode::WIREFRAME)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     else
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    shader->setMat4("projection", *projection);
-    shader->setMat4("view", STATE.window.camera.GetViewMatrix());
+    shader->setMat4("projection", projection);
+    shader->setMat4("view", view);
     shader->setMat4("model", model);
 
     for (u32 i = 0; i < textures.size(); i++) {

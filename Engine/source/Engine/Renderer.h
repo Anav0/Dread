@@ -16,11 +16,19 @@ typedef int ID;
 class Model;
 class MeshInBuffer;
 
+constexpr bool HIDE_ALPHA = true;
+
+enum class RenderMode {
+    WIREFRAME,
+    NORMAL,
+};
+
 class Renderer {
 
 public:
   std::vector<BoundingBox> boxes;
   std::vector<InstancedMeshBuffer> buffers;
+  RenderMode mode;
 
 	TexturedQuadBuffer font_buffer;
 	TexturedQuadBuffer ui_buffer;
@@ -32,11 +40,11 @@ public:
   // Model index by bounding boxes
   std::map<std::string, u32> mesh_by_buffor_index;
 
-	void Init();
-  void Draw();
+	void Init(Camera& camera, v2 screen_size);
+  void Draw(Camera& camera, v2 screen_size);
 	void Flush();
   void Update();
-	void UpdateProjection();
+	void UpdateProjection(Camera& camera, v2 screen_size);
 	void Reset();
 
   InstancedMeshBuffer* GetBuffer(std::string mesh_name);

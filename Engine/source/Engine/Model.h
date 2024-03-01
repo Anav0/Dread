@@ -44,7 +44,7 @@ public:
     {
     }
 
-    void Draw(Shader* shader, m4* projection);
+    void Draw(Shader* shader, m4 projection, m4 view);
 };
 
 Model* GetModelFromBoundingBoxIndex(int);

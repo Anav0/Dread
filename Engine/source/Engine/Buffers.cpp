@@ -1,5 +1,4 @@
 #include "Buffers.h"
-#include "GameState.h"
 #include "Mesh.h"
 #include "Model.h"
 #include "ResourceManager.h"
@@ -47,7 +46,7 @@ void InstancedMeshBuffer::Allocate()
     glBindVertexArray(0);
 }
 
-void InstancedMeshBuffer::Draw(Shader* shader, m4* projection, Texture* atlas)
+void InstancedMeshBuffer::Draw(Shader* shader, m4& projection, m4& view, Texture* atlas)
 {
     if (colors.size() == 0)
         return;
@@ -57,7 +56,7 @@ void InstancedMeshBuffer::Draw(Shader* shader, m4* projection, Texture* atlas)
         atlas->Bind();
     }
 
-    if (STATE.mode == RenderMode::WIREFRAME)
+    if (R.mode == RenderMode::WIREFRAME)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     else
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -65,8 +64,8 @@ void InstancedMeshBuffer::Draw(Shader* shader, m4* projection, Texture* atlas)
     shader->Use();
     shader->setInt("imageSampler", 0);
     shader->setBool("hideAlpha", HIDE_ALPHA);
-    shader->setMat4("projection", *projection);
-    shader->setMat4("view", STATE.window.camera.GetViewMatrix());
+    shader->setMat4("projection", projection);
+    shader->setMat4("view", view);
 
     glBindVertexArray(mesh.VAO);
     glDrawElementsInstanced(GL_TRIANGLES, static_cast<u32>(mesh.indices.size()), GL_UNSIGNED_INT, 0, matrices.size());
@@ -295,15 +294,13 @@ void TexturedQuadBuffer::Flush() {
 	glBindVertexArray(0);
 }
 
-void TexturedQuadBuffer::Draw(Shader* shader, m4* projection)
+void TexturedQuadBuffer::Draw(Shader* shader, m4& projection)
 {
 	if (rolling_index == 0) return;
 
 	shader->Use();
 	shader->setInt("imageSampler", 0);
-	//shader->setBool("hideAlpha", HIDE_ALPHA);
-	shader->setMat4("projection", *projection);
-	//shader->setVec2("resolution", STATE.window.screen_size);
+	shader->setMat4("projection", projection);
 	auto atlas = RM.GetTexture(this->texture_key);
 
 	if (atlas != nullptr) {
@@ -410,13 +407,13 @@ void GradientBuffer::Flush() {
 	glBindVertexArray(0);
 }
 
-void GradientBuffer::Draw(Shader* shader, m4* projection)
+void GradientBuffer::Draw(v2 screen_size, Shader* shader, m4& projection)
 {
 	if (rolling_index == 0) return;
 
 	shader->Use();
-	shader->setMat4("projection", *projection);
-	shader->setVec2("resolution", STATE.window.screen_size);
+	shader->setMat4("projection", projection);
+	shader->setVec2("resolution", screen_size);
 
 	glBindVertexArray(VAO);
 	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, rolling_index);

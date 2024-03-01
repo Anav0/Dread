@@ -1,5 +1,4 @@
 #include "Line.h"
-#include "GameState.h"
 #include "Shader.h"
 
 Line::Line(v3 from, v3 to)
@@ -29,12 +28,12 @@ void Line::Setup()
     glBindVertexArray(0);
 }
 
-void Line::Draw(Shader* shader, m4* projection)
+void Line::Draw(Shader* shader, m4 projection, m4 view)
 {
     glBindVertexArray(VAO);
     shader->Use();
-    shader->setMat4("view", STATE.window.camera.GetViewMatrix());
-    shader->setMat4("projection", *projection);
+    shader->setMat4("view", view);
+    shader->setMat4("projection", projection);
     shader->setMat4("model", this->model);
     glDrawArrays(GL_LINES, 0, points.size());
     glBindVertexArray(0);

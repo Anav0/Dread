@@ -47,7 +47,7 @@ public:
     }
 
     void Update();
-    void Draw(Shader* shader, m4* projection, m4 model);
+    void Draw(Shader* shader, m4 projection, m4 model, m4 view);
     void UpdateBuffer();
 
 private:

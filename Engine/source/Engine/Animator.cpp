@@ -1,7 +1,6 @@
 #include <algorithm>
 
 #include "Animator.h"
-#include "GameState.h"
 #include "WindowManager.h"
 
 steady_clock::time_point Animator::GetAnimationStartTime(std::string key)
@@ -92,19 +91,19 @@ v3* Animator::RememberV3(std::string key, v3 from)
     return &remembered_vec3[key];
 }
 
-steady_clock::time_point* Animator::RememberStartTime(std::string key, bool replace)
+steady_clock::time_point* Animator::RememberStartTime(WindowManager* window, std::string key, bool replace)
 {
     if (!start_points.contains(key))
-        start_points.insert(std::pair(key, STATE.window.frame_start_time));
+        start_points.insert(std::pair(key, window->frame_start_time));
 
     if (replace)
-        start_points[key] = STATE.window.frame_start_time;
+        start_points[key] = window->frame_start_time;
 
     return &start_points.at(key);
 }
 
 // TODO: string to ID
-bool Animator::AnimateVec3(std::string key, v3* from, v3 to, milliseconds duration_ms, bool forward)
+bool Animator::AnimateVec3(WindowManager* window, std::string key, v3* from, v3 to, milliseconds duration_ms, bool forward)
 {
     auto to_key = key + "_target_value";
     auto from_key = key + "_initial_value";
@@ -119,9 +118,9 @@ bool Animator::AnimateVec3(std::string key, v3* from, v3 to, milliseconds durati
     bool changed_direction = remembered_bool[from_key] != forward;
     remembered_bool[from_key] = forward;
 
-    const steady_clock::time_point* started = RememberStartTime(key, changed_direction);
+    const steady_clock::time_point* started = RememberStartTime(window, key, changed_direction);
 
-    auto now = STATE.window.frame_start_time;
+    auto now = window->frame_start_time;
     auto diff = duration_cast<milliseconds>(now - *started);
 
     f64 progress = (static_cast<f64>(diff.count()) / duration_ms.count());

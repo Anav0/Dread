@@ -3,10 +3,11 @@
 
 #pragma once
 
-#include "Base.h"
-#include "Constants.h"
 #include "GameState.h"
-#include "Gui.h"
+
+#include "Engine/Gui.h"
+#include "Engine/Base.h"
+#include "Engine/Constants.h"
 
 #include <vector>
 

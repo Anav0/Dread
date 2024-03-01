@@ -3,10 +3,10 @@
 #ifndef EntityManager_H
 #define EntityManager_H
 
-#include "Base.h"
-#include "BoundingBox.h"
-#include "Constants.h"
-#include "Gui.h"
+#include "Engine/Base.h"
+#include "Engine/BoundingBox.h"
+#include "Engine/Constants.h"
+#include "Engine/Gui.h"
 
 constexpr int MAX_ENTITIES = 1024;
 

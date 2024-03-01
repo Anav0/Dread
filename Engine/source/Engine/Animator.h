@@ -55,9 +55,9 @@ public:
     steady_clock::time_point GetAnimationStartTime(std::string key);
     void AnimateVec4(std::string key, WindowManager* mgr, v4* base, std::vector<KeyFrame<v4>>& keyframes);
     void AnimateVec2(std::string key, WindowManager* mgr, v2* base, std::vector<KeyFrame<v2>>& keyframes);
-    bool AnimateVec3(std::string key, v3* from, v3 to, milliseconds duration_ms, bool forward = true);
+    bool AnimateVec3(WindowManager* window, std::string key, v3* from, v3 to, milliseconds duration_ms, bool forward = true);
     v3* RememberV3(std::string key, v3 from);
-    steady_clock::time_point* RememberStartTime(std::string key, bool replace = false);
+    steady_clock::time_point* RememberStartTime(WindowManager* window, std::string key, bool replace = false);
     template <typename T>
     bool SetupForRepeat(std::string& key, std::vector<KeyFrame<T>>& keyframes, int& current_keyframe_index, KeyFrame<T>*& current_keyframe);
     void AdjustRepeatCounter(std::string& key);

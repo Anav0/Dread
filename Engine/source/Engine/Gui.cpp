@@ -1,7 +1,5 @@
 #include "Gui.h"
-#include "EntityManager.h"
 #include "Misc.h"
-#include "RenderHelpers.h"
 #include "Renderer.h"
 #include "TextRenderer.h"
 
@@ -115,8 +113,8 @@ void Gui::DrawLabel(std::string label, v2 pos, TextStyle style, bool use_layout)
 
 bool Gui::DrawButton(const char* label, v2 pos, ButtonStyle style)
 {
-    auto mouse_x = STATE.window.mouse_x;
-    auto mouse_y = STATE.window.mouse_y;
+    auto mouse_x = mouse.pos.x;
+    auto mouse_y = mouse.pos.y;
 
     v2 text_size = TR.GetTextSize(label, style.font_size);
 
@@ -149,7 +147,11 @@ bool Gui::DrawButton(const char* label, v2 pos, ButtonStyle style)
 
     Gui::DrawLabel(label, pos, text_style, false);
 
-    return is_mouse_over && STATE.window.buttonType == MouseButton::LEFT && STATE.window.buttonAction == MouseAction::RELEASED;
+    return is_mouse_over && mouse.type == MouseButton::LEFT && mouse.action == MouseAction::RELEASED;
+}
+
+void Gui::onFrameBegin(MouseInfo info) {
+    this->mouse = info;
 }
 
 bool Gui::DrawIcon(AtlasTextureInfo info, v2 pos, v2 offset)
@@ -165,11 +167,11 @@ bool Gui::DrawIcon(AtlasTextureInfo info, v2 pos, v2 offset)
 
     R.ui_buffer.AddTexturedQuad(&info, atlas, pos, info.size);
 
-	auto mouse_x = STATE.window.mouse_x;
-    auto mouse_y = STATE.window.mouse_y;
+	auto mouse_x = mouse.pos.x;
+    auto mouse_y = mouse.pos.y;
 	bool is_mouse_over = isPointInRect(pos, info.size, mouse_x, mouse_y);
 
-	return is_mouse_over && STATE.window.buttonType == MouseButton::LEFT && STATE.window.buttonAction == MouseAction::RELEASED;
+	return is_mouse_over && mouse.type == MouseButton::LEFT && mouse.action == MouseAction::RELEASED;
 }
 
 bool Gui::DrawIcon(IconParams icon_params, v2 pos, v2 offset)
@@ -188,11 +190,11 @@ bool Gui::DrawIcon(IconParams icon_params, v2 pos, v2 offset)
 
     R.ui_buffer.AddTexturedQuad(&info, atlas, pos, icon_size);
 
-	auto mouse_x = STATE.window.mouse_x;
-    auto mouse_y = STATE.window.mouse_y;
+	auto mouse_x = mouse.pos.x;
+    auto mouse_y = mouse.pos.y;
 	bool is_mouse_over = isPointInRect(pos, icon_size * icon_params.scale, mouse_x, mouse_y);
 
-	return is_mouse_over && STATE.window.buttonType == MouseButton::LEFT && STATE.window.buttonAction == MouseAction::RELEASED;
+	return is_mouse_over && mouse.type == MouseButton::LEFT && mouse.action == MouseAction::RELEASED;
 }
 
 void Gui::DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos, TextStyle style)

@@ -3,20 +3,15 @@
 #ifndef GameState_H
 #define GameState_H
 
-#include "Camera.h"
-#include "Constants.h"
-#include "Entities.h"
-#include "WindowManager.h"
+#include "Engine/Camera.h"
+#include "Engine/Constants.h"
+#include "Engine/Entities.h"
+#include "Engine/WindowManager.h"
 
 #include <array>
 #include <string>
 #include <set>
 #include <map>
-
-enum class RenderMode {
-    WIREFRAME,
-    NORMAL,
-};
 
 constexpr static u8 NUMBER_OF_OBLASTS    = 25;
 constexpr static u8 NUMBER_OF_SUPPORTERS = 10;
@@ -122,5 +117,35 @@ Country& GetCountryByCode(CountryCode code);
 Delivery* GetDeliveryByType(WeaponSystemType type);
 
 extern GameState STATE;
+
+WeaponSystem GetBmp1()
+{
+    WeaponSystem vehicle;
+	vehicle.type = WeaponSystemType::BMP1;
+    vehicle.name = "BMP-1";
+    vehicle.image_pos_on_atlas = 0;
+    vehicle.cost_in_dollars = 50'000;
+
+    vehicle.attack = 2;
+    vehicle.defence = 1;
+    vehicle.state = 0.7;
+
+    return vehicle;
+}
+
+WeaponSystem GetT72()
+{
+    WeaponSystem vehicle;
+	vehicle.type = WeaponSystemType::Twardy;
+    vehicle.name = "T72 Twardy";
+    vehicle.image_pos_on_atlas = 0;
+    vehicle.cost_in_dollars = 100'000;
+
+    vehicle.attack = 4;
+    vehicle.defence = 2;
+    vehicle.state = 0.85;
+
+    return vehicle;
+}
 
 #endif

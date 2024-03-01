@@ -1,5 +1,4 @@
 #include "WindowManager.h"
-#include "GameState.h"
 #include "Renderer.h"
 
 void WindowManager::onBeginOfTheLoop()
@@ -12,7 +11,7 @@ void WindowManager::onBeginOfTheLoop()
 
     glfwGetCursorPos(window, &mouse_x, &mouse_y);
 
-    mouse_y = STATE.window.screen_size.y - mouse_y;
+    mouse_y = screen_size.y - mouse_y;
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -85,8 +84,9 @@ bool WindowManager::Init()
 	auto framebuffer_size_lambda = [](GLFWwindow* w, int width, int height)
 	{
 		glViewport(0, 0, width, height);
-        static_cast<WindowManager*>(glfwGetWindowUserPointer(w))->Resize(width, height);
-		R.UpdateProjection();
+        WindowManager* wm = static_cast<WindowManager*>(glfwGetWindowUserPointer(w));
+        wm->Resize(width, height);
+        R.UpdateProjection(wm->camera, {width, height});
 	};
 
     glfwMakeContextCurrent(window);
@@ -132,9 +132,9 @@ void WindowManager::ProcessInput()
     }
 
     if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
-        STATE.mode = RenderMode::NORMAL;
+        R.mode = RenderMode::NORMAL;
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
-        STATE.mode = RenderMode::WIREFRAME;
+        R.mode = RenderMode::WIREFRAME;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)

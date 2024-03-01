@@ -2,7 +2,6 @@
 
 #include "Constants.h"
 
-#include "GameState.h"
 #include <array>
 #include <cassert>
 #include <chrono>
