@@ -10,6 +10,7 @@
 #include <array>
 
 class Shader;
+class Camera;
 
 typedef int ID;
 

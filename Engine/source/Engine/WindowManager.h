@@ -25,7 +25,7 @@ enum class MouseAction {
 class WindowManager {
 public:
     GLFWwindow* window;
-    Camera camera; // TODO: temporary
+    Camera camera;
     v2 screen_size;
 
     f64 mouse_x, mouse_y;

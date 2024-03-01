@@ -1,4 +1,6 @@
 #include "EntityManager.h"
+#include "Entities.h"
+
 #include "Engine/Renderer.h"
 
 EntityManager E;

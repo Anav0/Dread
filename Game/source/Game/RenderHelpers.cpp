@@ -1,8 +1,11 @@
-#include "RenderHelpers.h"
 #include "Engine/Gui.h"
 #include "Engine/Model.h"
 #include "Engine/ResourceManager.h"
 #include "Engine/TextRenderer.h"
+#include <Engine/Collision.h>
+
+#include "RenderHelpers.h"
+#include "EntityManager.h"
 #include "Entities.h"
 #include "Atlas.h"
 
@@ -32,7 +35,7 @@ std::vector<MeshInBuffer> AddModel(v3 position, std::string model_name, v4 color
 
 constexpr u16 top_offset = 80;
 
-void DrawTurnUI()
+void DrawTurnUI(WindowManager* window)
 {
 	auto initial_date = GetDateStr();
 	v2 size = TR.GetTextSize(initial_date.c_str(), default_style.font_size);
@@ -49,7 +52,7 @@ void DrawTurnUI()
 	}
 }
 
-void DrawResources()
+void DrawResources(WindowManager* window)
 {
     IconParams sword_icon, megaphone_icon;
     sword_icon.size = v2(64);
@@ -92,7 +95,7 @@ std::vector<MeshInBuffer> AddModel(v3 position, v3 size, std::string model_name,
     return meshes;
 }
 
-void DrawSupportPackage(SupportPackage& package, u32 package_index)
+void DrawSupportPackage(WindowManager* window, SupportPackage& package, u32 package_index)
 {
     Country& country = GetCountryByCode(package.origin);
     IconParams icon;
@@ -110,7 +113,7 @@ void DrawSupportPackage(SupportPackage& package, u32 package_index)
     UI.EndLayout();
 }
 
-void DrawWeaponsInReserve() {
+void DrawWeaponsInReserve(WindowManager* window) {
 	if (STATE.weapons_in_reserve.size() == 0) return;
 
 	UI.Stack(Direction::Vertical, 20);
@@ -120,21 +123,21 @@ void DrawWeaponsInReserve() {
 	UI.EndLayout();
 }
 
-void DrawDeliveriesUI()
+void DrawDeliveriesUI(WindowManager* window)
 {
     u32  i = 0;
     UI.Stack(Direction::Vertical, 60);
 		for (SupportPackage& package : STATE.promised_support) {
 			if (package.fully_delivered) continue;
-			DrawSupportPackage(package, i);
+			DrawSupportPackage(window, package, i);
 			i++;
 		}
     UI.EndLayout();
 }
 
-void DrawSupportingCountries()
+void DrawSupportingCountries(WindowManager* window)
 {
-    auto y = STATE.window.screen_size.y - top_offset;
+    auto y = window->screen_size.y - top_offset;
     auto x = 20;
 
     UI.Stack(Direction::Horizontal, 20, { x, y });
@@ -179,18 +182,18 @@ void DrawOblastInfo() {
 	UI.DrawLabel(std::format("{} - {:.2f}%", oblast->name, oblast->ukrainian_control * 100));
 }
 
-void DrawUI() {
-	u32 y = STATE.window.screen_size.y - top_offset - 200;
+void DrawUI(WindowManager* window) {
+	u32 y = window->screen_size.y - top_offset - 200;
   constexpr u32 x = 20;
 
-	DrawSupportingCountries();
+	DrawSupportingCountries(window);
 	
 	UI.Stack(Direction::Vertical, 100, {x, y});
-		DrawDeliveriesUI();
-		DrawWeaponsInReserve();
+		DrawDeliveriesUI(window);
+		DrawWeaponsInReserve(window);
 		DrawOblastInfo();
 	UI.EndLayout();
 
-	DrawResources();
-	DrawTurnUI();
+	DrawResources(window);
+	DrawTurnUI(window);
 }

@@ -3,7 +3,8 @@
 #include <array>
 
 #include "Engine/Constants.h";
-#include "Engine/GameState.h";
+
+#include "GameState.h";
 
 #define EXPORT extern "C" __declspec(dllexport)
 

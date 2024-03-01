@@ -21,11 +21,11 @@ void AddSupportingCountries();
 
 //------------------------------------------------------------------------
 
-void DrawUI();
-void DrawResources();
-void DrawSupportingCountries();
-void DrawDeliveriesUI();
-void DrawTurnUI();
+void DrawUI(WindowManager*);
+void DrawResources(WindowManager*);
+void DrawSupportingCountries(WindowManager*);
+void DrawDeliveriesUI(WindowManager*);
+void DrawTurnUI(WindowManager*);
 void DrawSupportPackage(SupportPackage& package);
 void DrawOblastInfo();
 

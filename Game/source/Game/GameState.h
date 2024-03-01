@@ -3,9 +3,10 @@
 #ifndef GameState_H
 #define GameState_H
 
+#include "Entities.h"
+
 #include "Engine/Camera.h"
 #include "Engine/Constants.h"
-#include "Engine/Entities.h"
 #include "Engine/WindowManager.h"
 
 #include <array>
@@ -16,7 +17,6 @@
 constexpr static u8 NUMBER_OF_OBLASTS    = 25;
 constexpr static u8 NUMBER_OF_SUPPORTERS = 10;
 
-constexpr bool HIDE_ALPHA  = false;
 constexpr bool DEBUG_LINES = false;
 constexpr bool CULLING     = true;
 
@@ -78,14 +78,10 @@ struct SupportPackage {
 //------------------------------------------------------------------------
 
 struct GameState {
-  WindowManager window;
-  RenderMode mode = RenderMode::NORMAL;
-  bool show_collisions = false;
+	OblastCode selected_oblast;
 
-  OblastCode selected_oblast;
-
-  f32 popular_support = 0.8;
-  u64 reserve         = 600'000;
+	f32 popular_support = 0.8;
+	u64 reserve         = 600'000;
 
 	std::vector<Country> countries;
 

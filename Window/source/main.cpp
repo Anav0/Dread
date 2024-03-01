@@ -1,10 +1,10 @@
 #include <algorithm>
 #include <set>
 
-#include "Engine/WindowManager.h"
+#include "Engine/Gui.h"
 #include "Engine/HotReload.h"
-
-#include <stb_image.h>
+#include "Engine/ResourceManager.h"
+#include "Engine/WindowManager.h"
 
 void GLAPIENTRY
 MessageCallback(GLenum source,
@@ -47,15 +47,31 @@ int main(int argc, char* argv[])
     stbi_set_flip_vertically_on_load(true);
 
     GameCode game = LoadGameCode();
+    game.GameInit(&window);
 
 #if DEBUG_LINES
     std::vector<Line> lines;
 #endif
 
+    u64 frame_counter = 0;
+    MouseInfo info {};
     while (!window.IsClosing()) {
         window.onBeginOfTheLoop();
+
+        info.action = window.buttonAction;
+        info.type = window.buttonType;
+        info.pos.x = window.mouse_x;
+        info.pos.y = window.mouse_y;
+
+        UI.onFrameBegin(info);
+
         glfwPollEvents();
 
+        if (frame_counter++ > 144) {
+            HotReloadGameCode(&game);
+            RM.HotReloadShaders();
+            frame_counter = 0;
+        }
         game.GameUpdateAndRender(&window);
 
         glfwSwapBuffers(window.window);

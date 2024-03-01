@@ -8,6 +8,8 @@
 #include "Engine/Constants.h"
 #include "Engine/Gui.h"
 
+#include "Entities.h"
+
 constexpr int MAX_ENTITIES = 1024;
 
 struct GameEntity {

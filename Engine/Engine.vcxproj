@@ -97,7 +97,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="source\Engine\Animator.h" />
-    <ClInclude Include="source\Engine\Atlas.h" />
     <ClInclude Include="source\Engine\Base.h" />
     <ClInclude Include="source\Engine\BoundingBox.h" />
     <ClInclude Include="source\Engine\Buffers.h" />

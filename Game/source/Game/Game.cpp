@@ -1,18 +1,19 @@
+#include "Engine/Renderer.h"
+#include "Engine/Gui.h"
+
+#include "Atlas.h"
+#include "Entities.h"
+#include "EntityManager.h"
 #include "Game.h"
+#include "GameState.h"
+#include "RenderHelpers.h"
 
-#include "Engine/GameState.h"
+#include "RenderHelpers.cpp"
 
-u32 frame_counter = 0;
-void GameUpdateAndRender(WindowManager*)
+void GameUpdateAndRender(WindowManager* window)
 {
-    /*
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    if (frame_counter++ > 144) {
-        HotReloadGameCode(&dll);
-        RM.HotReloadShaders();
-        frame_counter = 0;
-    }
 
     E.Update();
     R.Update();
@@ -20,6 +21,7 @@ void GameUpdateAndRender(WindowManager*)
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    /*
     if (STATE.window.buttonAction == MouseAction::PRESSED && STATE.window.buttonType == MouseButton::LEFT) {
         Ray ray = GetRayFromEyes(&R.projection);
 #if DEBUG_LINES
@@ -39,19 +41,32 @@ void GameUpdateAndRender(WindowManager*)
             printf("Nothing hit with mouse ray!\n");
         }
     }
+    */
 
-    //------------------------------------------------------------------------
-    //
+    const Gradient card_gradient {
+        GradientType::Radial,
+        v2(0.5, 0.5),
+        { 0.777, -0.56 },
+        1.0,
+        { YELLOW, BLACK },
+    };
 
-    R.gradient_buffer.AddGradient({ 0, STATE.window.screen_size.y - HEADER_H }, { STATE.window.screen_size.x, HEADER_H }, game->header_gradient);
+    const Gradient header_gradient {
+        GradientType::ThreeColor,
+        v2(0.25, 0.65),
+        { 0.0, 0.0 },
+        1.0,
+        { RED, BLACK, YELLOW },
+    };
 
-    R.gradient_buffer.AddGradient({ 50, 50 }, { 260, 130 }, game->card_gradient);
+    R.gradient_buffer.AddGradient({ 0, window->screen_size.y - HEADER_H }, { window->screen_size.x, HEADER_H }, header_gradient); 
+    R.gradient_buffer.AddGradient({ 50, 50 }, { 260, 130 }, card_gradient);
 
-    DrawUI();
+    DrawUI(window);
 
     R.Flush();
 
-    R.Draw();
+    R.Draw(window->camera, window->screen_size);
 
 #if DEBUG_LINES
     for (auto& line : lines)
@@ -60,25 +75,20 @@ void GameUpdateAndRender(WindowManager*)
 
     // printf("Camera: %f %f %f | %f %f\r", camera->position.x, camera->position.y, camera->position.z, camera->yaw, camera->pitch);
 
-    // printf("UI buffer index: %i\n", R.ui_buffer.rolling_index);
-    // printf("Font buffer index: %i\n", R.font_buffer.rolling_index);
-
     R.Reset();
     UI.Reset();
 
     STATE.turn_changed = false;
-    */
 }
 
-void GameInit(WindowManager*)
+void GameInit(WindowManager* window)
 {
-    /*
     RM.LoadRequiredResources();
     u8 size = 38;
     TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
     TR.UseFont("oswald.ttf");
 
-    R.Init();
+    R.Init(window->camera, window->screen_size);
 
     AddMap();
     AddSupportingCountries();
@@ -104,26 +114,4 @@ void GameInit(WindowManager*)
     p2.delivery.push_back({ 5, GetT72() });
 
     PromiseSupport(p2);
-    */
 }
-
-/*
-
-
-const Gradient card_gradient {
-    GradientType::Radial,
-    v2(0.5, 0.5),
-    { 0.777, -0.56 },
-    1.0,
-    { YELLOW, BLACK },
-};
-
-const Gradient header_gradient {
-    GradientType::ThreeColor,
-    v2(0.25, 0.65),
-    { 0.0, 0.0 },
-    1.0,
-    { RED, BLACK, YELLOW },
-};
-
-*/
