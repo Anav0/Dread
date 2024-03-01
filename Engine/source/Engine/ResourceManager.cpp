@@ -84,9 +84,6 @@ Texture* ResourceManager::LoadTexture(std::string file_path, std::string resourc
 
     int desiredChannels = 4;
 
-    if (file_path.find("Units") != std::string::npos)
-        int desiredChannels = 4;
-
     data = stbi_load(file_path.c_str(), &width, &height, &nrChannels, desiredChannels);
 
     if (data == nullptr) {

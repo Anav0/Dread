@@ -3,6 +3,7 @@ workspace "Dread"
    startproject "Window"
    cppdialect "C++20"
    configurations { "Debug", "Release" }
+	 flags { "MultiProcessorCompile" }
 
 project "Engine"
    kind "StaticLib"
@@ -11,7 +12,6 @@ project "Engine"
    location "Engine/"
    files { "Engine/source/**.h", "Engine/source/Engine/lib.cpp" }
 	 links {
-		"glfw3",
 		"opengl32",
 		"user32",
 		"gdi32",
@@ -20,7 +20,7 @@ project "Engine"
 		"assimp-vc143-mt",
 	 }
 	 libdirs { "Engine/libs" }
-	 includedirs {"Engine/includes" }
+	 includedirs { "Engine/includes" }
    filter "configurations:Debug"
       defines { "DEBUG" }
       symbols "On"
@@ -35,16 +35,9 @@ project "Game"
    location "Game/"
 	 links {
 		"Engine",
-		"glfw3",
-		"opengl32",
-		"user32",
-		"gdi32",
-		"shell32",
-		"freetype",
-		"assimp-vc143-mt",
 	 }
 	 libdirs { "Game/libs" }
-	 includedirs { "Engine/source", "Game/includes" }
+	 includedirs { "Engine/source", "Engine/includes", "Game/includes" }
    files { "Game/source/**.h", "Game/source/Game/Game.cpp" }
 
    filter "configurations:Debug"
@@ -63,7 +56,7 @@ project "Window"
    files { "Window/source/**.h", "Window/source/main.cpp" }
 	 links {
 		"Engine",
-		"Game.dll",
+		"Game",
 		"glfw3",
 		"opengl32",
 		"user32",
@@ -73,7 +66,7 @@ project "Window"
 		"assimp-vc143-mt",
 	 }
 	 libdirs { "Window/libs" }
-	 includedirs { "Engine/source", "Game/source", "Window/includes" }
+	 includedirs { "Window/includes", "Engine/source", "Game/source" }
    filter "configurations:Debug"
       defines { "DEBUG" }
       symbols "On"

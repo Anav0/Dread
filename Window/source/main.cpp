@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
     stbi_set_flip_vertically_on_load(true);
 
     GameCode game = LoadGameCode();
-    game.GameInit(&window);
+    //game.GameInit(&window);
 
 #if DEBUG_LINES
     std::vector<Line> lines;
@@ -68,10 +68,11 @@ int main(int argc, char* argv[])
         glfwPollEvents();
 
         if (frame_counter++ > 144) {
-            HotReloadGameCode(&game);
-            RM.HotReloadShaders();
+            //HotReloadGameCode(&game);
+            //RM.HotReloadShaders();
             frame_counter = 0;
         }
+
         game.GameUpdateAndRender(&window);
 
         glfwSwapBuffers(window.window);

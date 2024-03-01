@@ -15,8 +15,8 @@ class Texture;
 
 using std::string;
 
-static std::string ASSETS_PATH = "D:/Projects/Dread/assets/";
-static std::string FONTS_PATH  = "D:/Projects/Dread/fonts";
+static std::string ASSETS_PATH = "D:/Projects/Dread/Game/Assets/";
+static std::string FONTS_PATH  = "D:/Projects/Dread/Game/Fonts";
 
 class ResourceManager {
 private:
@@ -32,7 +32,7 @@ public:
 
     ResourceManager()
     {
-        SHADERS_PATH = "D://Projects//Dread//shaders//";
+        SHADERS_PATH = "D://Projects//Dread//Game//Shaders//";
     }
 
     void LoadAllResources();

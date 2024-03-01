@@ -7,22 +7,24 @@
 #include "GameState.h"
 #include "EntityManager.h"
 #include "RenderHelpers.h"
+#include <glad/glad.h>
 
 #include "Entities.cpp"
 #include "GameState.cpp"
 #include "EntityManager.cpp"
 #include "RenderHelpers.cpp"
 
+#include "glad.c"
+
 void GameUpdateAndRender(WindowManager* window)
 {
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    E.Update();
-    R.Update();
+    //E.Update();
+    //R.Update();
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    return;
 
     /*
     if (STATE.window.buttonAction == MouseAction::PRESSED && STATE.window.buttonType == MouseButton::LEFT) {
