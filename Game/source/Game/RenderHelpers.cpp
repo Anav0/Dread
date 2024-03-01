@@ -41,13 +41,13 @@ void DrawTurnUI(WindowManager* window)
 	v2 size = TR.GetTextSize(initial_date.c_str(), default_style.font_size);
 	v2 pos;
 	v2 header_size = v2(0, HEADER_H);
-	v2 header_pos  = v2(0, GetScreenSize().y - HEADER_H);
+	v2 header_pos  = v2(0, window->screen_size.y - HEADER_H);
 	CenterChildInParentY(&header_pos, &header_size, &pos, &size);
-    UI.Stack(Direction::Horizontal, 10, { GetScreenSize().x - 265, pos.y });
+    UI.Stack(Direction::Horizontal, 10, { window->screen_size.x - 265, pos.y });
     	UI.DrawLabel(initial_date);
     UI.EndLayout();
 
-	if (UI.DrawIcon(END_TURN_ICON, {GetScreenSize().x - 100, pos.y - 45})) {
+	if (UI.DrawIcon(END_TURN_ICON, {window->screen_size.x - 100, pos.y - 45})) {
 		GoToNextPhase();
 	}
 }
@@ -63,7 +63,7 @@ void DrawResources(WindowManager* window)
     megaphone_icon.index = MEGAPHONE;
     sword_icon.index     = SWORD;
 
-		u32 y = CenterChildInParentY(GetScreenSize().y - HEADER_H, HEADER_H, sword_icon.size.y);
+    u32 y = CenterChildInParentY(window->screen_size.y - HEADER_H, HEADER_H, sword_icon.size.y);
     u32 x = 10;
 
     UI.Stack(Direction::Horizontal, 10, { x, y });

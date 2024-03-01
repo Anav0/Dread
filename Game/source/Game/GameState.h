@@ -102,7 +102,6 @@ std::string GetYear();
 
 Oblast* GetOblast(OblastCode code);
 
-v2 GetScreenSize();
 void ChangeControl(f32 by);
 void GoToNextPhase();
 void GoToNextTurn();

@@ -1,13 +1,16 @@
 #include "Engine/Renderer.h"
 #include "Engine/Gui.h"
 
+#include "Game.h"
 #include "Atlas.h"
 #include "Entities.h"
-#include "EntityManager.h"
-#include "Game.h"
 #include "GameState.h"
+#include "EntityManager.h"
 #include "RenderHelpers.h"
 
+#include "Entities.cpp"
+#include "GameState.cpp"
+#include "EntityManager.cpp"
 #include "RenderHelpers.cpp"
 
 void GameUpdateAndRender(WindowManager* window)

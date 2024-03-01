@@ -45,7 +45,7 @@ project "Game"
 	 }
 	 libdirs { "Game/libs" }
 	 includedirs { "Engine/source", "Game/includes" }
-   files { "Game/source/**.h", "Game/source/**.c", "Game/source/**.cpp" }
+   files { "Game/source/**.h", "Game/source/Game/Game.cpp" }
 
    filter "configurations:Debug"
       defines { "DEBUG" }

@@ -89,11 +89,6 @@ void GoToNextTurn() {
 	STATE.turn_changed = true;
 }
 
-v2 GetScreenSize()
-{
-    return STATE.window.screen_size;
-}
-
 std::string GetDateStr() {
 	return std::format("{} {}", GetMonth(), GetYear());
 }

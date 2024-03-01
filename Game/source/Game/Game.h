@@ -4,8 +4,6 @@
 
 #include "Engine/Constants.h";
 
-#include "GameState.h";
-
 #define EXPORT extern "C" __declspec(dllexport)
 
 EXPORT void GameUpdateAndRender(WindowManager*);

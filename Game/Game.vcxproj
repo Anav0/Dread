@@ -104,11 +104,7 @@
     <ClInclude Include="source\Game\RenderHelpers.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\Game\Entities.cpp" />
-    <ClCompile Include="source\Game\EntityManager.cpp" />
     <ClCompile Include="source\Game\Game.cpp" />
-    <ClCompile Include="source\Game\GameState.cpp" />
-    <ClCompile Include="source\Game\RenderHelpers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">
