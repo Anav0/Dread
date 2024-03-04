@@ -57,7 +57,7 @@ project "Window"
    location "Window/"
 	 links {
 		"Engine",
-		"Game",
+		"Game.dll",
 	 }
    files { "Window/source/**.h", "Window/source/main.cpp" }
 	 libdirs { "Window/libs" }

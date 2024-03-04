@@ -29,7 +29,7 @@ class Renderer {
 public:
   std::vector<BoundingBox> boxes;
   std::vector<InstancedMeshBuffer> buffers;
-  RenderMode mode;
+  RenderMode mode = RenderMode::NORMAL;
 
 	TexturedQuadBuffer font_buffer;
 	TexturedQuadBuffer ui_buffer;

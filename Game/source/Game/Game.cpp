@@ -13,13 +13,43 @@
 #include "GameState.cpp"
 #include "RenderHelpers.cpp"
 
+u64 frame_counter = 0;
+MouseInfo info;
+
+void GLAPIENTRY
+MessageCallback(GLenum source,
+    GLenum type,
+    GLuint id,
+    GLenum severity,
+    GLsizei length,
+    const GLchar* message,
+    const void* userParam)
+{
+    fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+        type, severity, message);
+}
+
 void GameUpdateAndRender(WindowManager* window)
 {
+    info.action = window->buttonAction;
+    info.type = window->buttonType;
+    info.pos.x = window->mouse_x;
+    info.pos.y = window->mouse_y;
+
     E.Update();
 
-    assert(glClearColor != NULL);
-
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    UI.onFrameBegin(info);
+
+    R.Update();
+
+    if (frame_counter++ > 144) {
+        RM.HotReloadShaders();
+        frame_counter = 0;
+    }
 
     /*
     if (STATE.window.buttonAction == MouseAction::PRESSED && STATE.window.buttonType == MouseButton::LEFT) {
@@ -75,12 +105,31 @@ void GameUpdateAndRender(WindowManager* window)
 
     // printf("Camera: %f %f %f | %f %f\r", camera->position.x, camera->position.y, camera->position.z, camera->yaw, camera->pitch);
 
+    R.Reset();
+    UI.Reset();
+
     STATE.turn_changed = false;
 }
 
 void GameInit(WindowManager* window)
 {
     gladLoadGL();
+
+    glViewport(0, 0, window->screen_size.x, window->screen_size.y);
+
+#if CULLING
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+#endif
+
+    glEnable(GL_BLEND);
+    glEnable(GL_DEBUG_OUTPUT);
+    // glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDebugMessageCallback(MessageCallback, 0);
+
+    stbi_set_flip_vertically_on_load(true);
 
     RM.LoadRequiredResources();
     u8 size = 38;
