@@ -30,7 +30,7 @@ void StackLayout::PositionChild(v2 own_pos, v2& pos, v2 child_size, u16 child_in
         break;
     }
 
-    //printf("Child %i, X: %f, Y: %f, W: %f, H: %f\n", child_index, pos.x, pos.y, child_size.x, child_size.y);
+    // printf("Child %i, X: %f, Y: %f, W: %f, H: %f\n", child_index, pos.x, pos.y, child_size.x, child_size.y);
 }
 
 void Layout::PositionChild(v2& pos, v2 child_size)
@@ -71,10 +71,10 @@ void Gui::EndLayout()
 
 void Gui::DrawLabel(std::string label, v2 pos, TextStyle style, bool use_layout)
 {
-	assert(pos.x >= 0.0);
-	assert(pos.y >= 0.0);
+    assert(pos.x >= 0.0);
+    assert(pos.y >= 0.0);
 
-    FontInfo font       = TR.GetCurrentFont(style.font_size);
+    FontInfo font = TR.GetCurrentFont(style.font_size);
     Texture* font_atlas = RM.GetTexture(font.path);
 
     if (font_atlas == nullptr)
@@ -131,14 +131,14 @@ bool Gui::DrawButton(const char* label, v2 pos, ButtonStyle style)
     v2 position = v2(pos.x, pos.y);
 
     v4 bg_color = style.bg_color;
-    bool is_mouse_over = isPointInRect(position, size, mouse_x, 
-                                       mouse_y);
+    bool is_mouse_over = isPointInRect(position, size, mouse_x,
+        mouse_y);
     if (is_mouse_over) {
         bg_color = YELLOW;
     }
 
     auto parent_size = v2(size);
-    auto parent_pos  = v2(position);
+    auto parent_pos = v2(position);
 
     CenterChildInParent(&parent_pos, &parent_size, &pos, &text_size);
     TextStyle text_style = default_style;
@@ -150,7 +150,8 @@ bool Gui::DrawButton(const char* label, v2 pos, ButtonStyle style)
     return is_mouse_over && mouse.type == MouseButton::LEFT && mouse.action == MouseAction::RELEASED;
 }
 
-void Gui::onFrameBegin(MouseInfo info) {
+void Gui::onFrameBegin(MouseInfo info)
+{
     this->mouse = info;
 }
 
@@ -161,17 +162,17 @@ bool Gui::DrawIcon(AtlasTextureInfo info, v2 pos, v2 offset)
         parent.PositionChild(pos, info.size * info.scale);
     }
 
-	pos += offset;
+    pos += offset;
 
     auto atlas = RM.GetTexture("icons");
 
     R.ui_buffer.AddTexturedQuad(&info, atlas, pos, info.size);
 
-	auto mouse_x = mouse.pos.x;
+    auto mouse_x = mouse.pos.x;
     auto mouse_y = mouse.pos.y;
-	bool is_mouse_over = isPointInRect(pos, info.size, mouse_x, mouse_y);
+    bool is_mouse_over = isPointInRect(pos, info.size, mouse_x, mouse_y);
 
-	return is_mouse_over && mouse.type == MouseButton::LEFT && mouse.action == MouseAction::RELEASED;
+    return is_mouse_over && mouse.type == MouseButton::LEFT && mouse.action == MouseAction::RELEASED;
 }
 
 bool Gui::DrawIcon(IconParams icon_params, v2 pos, v2 offset)
@@ -180,7 +181,7 @@ bool Gui::DrawIcon(IconParams icon_params, v2 pos, v2 offset)
         Layout& parent = layouts.back();
         parent.PositionChild(pos, icon_params.size * icon_params.scale);
     }
-	pos += offset;
+    pos += offset;
 
     auto icon_size = icon_params.size;
 
@@ -190,17 +191,17 @@ bool Gui::DrawIcon(IconParams icon_params, v2 pos, v2 offset)
 
     R.ui_buffer.AddTexturedQuad(&info, atlas, pos, icon_size);
 
-	auto mouse_x = mouse.pos.x;
+    auto mouse_x = mouse.pos.x;
     auto mouse_y = mouse.pos.y;
-	bool is_mouse_over = isPointInRect(pos, icon_size * icon_params.scale, mouse_x, mouse_y);
+    bool is_mouse_over = isPointInRect(pos, icon_size * icon_params.scale, mouse_x, mouse_y);
 
-	return is_mouse_over && mouse.type == MouseButton::LEFT && mouse.action == MouseAction::RELEASED;
+    return is_mouse_over && mouse.type == MouseButton::LEFT && mouse.action == MouseAction::RELEASED;
 }
 
 void Gui::DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos, TextStyle style)
 {
-	assert(pos.x >= 0.0);
-	assert(pos.y >= 0.0);
+    assert(pos.x >= 0.0);
+    assert(pos.y >= 0.0);
 
     if (!layouts.empty()) {
         Layout& parent = layouts.back();

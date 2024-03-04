@@ -7,6 +7,7 @@
 int main(int argc, char* argv[])
 {
     WindowManager window;
+
     if (!window.Init()) {
         printf("ERROR: Failed to initialize WindowManager\n");
         return -1;
@@ -17,9 +18,9 @@ int main(int argc, char* argv[])
 
     u32 frame_counter = 0;
     while (!window.IsClosing()) {
-        glfwPollEvents();
-
         window.onBeginOfTheLoop();
+
+        glfwPollEvents();
 
         if (frame_counter++ > 144) {
             HotReloadGameCode(&game);
@@ -27,6 +28,7 @@ int main(int argc, char* argv[])
         }
 
         game.GameUpdateAndRender(&window);
+
         glfwSwapBuffers(window.window);
     }
 
