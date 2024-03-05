@@ -52,11 +52,11 @@ void Renderer::Update()
 {
 }
 
-void Renderer::Draw(Camera& camera, v2 screen_size)
+void Renderer::Draw(PickingBuffer* picking, Camera& camera, v2 screen_size)
 {
-    // TODO: temp
-    auto shader          = RM.GetShader("object");
-    auto texture_shader  = RM.GetShader("texture");
+  // TODO: temp
+  auto shader          = RM.GetShader("object");
+  auto texture_shader  = RM.GetShader("texture");
 	auto gradient_shader = RM.GetShader("gradient");
 
 	auto view = camera.GetViewMatrix();
@@ -66,7 +66,7 @@ void Renderer::Draw(Camera& camera, v2 screen_size)
 	font_buffer.Draw(texture_shader, ortho_projection);
 
     for (auto& buffer : buffers) {
-        buffer.Draw(shader, projection, view, nullptr);
+        buffer.Draw(shader, screen_size, picking, projection, view, nullptr);
     }
 
 	//TODO: show collisions

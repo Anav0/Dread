@@ -161,7 +161,7 @@ public:
         glBindVertexArray(0);
     }
 
-    void Draw(Shader* shader, m4& projection, m4& view, Texture* atlas);
+    void Draw(Shader* shader, v2 screen_size, PickingBuffer* picking, m4& projection, m4& view, Texture* atlas);
     m4 GetMatrix(u32 index);
 
     MeshInBuffer AddMesh(v3 position, v3 size, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f);
@@ -177,22 +177,6 @@ struct GradientBufferElement {
 	v2 radial_position;
     std::array<v4, GRADIENT_MAX_COLORS> colors;
 };
-
-/*
- 
-enum class GradientType : i32 {
-	Radial = 0,
-	ThreeColor = 1,
-};
-constexpr u8 GRADIENT_MAX_COLORS = 4;
-struct Gradient {
-	GradientType gradient_type;
-	v2 middle;
-	v2 radial_position;
-	f32 radial_factor;
-  std::array<v4, GRADIENT_MAX_COLORS> colors;
-};
-*/
 
 enum class GradientType : i32 {
 	Radial = 0,
@@ -213,9 +197,9 @@ class GradientBuffer {
 	GradientBufferElement elements[MAX_CAPACITY];
 
 public:
-    u16 rolling_index = 0;
+  u16 rolling_index = 0;
 
-    void Allocate(u32 buffer_size, BufferLayout);
+  void Allocate(u32 buffer_size, BufferLayout);
 	void Flush();
 	void Draw(v2 screen_size, Shader* shader, m4& projection);
 	void Reset();
@@ -230,22 +214,38 @@ struct TexturedQuadBufferElement {
 };
 
 class TexturedQuadBuffer {
-    unsigned int VAO, VBO, EBO, instanced_VBO;
+  unsigned int VAO, VBO, EBO, instanced_VBO;
 
 	TexturedQuadBufferElement elements[MAX_CAPACITY];
 
 public:
-    std::string texture_key;
-    u16 rolling_index = 0;
+  std::string texture_key;
+  u16 rolling_index = 0;
 
-    void Allocate(u32 buffer_size, BufferLayout);
+  void Allocate(u32 buffer_size, BufferLayout);
 	void Flush();
 	void Draw(Shader* shader, m4& projection);
 	void Reset();
 	
 	u32 AddQuad(const v2 position, const v2 size, const v4 color, float rotation = 0);
-    u32 AddTexturedQuad(const AtlasTextureInfo* texture_info, const Texture* atlas, const v2 pos, const v2 size = { 0, 0 },
-        const float rotation = 0, v4 color = WHITE);
+  u32 AddTexturedQuad(const AtlasTextureInfo* texture_info, const Texture* atlas, const v2 pos, const v2 size = { 0, 0 }, const float rotation = 0, v4 color = WHITE);
+
+};
+
+struct PickingBufferElement {
+	u32 entity_id;
+};
+
+class PickingBuffer {
+  u32 FBO;
+	u32 picking_texture;
+
+	public:
+    u16 rolling_index = 0;
+		void Allocate(v2 screen_size);
+		void Bind();
+		void Unbind();
+		f32 ReadPixel(v2 pos);
 
 };
 

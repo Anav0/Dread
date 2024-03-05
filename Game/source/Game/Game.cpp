@@ -1,3 +1,4 @@
+#include "Engine/Buffers.h"
 #include "Engine/Gui.h"
 #include "Engine/Renderer.h"
 
@@ -12,6 +13,7 @@
 #include "EntityManager.cpp"
 #include "GameState.cpp"
 #include "RenderHelpers.cpp"
+#include "glad/glad.h"
 
 u64 frame_counter = 0;
 MouseInfo info;
@@ -30,6 +32,8 @@ MessageCallback(GLenum source,
         type, severity, message);
 }
 
+PickingBuffer picking_buffer;
+
 void GameUpdateAndRender(WindowManager* window)
 {
     info.action = window->buttonAction;
@@ -39,8 +43,6 @@ void GameUpdateAndRender(WindowManager* window)
 
     E.Update();
     assert(glClearColor != NULL);
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     UI.onFrameBegin(info);
 
@@ -50,28 +52,6 @@ void GameUpdateAndRender(WindowManager* window)
         RM.HotReloadShaders();
         frame_counter = 0;
     }
-
-    /*
-    if (STATE.window.buttonAction == MouseAction::PRESSED && STATE.window.buttonType == MouseButton::LEFT) {
-        Ray ray = GetRayFromEyes(&R.projection);
-#if DEBUG_LINES
-        lines.push_back(Line(ray.position, ray.position + ray.direction * 1000.0f));
-#endif
-        Collision c = CheckRayCollision(ray, R.projection);
-        if (c.hit_something) {
-            switch (c.what_was_hit) {
-            case EntityType::BoundingBox:
-                auto entity = E.GetEntityById(c.box.child_id);
-                if (entity->type == EntityType::Oblast) {
-                    STATE.selected_oblast = entity->oblast.code;
-                }
-                break;
-            }
-        } else {
-            printf("Nothing hit with mouse ray!\n");
-        }
-    }
-    */
 
     const Gradient card_gradient {
         GradientType::Radial,
@@ -96,7 +76,23 @@ void GameUpdateAndRender(WindowManager* window)
 
     R.Flush();
 
-    R.Draw(window->camera, window->screen_size);
+		//--------------------------------------------------------------
+		/*
+		auto p_shader = RM.GetShader("picking");
+		p_shader->Use();
+		p_shader->setInt("entity_id", 55);
+		*/
+		picking_buffer.Bind();
+    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    R.Draw(&picking_buffer, window->camera, window->screen_size);
+		picking_buffer.Unbind();
+		//--------------------------------------------------------------
+				
+    glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    R.Draw(&picking_buffer, window->camera, window->screen_size);
 
 #if DEBUG_LINES
     for (auto& line : lines)
@@ -114,6 +110,9 @@ void GameUpdateAndRender(WindowManager* window)
 void GameInitAfterReload(WindowManager* window)
 {
     gladLoadGL();
+
+		picking_buffer.Allocate(window->screen_size);
+
     glViewport(0, 0, window->screen_size.x, window->screen_size.y);
 
 #if CULLING
@@ -141,6 +140,8 @@ void GameInitAfterReload(WindowManager* window)
 GameState* GameInit(WindowManager* window)
 {
     gladLoadGL();
+
+		picking_buffer.Allocate(window->screen_size);
 
     glViewport(0, 0, window->screen_size.x, window->screen_size.y);
 

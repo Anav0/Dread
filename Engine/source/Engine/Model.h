@@ -27,7 +27,7 @@ class Shader;
 class Model;
 
 namespace Models {
-Mesh TransformMesh(aiMesh* mesh, const aiScene* scene, const string& directory);
+Mesh TransformMesh(u32 i, aiMesh* mesh, const aiScene* scene, const string& directory);
 void LoadMeshesFromScene(vector<Mesh>& meshes, aiNode* node, const aiScene* scene, const string& directory);
 }
 
@@ -44,7 +44,6 @@ public:
     {
     }
 
-    void Draw(Shader* shader, m4 projection, m4 view);
 };
 
 Model* GetModelFromBoundingBoxIndex(int);

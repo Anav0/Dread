@@ -31,7 +31,8 @@ void ResourceManager::LoadRequiredResources()
     LoadShader("texture.vert", "texture.frag", "texture");
     LoadShader("gradient.vert", "gradient.frag", "gradient");
     
-	LoadShader("object.vert", "object.frag", "object");
+		LoadShader("picking.vert", "picking.frag", "picking");
+		LoadShader("object.vert", "object.frag", "object");
     LoadShader("debug.vert", "debug.frag", "debug");
     LoadShader("mesh.vert", "mesh.frag", "mesh");
 

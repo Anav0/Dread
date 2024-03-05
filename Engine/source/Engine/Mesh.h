@@ -14,6 +14,7 @@ using std::string;
 using std::vector;
 
 class Shader;
+class PickingBuffer;
 
 class MeshInBuffer {
 public:
@@ -28,6 +29,7 @@ public:
 class Mesh {
 public:
     std::string id;
+		u32 int_id;
     u32 VAO;
     vector<Vertex> vertices;
     vector<u32> indices;
@@ -36,7 +38,7 @@ public:
 
     Mesh() { }
 
-    Mesh(u64 triangle_count, vector<Vertex> vertices, vector<u32> indices, vector<std::string> textures)
+    Mesh(u32 int_id, u64 triangle_count, vector<Vertex> vertices, vector<u32> indices, vector<std::string> textures)
     {
         this->vertices = vertices;
         this->indices = indices;
@@ -47,7 +49,6 @@ public:
     }
 
     void Update();
-    void Draw(Shader* shader, m4 projection, m4 model, m4 view);
     void UpdateBuffer();
 
 private:

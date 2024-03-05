@@ -3,6 +3,7 @@
 #include "Model.h"
 #include "ResourceManager.h"
 #include "TextRenderer.h"
+#include "glad/glad.h"
 
 InstancedMeshBuffer::InstancedMeshBuffer(Mesh mesh)
 {
@@ -46,7 +47,7 @@ void InstancedMeshBuffer::Allocate()
     glBindVertexArray(0);
 }
 
-void InstancedMeshBuffer::Draw(Shader* shader, m4& projection, m4& view, Texture* atlas)
+void InstancedMeshBuffer::Draw(Shader* shader, v2 screen_size, PickingBuffer* picking_buffer, m4& projection, m4& view, Texture* atlas)
 {
     if (colors.size() == 0)
         return;
@@ -55,6 +56,9 @@ void InstancedMeshBuffer::Draw(Shader* shader, m4& projection, m4& view, Texture
         glActiveTexture(GL_TEXTURE0);
         atlas->Bind();
     }
+
+		glEnable(GL_BLEND);
+    glViewport(0, 0, screen_size.x, screen_size.y);
 
     if (R.mode == RenderMode::WIREFRAME)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -423,4 +427,56 @@ void GradientBuffer::Draw(v2 screen_size, Shader* shader, m4& projection)
 void GradientBuffer::Reset() {
 	//This should be enough
 	rolling_index = 0;
+}
+
+void PickingBuffer::Allocate(v2 screen_size) {
+	glGenFramebuffers(1, &FBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+
+	glGenTextures(1, &picking_texture);
+	glBindTexture(GL_TEXTURE_2D, picking_texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, screen_size.x, screen_size.y, 0, GL_RGB, GL_FLOAT, NULL);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, picking_texture, 0);
+
+	glReadBuffer(GL_NONE);
+	glDrawBuffer(GL_COLOR_ATTACHMENT0);
+
+  assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);  
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+
+void PickingBuffer::Bind() {
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FBO);  
+	glBindTexture(GL_TEXTURE_2D, picking_texture);
+}
+
+void PickingBuffer::Unbind() {
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);  
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+f32 PickingBuffer::ReadPixel(v2 pos) {
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	glBindTexture(GL_TEXTURE_2D, picking_texture);
+
+	f32 pixel[3];
+
+	glReadPixels(pos.x, pos.y, 1, 1, GL_RGB, GL_FLOAT, &pixel);
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);  
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	return pixel[0];
 }

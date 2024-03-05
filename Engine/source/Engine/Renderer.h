@@ -42,7 +42,7 @@ public:
   std::map<std::string, u32> mesh_by_buffor_index;
 
 	void Init(Camera& camera, v2 screen_size);
-  void Draw(Camera& camera, v2 screen_size);
+  void Draw(PickingBuffer*, Camera&, v2 screen_size);
 	void Flush();
   void Update();
 	void UpdateProjection(Camera& camera, v2 screen_size);

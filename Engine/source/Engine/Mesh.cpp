@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "Constants.h"
 #include "Shader.h"
+#include "Buffers.h"
 
 #include "Renderer.h"
 
@@ -10,46 +11,6 @@ void Mesh::Update()
     // model = glm::translate(model, v3(0.0, 0.05, 0.0));
     // BoundingBox* box = &R.boxes.at(bounding_box_id);
     // box->is_dirty = true;
-}
-
-void Mesh::Draw(Shader* shader, m4 projection, m4 model, m4 view)
-{
-    u32 diffuseNr = 1;
-    u32 specularNr = 1;
-    u32 normalNr = 1;
-    u32 heightNr = 1;
-
-    if (R.mode == RenderMode::WIREFRAME)
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    else
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    shader->setMat4("projection", projection);
-    shader->setMat4("view", view);
-    shader->setMat4("model", model);
-
-    for (u32 i = 0; i < textures.size(); i++) {
-        glActiveTexture(GL_TEXTURE0 + i);
-        string number;
-        Texture* t = RM.GetTextureByKey(textures[i]);
-        if (t->type == "texture_diffuse")
-            number = std::to_string(diffuseNr++);
-        else if (t->type == "texture_specular")
-            number = std::to_string(specularNr++);
-        else if (t->type == "texture_normal")
-            number = std::to_string(normalNr++);
-        else if (t->type == "texture_height")
-            number = std::to_string(heightNr++);
-
-        glUniform1i(glGetUniformLocation(shader->ID, (t->type + number).c_str()), i);
-        glBindTexture(GL_TEXTURE_2D, t->ID);
-    }
-
-    glBindVertexArray(VAO);
-    glDrawElementsInstanced(GL_TRIANGLES, static_cast<u32>(indices.size()), GL_UNSIGNED_INT, 0, 10);
-    glBindVertexArray(0);
-
-    glActiveTexture(GL_TEXTURE0);
 }
 
 void Mesh::UpdateBuffer()
