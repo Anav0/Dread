@@ -34,7 +34,6 @@ int main(int argc, char* argv[])
             if (GameCodeChanged(&game)) {
                 GameState state_copy = *current_game_state;
                 UnloadGameCode(&game);
-                printf("\n\n\n\n%i\n\n\n\n", state_copy.current_turn);
                 game = LoadGameCode();
                 current_game_state = game.GameInitEx(state_copy, &window);
             }
