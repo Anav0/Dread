@@ -33,7 +33,7 @@ std::vector<MeshInBuffer> AddModel(v3 position, std::string model_name, v4 color
     return meshes;
 }
 
-constexpr u16 top_offset = 80;
+constexpr u16 top_offset = 120;
 
 void DrawTurnUI(WindowManager* window)
 {
@@ -110,7 +110,7 @@ void DrawSupportPackage(WindowManager* window, SupportPackage& package, u32 pack
 			UI.DrawLabel(std::format("{}x {}", d.n, d.system.name));
 		}
 		UI.DrawIcon(icon);
-    UI.EndLayout();
+  UI.EndLayout();
 }
 
 void DrawWeaponsInReserve(WindowManager* window) {
@@ -125,8 +125,8 @@ void DrawWeaponsInReserve(WindowManager* window) {
 
 void DrawDeliveriesUI(WindowManager* window)
 {
-    u32  i = 0;
-    UI.Stack(Direction::Vertical, 60);
+    u32 i = 0;
+    UI.Stack(Direction::Vertical, 40);
 		for (SupportPackage& package : STATE.promised_support) {
 			if (package.fully_delivered) continue;
 			DrawSupportPackage(window, package, i);
@@ -138,7 +138,7 @@ void DrawDeliveriesUI(WindowManager* window)
 void DrawSupportingCountries(WindowManager* window)
 {
     auto y = window->screen_size.y - top_offset;
-    auto x = 20;
+    auto x = 120;
 
     UI.Stack(Direction::Horizontal, 20, { x, y });
 		for (auto& country : STATE.countries) {
@@ -183,7 +183,7 @@ void DrawOblastInfo() {
 }
 
 void DrawUI(WindowManager* window) {
-	u32 y = window->screen_size.y - top_offset - 200;
+	u32 y = window->screen_size.y - top_offset - HEADER_H - 120;
   constexpr u32 x = 20;
 
 	DrawSupportingCountries(window);
