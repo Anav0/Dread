@@ -136,10 +136,9 @@ void GameInitAfterReload(WindowManager* window)
     u8 size = 38;
     TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
     TR.UseFont("oswald.ttf");
-
 }
 
-void GameInit(WindowManager* window)
+GameState* GameInit(WindowManager* window)
 {
     gladLoadGL();
 
@@ -190,4 +189,39 @@ void GameInit(WindowManager* window)
     p2.delivery.push_back({ 5, GetT72() });
 
     PromiseSupport(p2);
+
+    return &STATE;
+}
+
+GameState* GameInitEx(GameState state, WindowManager* window)
+{
+    STATE = state;
+    gladLoadGL();
+
+    glViewport(0, 0, window->screen_size.x, window->screen_size.y);
+
+#if CULLING
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+#endif
+
+    glEnable(GL_BLEND);
+    glEnable(GL_DEBUG_OUTPUT);
+    // glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDebugMessageCallback(MessageCallback, 0);
+
+    stbi_set_flip_vertically_on_load(true);
+
+    RM.LoadRequiredResources();
+    u8 size = 38;
+    TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
+    TR.UseFont("oswald.ttf");
+
+    R.Init(window->camera, window->screen_size);
+
+    AddMap();
+
+    return &STATE;
 }
