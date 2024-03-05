@@ -20,6 +20,7 @@ using namespace std::filesystem;
 class WindowManager;
 
 typedef void (*tGameUpdateAndRender)(WindowManager* window);
+typedef void (*tGameInitAfterReload)(WindowManager* window);
 typedef void (*tGameInit)(WindowManager* window);
 
 // TODO: move to GameState.h
@@ -27,9 +28,10 @@ struct GameCode {
     HINSTANCE dll;
     tGameUpdateAndRender GameUpdateAndRender;
     tGameInit GameInit;
+    tGameInitAfterReload GameInitAfterReload;
     file_time_type dll_change_time;
 };
 
 GameCode LoadGameCode();
 void UnloadGameCode(GameCode);
-void HotReloadGameCode(GameCode* game);
+bool HotReloadGameCode(GameCode* game);

@@ -30,12 +30,17 @@ GameCode LoadGameCode()
 
     tGameInit GameInit = (tGameInit)GetProcAddress(dll, "GameInit");
     assert(GameInit != NULL);
+
+    tGameInitAfterReload GameInitAfterReload  = (tGameInitAfterReload)GetProcAddress(dll, "GameInitAfterReload");
+    assert(GameInitAfterReload != NULL);
+
     auto write_time = last_write_time("Game.dll");
 
     return GameCode {
         dll,
         GameUpdateAndRender,
         GameInit,
+        GameInitAfterReload,
         write_time
     };
 }
@@ -46,13 +51,17 @@ void UnloadGameCode(GameCode* game)
     game->dll = 0;
 }
 
-void HotReloadGameCode(GameCode* game)
+bool HotReloadGameCode(GameCode* game)
 {
     auto dll_last_written = last_write_time("Game.dll");
     bool dll_was_changed = dll_last_written > game->dll_change_time;
 
     if (dll_was_changed) {
+        printf("\n\nDLL CHANGED!\n\n");
         UnloadGameCode(game);
         *game = LoadGameCode();
+        return true;
     }
+
+    return false;
 }

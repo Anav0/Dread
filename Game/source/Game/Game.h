@@ -8,3 +8,4 @@
 
 EXPORT void GameUpdateAndRender(WindowManager*);
 EXPORT void GameInit(WindowManager*);
+EXPORT void GameInitAfterReload(WindowManager*);

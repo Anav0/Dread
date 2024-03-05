@@ -38,7 +38,7 @@ void GameUpdateAndRender(WindowManager* window)
     info.pos.y = window->mouse_y;
 
     E.Update();
-
+    assert(glClearColor != NULL);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -75,7 +75,7 @@ void GameUpdateAndRender(WindowManager* window)
 
     const Gradient card_gradient {
         GradientType::Radial,
-        v2(0.5, 0.5),
+        v2(0.25, 0.5),
         { 0.777, -0.56 },
         1.0,
         { YELLOW, BLACK },
@@ -83,7 +83,7 @@ void GameUpdateAndRender(WindowManager* window)
 
     const Gradient header_gradient {
         GradientType::ThreeColor,
-        v2(0.25, 0.65),
+        v2(0.5, 0.65),
         { 0.0, 0.0 },
         1.0,
         { RED, BLACK, YELLOW },
@@ -109,6 +109,34 @@ void GameUpdateAndRender(WindowManager* window)
     UI.Reset();
 
     STATE.turn_changed = false;
+}
+
+void GameInitAfterReload(WindowManager* window)
+{
+    gladLoadGL();
+    glViewport(0, 0, window->screen_size.x, window->screen_size.y);
+
+#if CULLING
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+#endif
+
+    glEnable(GL_BLEND);
+    glEnable(GL_DEBUG_OUTPUT);
+    // glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDebugMessageCallback(MessageCallback, 0);
+
+    stbi_set_flip_vertically_on_load(true);
+
+    R.Init(window->camera, window->screen_size);
+
+    RM.LoadRequiredResources();
+    u8 size = 38;
+    TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
+    TR.UseFont("oswald.ttf");
+
 }
 
 void GameInit(WindowManager* window)

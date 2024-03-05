@@ -22,8 +22,9 @@ int main(int argc, char* argv[])
 
         glfwPollEvents();
 
-        if (frame_counter++ > 144) {
-            HotReloadGameCode(&game);
+        if (frame_counter++ > 144 * 1) {
+            bool was_reloaded = HotReloadGameCode(&game);
+            if (was_reloaded) game.GameInit(&window);
             frame_counter = 0;
         }
 
