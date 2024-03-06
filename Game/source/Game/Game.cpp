@@ -92,14 +92,15 @@ void GameUpdateAndRender(WindowManager* window)
     R.Flush();
 
 		//--------------------------------------------------------------
+
 		auto p_shader = RM.GetShader("picking");
 		picking_buffer.Bind();
     glClearColor(-1.0f, -1.0f, -1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     R.DrawModels(p_shader, &picking_buffer, window->camera, window->screen_size);
 		picking_buffer.Unbind();
+
 		//--------------------------------------------------------------
-		//
 						
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);

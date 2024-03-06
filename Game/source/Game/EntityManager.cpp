@@ -1,4 +1,5 @@
 #include "EntityManager.h"
+#include "GameState.h"
 #include "Entities.h"
 
 #include "Engine/Renderer.h"
@@ -23,6 +24,8 @@ void EntityManager::Update()
         case EntityType::BoundingBox:
             break;
         case EntityType::Oblast:
+						if(e->oblast.code == STATE.selected_oblast) continue;
+						e->oblast.UpdateColorBasedOnControl();
             break;
         }
 
