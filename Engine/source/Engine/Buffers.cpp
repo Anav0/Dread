@@ -70,6 +70,7 @@ void InstancedMeshBuffer::Draw(Shader* shader, v2 screen_size, PickingBuffer* pi
     shader->setBool("hideAlpha", HIDE_ALPHA);
     shader->setMat4("projection", projection);
     shader->setMat4("view", view);
+		shader->setInt("entity_id", mesh.int_id);
 
     glBindVertexArray(mesh.VAO);
     glDrawElementsInstanced(GL_TRIANGLES, static_cast<u32>(mesh.indices.size()), GL_UNSIGNED_INT, 0, matrices.size());

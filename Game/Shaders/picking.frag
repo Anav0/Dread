@@ -1,4 +1,4 @@
-#version 330 core
+#version 420 core
 
 out vec4 FragColor;
 
@@ -6,5 +6,5 @@ flat in int EntityId;
 
 void main()
 {    
-    FragColor = vec4(EntityId, EntityId, EntityId, 1.0);
+   FragColor = vec4(EntityId, EntityId, EntityId, 1.0);
 }

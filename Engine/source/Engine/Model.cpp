@@ -4,7 +4,7 @@
 #include "ResourceManager.h"
 #include "Shader.h"
 
-Mesh Models::TransformMesh(u32 i, aiMesh* mesh, const aiScene* scene, const string& directory)
+Mesh Models::TransformMesh(aiMesh* mesh, const aiScene* scene, const string& directory)
 {
     vector<Vertex> vertices;
     vector<u32> indices;
@@ -66,14 +66,14 @@ Mesh Models::TransformMesh(u32 i, aiMesh* mesh, const aiScene* scene, const stri
     auto heightMaps = RM.LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height", directory);
     texture_keys.insert(texture_keys.end(), heightMaps.begin(), heightMaps.end());
 
-    return Mesh(i, mesh->mNumVertices / 3, vertices, indices, texture_keys);
+    return Mesh(mesh->mNumVertices / 3, vertices, indices, texture_keys);
 }
 
 void Models::LoadMeshesFromScene(vector<Mesh>& meshes, aiNode* node, const aiScene* scene, const string& directory)
 {
     for (u32 i = 0; i < node->mNumMeshes; i++) {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        Mesh m = TransformMesh(i, mesh, scene, directory);
+        Mesh m = TransformMesh(mesh, scene, directory);
         meshes.push_back(m);
     }
 

@@ -8,8 +8,8 @@ EntityManager E;
 ID EntityManager::CreateOblast(Oblast oblast)
 {
     entities[ROLLING_INDEX].oblast = oblast;
-    entities[ROLLING_INDEX].id = ROLLING_INDEX;
-    entities[ROLLING_INDEX].type = EntityType::Oblast;
+    entities[ROLLING_INDEX].id     = ROLLING_INDEX;
+    entities[ROLLING_INDEX].type   = EntityType::Oblast;
 
     return ROLLING_INDEX++;
 }

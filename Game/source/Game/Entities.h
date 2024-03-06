@@ -135,7 +135,7 @@ struct Country {
     CountryCode code;
     const char* name;
     f32 support;
-	u8 index_in_atlas;
+		u8 index_in_atlas;
 
     Country() { }
     Country(CountryCode code, const char* name, f32 support, u8 index_in_atlas)
@@ -143,7 +143,7 @@ struct Country {
         this->code = code;
         this->name = name;
         this->support = support;
-		this->index_in_atlas = index_in_atlas;
+				this->index_in_atlas = index_in_atlas;
     }
 };
 

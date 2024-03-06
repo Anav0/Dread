@@ -38,7 +38,7 @@ public:
 
     Mesh() { }
 
-    Mesh(u32 int_id, u64 triangle_count, vector<Vertex> vertices, vector<u32> indices, vector<std::string> textures)
+    Mesh(u64 triangle_count, vector<Vertex> vertices, vector<u32> indices, vector<std::string> textures)
     {
         this->vertices = vertices;
         this->indices = indices;

@@ -3,6 +3,7 @@
 #include "Engine/Renderer.h"
 
 #include "Atlas.h"
+#include "Engine/WindowManager.h"
 #include "Entities.h"
 #include "EntityManager.h"
 #include "Game.h"
@@ -77,22 +78,27 @@ void GameUpdateAndRender(WindowManager* window)
     R.Flush();
 
 		//--------------------------------------------------------------
-		/*
 		auto p_shader = RM.GetShader("picking");
-		p_shader->Use();
-		p_shader->setInt("entity_id", 55);
-		*/
 		picking_buffer.Bind();
-    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.5f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    R.Draw(&picking_buffer, window->camera, window->screen_size);
+    R.Draw(p_shader, &picking_buffer, window->camera, window->screen_size);
 		picking_buffer.Unbind();
 		//--------------------------------------------------------------
+		//
+
+		//TODO: it is not really entity id but mesh id
+		if(info.action == MouseAction::PRESSED && info.type == MouseButton::LEFT) {
+			u32 entity_id = picking_buffer.ReadPixel(info.pos);
+			OblastCode code = static_cast<OblastCode>(entity_id);
+			auto oblast_name = OBLAST_NAMES.at(code);
+		}
 				
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    R.Draw(&picking_buffer, window->camera, window->screen_size);
+		auto shader = RM.GetShader("object");
+    R.Draw(shader, &picking_buffer, window->camera, window->screen_size);
 
 #if DEBUG_LINES
     for (auto& line : lines)

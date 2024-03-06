@@ -94,7 +94,6 @@ struct BufferLayout {
 //------------------------------------------------------------------------
 
 class InstancedMeshBuffer {
-
     u32 VBO = 0;
 
     // Dynamic
@@ -103,9 +102,7 @@ class InstancedMeshBuffer {
 
 public:
     Mesh mesh;
-
     InstancedMeshBuffer(Mesh mesh);
-
     void Allocate();
 
     void UpdateMatrix(const u32 index, v3 size, v3 pos, f32 rotation = 0.0f)

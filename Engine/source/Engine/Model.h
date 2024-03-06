@@ -27,7 +27,7 @@ class Shader;
 class Model;
 
 namespace Models {
-Mesh TransformMesh(u32 i, aiMesh* mesh, const aiScene* scene, const string& directory);
+Mesh TransformMesh(aiMesh* mesh, const aiScene* scene, const string& directory);
 void LoadMeshesFromScene(vector<Mesh>& meshes, aiNode* node, const aiScene* scene, const string& directory);
 }
 
