@@ -52,6 +52,13 @@ void Renderer::Update()
 {
 }
 
+void Renderer::DrawModels(Shader* pshader, PickingBuffer* picking, Camera& camera, v2 screen_size) {
+		auto view = camera.GetViewMatrix();
+    for (auto& buffer : buffers) {
+        buffer.Draw(pshader, screen_size, picking, projection, view, nullptr);
+    }
+}
+
 void Renderer::Draw(Shader* pshader, PickingBuffer* picking, Camera& camera, v2 screen_size)
 {
   auto texture_shader  = RM.GetShader("texture");
@@ -63,16 +70,7 @@ void Renderer::Draw(Shader* pshader, PickingBuffer* picking, Camera& camera, v2 
 	ui_buffer.Draw(texture_shader, ortho_projection);
 	font_buffer.Draw(texture_shader, ortho_projection);
 
-    for (auto& buffer : buffers) {
-        buffer.Draw(pshader, screen_size, picking, projection, view, nullptr);
-    }
-
-	//TODO: show collisions
-    if (false) {
-        for (auto& box : R.boxes) {
-            box.Draw(projection, view);
-        }
-    }
+	DrawModels(pshader, picking ,camera, screen_size);
 }
 
 void Renderer::Flush() {

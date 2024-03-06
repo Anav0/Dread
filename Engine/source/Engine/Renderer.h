@@ -43,6 +43,7 @@ public:
 
 	void Init(Camera& camera, v2 screen_size);
   void Draw(Shader* shader, PickingBuffer*, Camera&, v2 screen_size);
+  void DrawModels(Shader* shader, PickingBuffer*, Camera&, v2 screen_size);
 	void Flush();
   void Update();
 	void UpdateProjection(Camera& camera, v2 screen_size);

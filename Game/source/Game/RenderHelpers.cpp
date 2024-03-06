@@ -167,7 +167,6 @@ void AddMap()
 {
     int i = 0;
     Model* map_model = RM.GetModel("map");
-    std::vector<MeshInBuffer> meshes;
 
     for (auto& mesh : map_model->meshes) {
         if (i > NUMBER_OF_OBLASTS - 1)
@@ -186,14 +185,12 @@ void AddMap()
 
 				// Add instance to instanced mesh rendering
 				auto mesh_in_buffer = buffer->AddMesh({0,0,0}, GREY, static_cast<i32>(id));
-				E.GetEntityById(id)->oblast.SetMesh(mesh_in_buffer);
         mesh_in_buffer.buffer_index = R.buffers.size() - 1;
-        meshes.push_back(mesh_in_buffer);
+
+				E.GetEntityById(id)->oblast.SetMesh(mesh_in_buffer);
 
         i++;
     }
-
-    assert(meshes.size() > 0);
 }
 
 void DrawOblastInfo() {

@@ -1,3 +1,4 @@
+#include "Engine/Base.h"
 #include "Engine/Buffers.h"
 #include "Engine/Gui.h"
 #include "Engine/Renderer.h"
@@ -75,27 +76,31 @@ void GameUpdateAndRender(WindowManager* window)
 
     DrawUI(window);
 
+		//
+		//TODO: it is not really entity id but mesh id
+		if(info.action == MouseAction::PRESSED && info.type == MouseButton::LEFT) {
+			i32 entity_id = picking_buffer.ReadPixel(info.pos);
+			if(entity_id != -1) {
+				auto entity = E.GetEntityById(entity_id);
+				if (entity->type == EntityType::Oblast) {
+					  STATE.selected_oblast = entity->oblast.code;
+						entity->oblast.mesh.ChangeColor(YELLOW);
+				}
+			}
+		}
+
     R.Flush();
 
 		//--------------------------------------------------------------
 		auto p_shader = RM.GetShader("picking");
 		picking_buffer.Bind();
-    glClearColor(0.5f, 0.1f, 0.1f, 1.0f);
+    glClearColor(-1.0f, -1.0f, -1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    R.Draw(p_shader, &picking_buffer, window->camera, window->screen_size);
+    R.DrawModels(p_shader, &picking_buffer, window->camera, window->screen_size);
 		picking_buffer.Unbind();
 		//--------------------------------------------------------------
 		//
-
-		//TODO: it is not really entity id but mesh id
-		if(info.action == MouseAction::PRESSED && info.type == MouseButton::LEFT) {
-			u32 entity_id = picking_buffer.ReadPixel(info.pos);
-			auto entity = E.GetEntityById(entity_id);
-      if (entity->type == EntityType::Oblast) {
-          STATE.selected_oblast = entity->oblast.code;
-      }
-		}
-				
+						
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
