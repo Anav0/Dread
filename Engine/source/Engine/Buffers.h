@@ -1,6 +1,7 @@
 #ifndef Buffers_H
 #define Buffers_H
 
+#include "glm/ext/matrix_transform.hpp"
 #pragma once
 
 #include "Base.h"
@@ -120,6 +121,13 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }
+
+		void ScaleAll(f32 scale) {
+			for(u32 i = 0; i < matrices.size(); i++) {
+				matrices[i] = glm::scale(m4(1.0), v3(scale));
+				UpdateMatrix(i, matrices[i]);
+			}
+		}
 
     void UpdateMatrix(const u32 index, m4 matrix)
     {

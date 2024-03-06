@@ -6,7 +6,6 @@
 #include <Game/GameState.h>
 
 /*
-
     Window should keep game state, and only functions that change the behavior of the game should be hot
     reloaded
 */

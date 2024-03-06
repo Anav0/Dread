@@ -2,6 +2,7 @@
 #include "Engine/Buffers.h"
 #include "Engine/Gui.h"
 #include "Engine/Renderer.h"
+#include "Engine/alloc.h"
 
 #include "Atlas.h"
 #include "Engine/WindowManager.h"
@@ -35,6 +36,12 @@ MessageCallback(GLenum source,
 }
 
 PickingBuffer picking_buffer;
+
+void DisableStencil() {
+}
+
+void EnableStencil() {
+}
 
 void GameUpdateAndRender(WindowManager* window)
 {
@@ -76,8 +83,6 @@ void GameUpdateAndRender(WindowManager* window)
 
     DrawUI(window);
 
-		//
-		//TODO: it is not really entity id but mesh id
 		if(info.action == MouseAction::PRESSED && info.type == MouseButton::LEFT) {
 			i32 entity_id = picking_buffer.ReadPixel(info.pos);
 			if(entity_id != -1) {
@@ -88,8 +93,6 @@ void GameUpdateAndRender(WindowManager* window)
 				}
 			}
 		}
-
-    R.Flush();
 
 		//--------------------------------------------------------------
 
@@ -102,10 +105,25 @@ void GameUpdateAndRender(WindowManager* window)
 
 		//--------------------------------------------------------------
 						
-    glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
+		auto single_color_shader = RM.GetShader("simple");
 		auto shader = RM.GetShader("object");
+
+    glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    glStencilMask(0xFF);
+		R.ScaleAllModels(1.0);
+    R.DrawModels(shader, &picking_buffer, window->camera, window->screen_size);
+
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    glStencilMask(0x00);
+	  glDisable(GL_DEPTH_TEST);
+		R.ScaleAllModels(1.02);
+    R.DrawModels(single_color_shader, &picking_buffer, window->camera, window->screen_size);
+		
+		// Flushes 2D buffers only for now
+    R.Flush();
     R.Draw(shader, &picking_buffer, window->camera, window->screen_size);
 
 #if DEBUG_LINES
@@ -133,6 +151,11 @@ void GameInitAfterReload(WindowManager* window)
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 #endif
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_STENCIL_TEST);
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
     glEnable(GL_BLEND);
     glEnable(GL_DEBUG_OUTPUT);
@@ -163,6 +186,11 @@ GameState* GameInit(WindowManager* window)
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 #endif
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_STENCIL_TEST);
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
     glEnable(GL_BLEND);
     glEnable(GL_DEBUG_OUTPUT);

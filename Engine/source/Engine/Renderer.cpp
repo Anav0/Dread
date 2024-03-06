@@ -69,8 +69,6 @@ void Renderer::Draw(Shader* pshader, PickingBuffer* picking, Camera& camera, v2 
 	gradient_buffer.Draw(screen_size, gradient_shader, ortho_projection);
 	ui_buffer.Draw(texture_shader, ortho_projection);
 	font_buffer.Draw(texture_shader, ortho_projection);
-
-	DrawModels(pshader, picking ,camera, screen_size);
 }
 
 void Renderer::Flush() {
@@ -83,6 +81,12 @@ void Renderer::Reset() {
 	gradient_buffer.Reset();
 	ui_buffer.Reset();
 	font_buffer.Reset();
+}
+
+void Renderer::ScaleAllModels(f32 scale) {
+	for(auto& b : buffers) {
+		b.ScaleAll(scale);
+	}
 }
 
 InstancedMeshBuffer* Renderer::CreateBuffer(Mesh mesh)

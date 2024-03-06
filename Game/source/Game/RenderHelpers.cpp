@@ -184,7 +184,7 @@ void AddMap()
             buffer = R.CreateBuffer(mesh);
 
 				// Add instance to instanced mesh rendering
-				auto mesh_in_buffer = buffer->AddMesh({0,0,0}, GREY, static_cast<i32>(id));
+				auto mesh_in_buffer = buffer->AddMesh({0, 2, 0}, GREY, static_cast<i32>(id));
         mesh_in_buffer.buffer_index = R.buffers.size() - 1;
 
 				E.GetEntityById(id)->oblast.SetMesh(mesh_in_buffer);
