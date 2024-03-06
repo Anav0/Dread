@@ -16,8 +16,11 @@ void InstancedMeshBuffer::Allocate()
     glBindVertexArray(mesh.VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    auto matrices_size = sizeof(m4) * matrices.size();
-    auto colors_size = sizeof(v4) * colors.size();
+    auto matrices_size = sizeof(m4)  * matrices.size();
+    auto colors_size   = sizeof(v4)  * colors.size();
+    auto ids_size      = sizeof(i32) * ids.size();
+
+		auto total_size = matrices_size + colors_size + ids_size;
 
     std::size_t vec4Size = sizeof(v4);
 
@@ -33,16 +36,20 @@ void InstancedMeshBuffer::Allocate()
     glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * vec4Size));
     glEnableVertexAttribArray(7);
     glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(v4), (void*)matrices_size);
+    glEnableVertexAttribArray(8);
+		glVertexAttribIPointer(8, 1, GL_INT, sizeof(i32), (void*)(matrices_size + colors_size));
 
     glVertexAttribDivisor(3, 1); // Matrix transform
     glVertexAttribDivisor(4, 1);
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
     glVertexAttribDivisor(7, 1); // Color
+    glVertexAttribDivisor(8, 1); // EntityId
 
-    glBufferData(GL_ARRAY_BUFFER, matrices_size + colors_size, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, total_size, NULL, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, matrices_size, &matrices[0]);
     glBufferSubData(GL_ARRAY_BUFFER, matrices_size, colors_size, &colors[0]);
+    glBufferSubData(GL_ARRAY_BUFFER, matrices_size + colors_size, ids_size, &ids[0]);
 
     glBindVertexArray(0);
 }
@@ -70,7 +77,6 @@ void InstancedMeshBuffer::Draw(Shader* shader, v2 screen_size, PickingBuffer* pi
     shader->setBool("hideAlpha", HIDE_ALPHA);
     shader->setMat4("projection", projection);
     shader->setMat4("view", view);
-		shader->setInt("entity_id", mesh.int_id);
 
     glBindVertexArray(mesh.VAO);
     glDrawElementsInstanced(GL_TRIANGLES, static_cast<u32>(mesh.indices.size()), GL_UNSIGNED_INT, 0, matrices.size());
@@ -82,12 +88,13 @@ m4 InstancedMeshBuffer::GetMatrix(u32 index)
     return matrices[index];
 }
 
-MeshInBuffer InstancedMeshBuffer::AddMesh(v3 position, v3 size, v4 color, f32 rotation, f32 scale)
+MeshInBuffer InstancedMeshBuffer::AddMesh(v3 position, v3 size, v4 color, i32 entity_id, f32 rotation, f32 scale) 
 {
     auto mesh_in_buffer = MeshInBuffer();
 
     this->colors.push_back(color);
     this->matrices.push_back(GetTransformMatrix(position, size, rotation, v3(scale)));
+    this->ids.push_back(entity_id);
 
     mesh_in_buffer.pos_in_buffer = this->colors.size() - 1;
 
@@ -96,12 +103,13 @@ MeshInBuffer InstancedMeshBuffer::AddMesh(v3 position, v3 size, v4 color, f32 ro
 
     return mesh_in_buffer;
 }
-MeshInBuffer InstancedMeshBuffer::AddMesh(v3 position, v4 color, f32 rotation, f32 scale)
+MeshInBuffer InstancedMeshBuffer::AddMesh(v3 position, v4 color, i32 entity_id, f32 rotation, f32 scale)
 {
     auto mesh_in_buffer = MeshInBuffer();
 
     this->colors.push_back(color);
     this->matrices.push_back(GetTransformMatrix(position, rotation, v3(scale)));
+    this->ids.push_back(entity_id);
 
     mesh_in_buffer.pos_in_buffer = this->colors.size() - 1;
 

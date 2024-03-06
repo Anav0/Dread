@@ -76,7 +76,7 @@ struct BufferLayout {
 	std::vector<BufferElement> elements;
 	u64 size = 0;
 
-    BufferLayout() { }
+  BufferLayout() { }
 	BufferLayout(std::initializer_list<BufferElement> items) : elements(items){
 		CalculateStrideAndTotalSize();
 	}
@@ -99,6 +99,7 @@ class InstancedMeshBuffer {
     // Dynamic
     std::vector<m4> matrices;
     std::vector<v4> colors;
+    std::vector<i32> ids;
 
 public:
     Mesh mesh;
@@ -161,8 +162,8 @@ public:
     void Draw(Shader* shader, v2 screen_size, PickingBuffer* picking, m4& projection, m4& view, Texture* atlas);
     m4 GetMatrix(u32 index);
 
-    MeshInBuffer AddMesh(v3 position, v3 size, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f);
-    MeshInBuffer AddMesh(v3 position, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f);
+    MeshInBuffer AddMesh(v3 position, v3 size, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, i32 entity_id = -1, f32 rotation = 0.0f, f32 scale = 1.0f);
+    MeshInBuffer AddMesh(v3 position, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, i32 entity_id = -1, f32 rotation = 0.0f, f32 scale = 1.0f);
 };
 
 constexpr u32 GRADIENT_MAX_COLORS = 4;
@@ -229,21 +230,15 @@ public:
 
 };
 
-struct PickingBufferElement {
-	u32 entity_id;
-};
-
 class PickingBuffer {
   u32 FBO;
 	u32 picking_texture;
 
 	public:
-    u16 rolling_index = 0;
 		void Allocate(v2 screen_size);
 		void Bind();
 		void Unbind();
 		f32 ReadPixel(v2 pos);
-
 };
 
 #endif

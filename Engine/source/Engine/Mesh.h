@@ -29,7 +29,6 @@ public:
 class Mesh {
 public:
     std::string id;
-		u32 int_id;
     u32 VAO;
     vector<Vertex> vertices;
     vector<u32> indices;

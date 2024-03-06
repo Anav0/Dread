@@ -5,15 +5,15 @@ layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoords;
 layout (location = 3) in mat4 aModel;
 layout (location = 7) in vec4 aColor;
+layout (location = 8) in int aEntityId;
 
 flat out int EntityId;
 
 uniform mat4 view;
 uniform mat4 projection;
-uniform int entity_id;
 
 void main()
 {
-    EntityId = entity_id;
+    EntityId = aEntityId;
     gl_Position = projection * view * aModel * vec4(aPos, 1.0);
 }

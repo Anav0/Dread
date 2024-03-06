@@ -90,8 +90,10 @@ void GameUpdateAndRender(WindowManager* window)
 		//TODO: it is not really entity id but mesh id
 		if(info.action == MouseAction::PRESSED && info.type == MouseButton::LEFT) {
 			u32 entity_id = picking_buffer.ReadPixel(info.pos);
-			OblastCode code = static_cast<OblastCode>(entity_id);
-			auto oblast_name = OBLAST_NAMES.at(code);
+			auto entity = E.GetEntityById(entity_id);
+      if (entity->type == EntityType::Oblast) {
+          STATE.selected_oblast = entity->oblast.code;
+      }
 		}
 				
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);

@@ -17,6 +17,7 @@ std::vector<MeshInBuffer> AddModel(v3 position, std::string model_name, v4 color
 
     std::vector<MeshInBuffer> meshes;
 
+		u32 i=0;
     for (auto& mesh : model->meshes) {
         InstancedMeshBuffer* buffer;
         buffer = R.GetBuffer(mesh.id);
@@ -26,6 +27,7 @@ std::vector<MeshInBuffer> AddModel(v3 position, std::string model_name, v4 color
         auto mesh_in_buffer = buffer->AddMesh(position, color, rotation, scale);
         mesh_in_buffer.buffer_index = R.buffers.size() - 1;
         meshes.push_back(mesh_in_buffer);
+				i++;
     }
 
     assert(meshes.size() > 0);
@@ -164,17 +166,34 @@ void AddSupportingCountries() {
 void AddMap()
 {
     int i = 0;
-    for (auto& mesh : AddModel({ 0, 0, 0 }, "map", GREY, 0, 1)) {
+    Model* map_model = RM.GetModel("map");
+    std::vector<MeshInBuffer> meshes;
+
+    for (auto& mesh : map_model->meshes) {
         if (i > NUMBER_OF_OBLASTS - 1)
             continue;
 
+				//Create entity
         auto code = static_cast<OblastCode>(i);
         auto control = INITIAL_CONTROL.at(code);
+        ID id = E.CreateOblast(Oblast(static_cast<OblastCode>(i), OBLAST_NAMES.at(code), control));
 
-        ID id = E.CreateOblast(Oblast(mesh, static_cast<OblastCode>(i), OBLAST_NAMES.at(code), control));
-        AddBoundingBox(mesh, id);
+				// Create buffer for mesh or use existing one
+				InstancedMeshBuffer* buffer;
+        buffer = R.GetBuffer(mesh.id);
+        if (buffer == nullptr)
+            buffer = R.CreateBuffer(mesh);
+
+				// Add instance to instanced mesh rendering
+				auto mesh_in_buffer = buffer->AddMesh({0,0,0}, GREY, static_cast<i32>(id));
+				E.GetEntityById(id)->oblast.SetMesh(mesh_in_buffer);
+        mesh_in_buffer.buffer_index = R.buffers.size() - 1;
+        meshes.push_back(mesh_in_buffer);
+
         i++;
     }
+
+    assert(meshes.size() > 0);
 }
 
 void DrawOblastInfo() {

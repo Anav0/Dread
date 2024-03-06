@@ -116,6 +116,19 @@ public:
 
         UpdateColorBasedOnControl();
     }
+
+		Oblast(OblastCode code, const char* name, f32 ukrainian_control = 0.0f)
+    {
+        this->code = code;
+        this->name = name;
+        this->ukrainian_control = ukrainian_control;
+    }
+
+		void SetMesh(MeshInBuffer mesh) {
+			this->mesh = mesh;
+			UpdateColorBasedOnControl();
+		}
+		
 };
 
 enum class CountryCode {

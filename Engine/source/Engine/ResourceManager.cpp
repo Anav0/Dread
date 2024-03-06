@@ -214,7 +214,6 @@ void ResourceManager::LoadModel(std::string file_path, std::string resource_key,
     int i = 0;
     for (auto& mesh : model.meshes) {
         mesh.id = directory + "_" + std::to_string(i);
-				mesh.int_id = i;
         i++;
     }
 
