@@ -11,7 +11,7 @@
 
 #include "stb_truetype.h"
 
-std::vector<MeshInBuffer> AddModel(v3 position, std::string model_name, v4 color, f32 rotation, f32 scale)
+std::vector<MeshInBuffer> AddModel(v3 position, const std::string& model_name, v4 color, f32 rotation, f32 scale)
 {
     Model* model = RM.GetModel(model_name);
 
@@ -39,14 +39,14 @@ constexpr u16 top_offset = 120;
 
 void DrawTurnUI(WindowManager* window)
 {
-	auto initial_date = GetDateStr();
-	v2 size = TR.GetTextSize(initial_date.c_str(), default_style.font_size);
+	GetDateStr(STATE.game_date_str);
+	v2 size = TR.GetTextSize(STATE.game_date_str.c_str(), default_style.font_size);
 	v2 pos;
 	v2 header_size = v2(0, HEADER_H);
 	v2 header_pos  = v2(0, window->screen_size.y - HEADER_H);
 	CenterChildInParentY(&header_pos, &header_size, &pos, &size);
     UI.Stack(Direction::Horizontal, 10, { window->screen_size.x - 265, pos.y });
-    	UI.DrawLabel(initial_date);
+    	UI.DrawLabel(STATE.game_date_str);
     UI.EndLayout();
 
 	if (UI.DrawIcon(END_TURN_ICON, {window->screen_size.x - 100, pos.y - 45})) {
@@ -75,7 +75,7 @@ void DrawResources(WindowManager* window)
     UI.EndLayout();
 }
 
-std::vector<MeshInBuffer> AddModel(v3 position, v3 size, std::string model_name, v4 color = { 0.0f, 0.0f, 0.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f)
+std::vector<MeshInBuffer> AddModel(v3 position, v3 size, const std::string& model_name, v4 color = { 0.0f, 0.0f, 0.0f, 1.0f }, f32 rotation = 0.0f, f32 scale = 1.0f)
 {
     Model* model = RM.GetModel(model_name);
 

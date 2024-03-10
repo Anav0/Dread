@@ -50,7 +50,7 @@ public:
 	void UpdateProjection(Camera& camera, v2 screen_size);
 	void Reset();
 
-  InstancedMeshBuffer* GetBuffer(std::string mesh_name);
+  InstancedMeshBuffer* GetBuffer(const std::string& mesh_name);
   InstancedMeshBuffer* GetBufferByIndex(u32 index);
   InstancedMeshBuffer* CreateBuffer(Mesh mesh);
 };

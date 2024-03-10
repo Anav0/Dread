@@ -55,7 +55,7 @@ void ResourceManager::LoadAllResources()
     }
 }
 
-Texture* ResourceManager::GetTexture(std::string resource_key)
+Texture* ResourceManager::GetTexture(const std::string& resource_key)
 {
     if (!loaded_textures.contains(resource_key))
         return nullptr;
@@ -63,12 +63,12 @@ Texture* ResourceManager::GetTexture(std::string resource_key)
     return &loaded_textures[resource_key];
 }
 
-Shader* ResourceManager::GetShader(std::string shader_name)
+Shader* ResourceManager::GetShader(const std::string& shader_name)
 {
     return &loaded_shaders[shader_name];
 }
 
-Texture* ResourceManager::LoadTexture(std::string file_path, std::string resource_key, bool absolute_path, bool alpha)
+Texture* ResourceManager::LoadTexture(std::string file_path, const std::string& resource_key, bool absolute_path, bool alpha)
 {
     if (!absolute_path && file_path.find(ASSETS_PATH) == std::string::npos) {
         file_path = ASSETS_PATH + file_path;
@@ -146,7 +146,7 @@ u32 ResourceManager::TextureFromFile(const char* path, const string& directory, 
     return textureID;
 }
 
-Texture* ResourceManager::GetTextureByKey(std::string key)
+Texture* ResourceManager::GetTextureByKey(const std::string& key)
 {
     if (!loaded_textures.contains(key)) {
         return nullptr;
@@ -154,7 +154,7 @@ Texture* ResourceManager::GetTextureByKey(std::string key)
     return &loaded_textures.at(key);
 }
 
-vector<std::string> ResourceManager::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, const string typeName, const string& directory)
+vector<std::string> ResourceManager::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& typeName, const std::string& directory)
 {
     auto number_of_textures = mat->GetTextureCount(type);
     vector<std::string> keys;
@@ -180,7 +180,7 @@ vector<std::string> ResourceManager::LoadMaterialTextures(aiMaterial* mat, aiTex
     return keys;
 }
 
-Model* ResourceManager::GetModel(std::string resource_key)
+Model* ResourceManager::GetModel(const std::string& resource_key)
 {
 
     if (loaded_models.contains(resource_key))
@@ -189,7 +189,7 @@ Model* ResourceManager::GetModel(std::string resource_key)
     return nullptr;
 }
 
-void ResourceManager::LoadModel(std::string file_path, std::string resource_key, bool gamma)
+void ResourceManager::LoadModel(const std::string& file_path, const std::string& resource_key, bool gamma)
 {
     if (loaded_models.contains(resource_key))
         return;
@@ -222,7 +222,7 @@ void ResourceManager::LoadModel(std::string file_path, std::string resource_key,
     return;
 }
 
-Shader* ResourceManager::LoadShader(std::string vs, std::string fs, const std::string resource_key, std::string gs)
+Shader* ResourceManager::LoadShader(const std::string& vs, const std::string& fs, const const std::string& resource_key, const std::string& gs)
 {
     std::string vertexCode;
     std::string fragmentCode;
@@ -248,7 +248,7 @@ Shader* ResourceManager::LoadShader(std::string vs, std::string fs, const std::s
     return &loaded_shaders[resource_key];
 }
 
-AtlasTextureInfo GetTextureInfoByIndex(u16 index, v2 icon_size, std::string atlas_key)
+AtlasTextureInfo GetTextureInfoByIndex(u16 index, v2 icon_size, const std::string& atlas_key)
 {
     auto info = AtlasTextureInfo();
 

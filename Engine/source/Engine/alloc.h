@@ -1,13 +1,15 @@
 #ifndef ALLOC_H
 #define ALLOC_H
 
+#pragma once
+
 #include "base.h"
 #include <string>
 
-#define MemoryCopy(dst, src, size)    memmove((dst), (src), (size))
-#define MemorySet(dst, byte, size)    memset((dst), (byte), (size))
-#define MemoryCompare(a, b, size)     memcmp((a), (b), (size))
-#define MemoryStrlen(ptr)             strlen(ptr)
+#define MemoryCopy(dst, src, size) memmove((dst), (src), (size))
+#define MemorySet(dst, byte, size) memset((dst), (byte), (size))
+#define MemoryCompare(a, b, size)  memcmp((a), (b), (size))
+#define MemoryStrlen(ptr)          strlen(ptr)
 
 #define MemoryCopyStruct(d,s)  MemoryCopy((d),(s),sizeof(*(d)))
 #define MemoryCopyArray(d,s)   MemoryCopy((d),(s),sizeof(d))

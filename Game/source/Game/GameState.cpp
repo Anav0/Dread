@@ -89,8 +89,8 @@ void GoToNextTurn() {
 	STATE.turn_changed = true;
 }
 
-std::string GetDateStr() {
-	return std::format("{} {}", GetMonth(), GetYear());
+void GetDateStr(std::string& date_str) {
+	date_str = std::format("{} {}", GetMonth(), 2022 + STATE.current_turn / 12);
 }
 
 const char* GetMonth() {

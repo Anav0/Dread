@@ -69,7 +69,7 @@ void Gui::EndLayout()
 
 //------------------------------------------------------------------------
 
-void Gui::DrawLabel(std::string label, v2 pos, TextStyle style, bool use_layout)
+void Gui::DrawLabel(const std::string& label, v2 pos, TextStyle style, bool use_layout)
 {
     assert(pos.x >= 0.0);
     assert(pos.y >= 0.0);
@@ -90,7 +90,7 @@ void Gui::DrawLabel(std::string label, v2 pos, TextStyle style, bool use_layout)
     f32 base_y = pos.y;
 
     v4 color_to_use;
-    for (char& c : label) {
+    for (const char& c : label) {
         color_to_use = style.color;
 
         if (c == ' ') {
@@ -198,7 +198,7 @@ bool Gui::DrawIcon(IconParams icon_params, v2 pos, v2 offset)
     return is_mouse_over && mouse.type == MouseButton::LEFT && mouse.action == MouseAction::RELEASED;
 }
 
-void Gui::DrawIconAndLabel(IconParams icon_params, std::string label, v2 pos, TextStyle style)
+void Gui::DrawIconAndLabel(IconParams icon_params, const std::string& label, v2 pos, TextStyle style)
 {
     assert(pos.x >= 0.0);
     assert(pos.y >= 0.0);

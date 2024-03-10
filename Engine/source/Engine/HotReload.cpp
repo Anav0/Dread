@@ -6,13 +6,6 @@
 #include <windows.h>
 #include <winnt.rh>
 
-static LPWSTR ToWeirdMicrosoftString(std::string text)
-{
-    wchar_t wtext[20];
-    mbstowcs(wtext, text.c_str(), text.length()); // includes null
-    return wtext;
-}
-
 GameCode LoadGameCode()
 {
     bool success = CopyFileA("Game.dll", "Game_tmp.dll", false);

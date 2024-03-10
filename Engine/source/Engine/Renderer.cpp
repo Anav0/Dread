@@ -97,7 +97,7 @@ InstancedMeshBuffer* Renderer::CreateBuffer(Mesh mesh)
     return &buffers[buffers.size() - 1];
 }
 
-InstancedMeshBuffer* Renderer::GetBuffer(std::string mesh_name)
+InstancedMeshBuffer* Renderer::GetBuffer(const std::string& mesh_name)
 {
     if (mesh_by_buffor_index.contains(mesh_name)) {
         u32 index = mesh_by_buffor_index[mesh_name];

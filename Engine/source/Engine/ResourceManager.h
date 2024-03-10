@@ -26,7 +26,7 @@ private:
     std::map<std::string, Texture>       loaded_textures;
     std::map<std::string, Model>         loaded_models;
 
-    u32 TextureFromFile(const char *path, const string &directory, bool gamma);
+    u32 TextureFromFile(const char *path, const string& directory, bool gamma);
 
 public:
 
@@ -38,21 +38,21 @@ public:
     void LoadAllResources();
   	void LoadRequiredResources();
 
-    Texture*            GetTexture(std::string resource_key);
-    Shader*             GetShader(std::string shader_name);
-    Mesh*               LoadMesh(std::string file_path, std::string resource_key, bool gamma = false);
-    void                LoadModel(std::string file_path, std::string resource_key, bool gamma = false);
-    Model*              GetModel(std::string resource_key);
-    vector<std::string> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, const string typeName, const string& directory);
-    Texture*            LoadTexture(std::string file_path, std::string resource_key, bool absolute_path = false, bool alpha = false);
-    Shader*             LoadShader(std::string vs, std::string fs, const std::string resource_key, std::string gs = "");
-		void                HotReloadShaders();
-    Texture*            GetTextureByKey(std::string);
+    Texture*            GetTexture(const std::string& resource_key);
+    Shader*             GetShader(const std::string& shader_name);
+    Mesh*               LoadMesh(const std::string& file_path, const std::string& resource_key, bool gamma = false);
+    void                LoadModel(const std::string& file_path, const std::string& resource_key, bool gamma = false);
+    Model*              GetModel(const std::string& resource_key);
+    vector<std::string> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, const string& typeName, const string& directory);
+    Texture*            LoadTexture(std::string file_path, const std::string& resource_key, bool absolute_path = false, bool alpha = false);
+    Shader*             LoadShader(const std::string& vs, const std::string& fs, const std::string& resource_key, const std::string& gs = "");
+	void                HotReloadShaders();
+    Texture*            GetTextureByKey(const std::string&);
                     
 };
 
 // Returns texture info eg. pos, width and height based on it's index in atlas
-AtlasTextureInfo GetTextureInfoByIndex(u16 index, v2 icon_size, std::string atlas_key);
+AtlasTextureInfo GetTextureInfoByIndex(u16 index, v2 icon_size, const std::string& atlas_key);
 
 extern ResourceManager RM;
 

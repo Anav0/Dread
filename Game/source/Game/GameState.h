@@ -78,6 +78,7 @@ struct SupportPackage {
 //------------------------------------------------------------------------
 
 struct GameState {
+	std::string game_date_str;
 	OblastCode selected_oblast;
 
 	f32 popular_support = 0.8;
@@ -97,7 +98,7 @@ struct GameState {
 };
 
 const char* GetMonth();
-std::string GetDateStr();
+void GetDateStr(std::string& date_str);
 std::string GetYear();
 
 Oblast* GetOblast(OblastCode code);
