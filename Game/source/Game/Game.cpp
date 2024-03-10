@@ -1,5 +1,6 @@
 #include "Engine/Base.h"
 #include "Engine/Buffers.h"
+#include "Engine/Particles.h"
 #include "Engine/Gui.h"
 #include "Engine/Renderer.h"
 #include "Engine/alloc.h"
@@ -36,12 +37,18 @@ MessageCallback(GLenum source,
 }
 
 PickingBuffer picking_buffer;
-
-void DisableStencil() {
-}
-
-void EnableStencil() {
-}
+ParticlesEmitter emitter = ParticlesEmitter({100,100}, {50, 50}, 10, 100);
+BufferLayout emitter_layout {
+	{ BufferElementType::VFloat4, "model_0"},
+	{ BufferElementType::VFloat4, "model_1"},
+	{ BufferElementType::VFloat4, "model_2"},
+	{ BufferElementType::VFloat4, "model_3"},
+	{ BufferElementType::VFloat4, "color"},
+	{ BufferElementType::VFloat2, "pos"},
+	{ BufferElementType::VFloat2, "direction"},
+	{ BufferElementType::Float, "velocity"},
+	{ BufferElementType::Float, "ttl_s"},
+};
 
 void GameUpdateAndRender(WindowManager* window)
 {
@@ -50,12 +57,14 @@ void GameUpdateAndRender(WindowManager* window)
     info.pos.x = window->mouse_x;
     info.pos.y = window->mouse_y;
 
-    E.Update();
     assert(glClearColor != NULL);
+
+    E.Update();
 
     UI.onFrameBegin(info);
 
     R.Update();
+		emitter.Update(window->delta_time);
 
     if (frame_counter++ > 144) {
         RM.HotReloadShaders();
@@ -82,6 +91,7 @@ void GameUpdateAndRender(WindowManager* window)
     R.gradient_buffer.AddGradient({ 50, 50 }, { 260, 130 }, card_gradient);
 
     DrawUI(window);
+		Shader* particle_shader = RM.GetShader("particles");
 
 		if(info.action == MouseAction::PRESSED && info.type == MouseButton::LEFT) {
 			i32 entity_id = picking_buffer.ReadPixel(info.pos);
@@ -94,44 +104,19 @@ void GameUpdateAndRender(WindowManager* window)
 			}
 		}
 
-		//--------------------------------------------------------------
-
-		auto p_shader = RM.GetShader("picking");
-		picking_buffer.Bind();
-    glClearColor(-1.0f, -1.0f, -1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    R.DrawModels(p_shader, &picking_buffer, window->camera, window->screen_size);
-		picking_buffer.Unbind();
-
-		//--------------------------------------------------------------
-						
-		auto single_color_shader = RM.GetShader("simple");
 		auto shader = RM.GetShader("object");
 
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    glStencilFunc(GL_ALWAYS, 1, 0xFF);
-    glStencilMask(0xFF);
-		R.ScaleAllModels(1.0);
-    R.DrawModels(shader, &picking_buffer, window->camera, window->screen_size);
-
-    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-    glStencilMask(0x00);
-	  glDisable(GL_DEPTH_TEST);
-		R.ScaleAllModels(1.02);
-    R.DrawModels(single_color_shader, &picking_buffer, window->camera, window->screen_size);
-		
-		// Flushes 2D buffers only for now
+		emitter.Flush();
     R.Flush();
+
     R.Draw(shader, &picking_buffer, window->camera, window->screen_size);
+		emitter.Draw(*particle_shader, R.ortho_projection);
 
-#if DEBUG_LINES
-    for (auto& line : lines)
-        line.Draw(line_shader, &projection);
-#endif
-
-    // printf("Camera: %f %f %f | %f %f\r", camera->position.x, camera->position.y, camera->position.z, camera->yaw, camera->pitch);
+		auto& camera = window->camera;
+    //printf("Camera: %f %f %f | %f %f\r", camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
 
     R.Reset();
     UI.Reset();
@@ -151,12 +136,6 @@ void GameInitAfterReload(WindowManager* window)
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 #endif
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    glEnable(GL_STENCIL_TEST);
-    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
     glEnable(GL_BLEND);
     glEnable(GL_DEBUG_OUTPUT);
     // glEnable(GL_DEPTH_TEST);
@@ -166,6 +145,7 @@ void GameInitAfterReload(WindowManager* window)
 
     stbi_set_flip_vertically_on_load(true);
 
+		emitter.Allocate(emitter_layout);
     R.Init(window->camera, window->screen_size);
 
     RM.LoadRequiredResources();
@@ -186,12 +166,6 @@ GameState* GameInit(WindowManager* window)
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 #endif
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    glEnable(GL_STENCIL_TEST);
-    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
     glEnable(GL_BLEND);
     glEnable(GL_DEBUG_OUTPUT);
     // glEnable(GL_DEPTH_TEST);
@@ -201,6 +175,7 @@ GameState* GameInit(WindowManager* window)
 
     stbi_set_flip_vertically_on_load(true);
 
+		emitter.Allocate(emitter_layout);
     RM.LoadRequiredResources();
     u8 size = 38;
     TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);

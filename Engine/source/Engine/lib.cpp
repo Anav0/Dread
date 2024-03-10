@@ -20,6 +20,7 @@
 #include "TimeManager.h"
 #include "WindowManager.h"
 #include "alloc.h"
+#include "Particles.h"
 
 #include "Animator.cpp"
 #include "BoundingBox.cpp"
@@ -38,6 +39,7 @@
 #include "WindowManager.cpp"
 #include "alloc.cpp"
 #include "glad.c"
+#include "Particles.cpp"
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION

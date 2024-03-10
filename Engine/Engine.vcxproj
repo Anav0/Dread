@@ -113,6 +113,8 @@
     <ClInclude Include="source\Engine\Misc.h" />
     <ClInclude Include="source\Engine\Model.h" />
     <ClInclude Include="source\Engine\Mouse.h" />
+    <ClInclude Include="source\Engine\Particles.h" />
+    <ClInclude Include="source\Engine\Picking.h" />
     <ClInclude Include="source\Engine\Renderer.h" />
     <ClInclude Include="source\Engine\ResourceManager.h" />
     <ClInclude Include="source\Engine\Shader.h" />

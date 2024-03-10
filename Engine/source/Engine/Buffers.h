@@ -216,7 +216,7 @@ public:
 struct TexturedQuadBufferElement {
 	m4 matrices;
 	v2 textures_coords[4];
-    v4 color;
+  v4 color;
 };
 
 class TexturedQuadBuffer {

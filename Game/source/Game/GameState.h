@@ -79,6 +79,7 @@ struct SupportPackage {
 
 struct GameState {
 	std::string game_date_str;
+
 	OblastCode selected_oblast;
 
 	f32 popular_support = 0.8;
