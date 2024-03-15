@@ -23,7 +23,7 @@ struct Particle {
 	}
 };
 
-typedef void (*pParticlesUpdate)(std::vector<Particle>&, f32 dt);
+typedef void (*pParticlesUpdate)(std::vector<Particle>&, f32 dt, v2 pos, v2 size);
 
 class ParticlesEmitter {
 	u32 VAO, VBO, EBO, instanced_VBO;

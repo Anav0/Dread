@@ -116,5 +116,5 @@ void ParticlesEmitter::Draw(Shader& shader, const m4& projection) {
 }
 
 void ParticlesEmitter::Update(f32 dt) {
-		this->update(this->particles, dt);
+		this->update(this->particles, dt, pos, size);
 }

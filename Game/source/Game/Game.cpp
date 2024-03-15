@@ -21,6 +21,7 @@
 #include "RenderHelpers.cpp"
 #include "glad/glad.h"
 #include <execution>
+#include <algorithm>
 
 u64 frame_counter = 0;
 MouseInfo info;
@@ -171,17 +172,17 @@ void GameInitAfterReload(WindowManager* window)
     TR.UseFont("oswald.ttf");
 }
 
-void Blink(std::vector<Particle>& parts, f32 dt) {
+void Blink(std::vector<Particle>& parts, f32 dt, v2 pos, v2 size) {
 	for(auto& p : parts) {
 		//if(ttl_s < 0) continue;
 		p.pos += p.velocity * dt * p.direction;
 		//p.ttl_s -= dt;
 
-		if(p.pos.y > 400) {
-			p.pos.y = 0;
+		if(p.pos.y > pos.y + size.y) {
+			p.pos.y = pos.y;
 		}
-		if(p.pos.x > 400) {
-			p.pos.x = 0;
+		if(p.pos.x > pos.x + size.x) {
+			p.pos.x = pos.x;
 		}
 		p.UpdateMatrix();
 	}
@@ -201,7 +202,7 @@ void SetupEmitter(v2 pos, v2 size) {
 }
 
 v2 emitter_pos = {200, 200};
-v2 emitter_bounds = {200, 200};
+v2 emitter_bounds = {400, 400};
 
 GameState* GameInit(WindowManager* window)
 {
