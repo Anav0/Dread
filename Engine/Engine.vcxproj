@@ -106,6 +106,7 @@
     <ClInclude Include="source\Engine\Camera.h" />
     <ClInclude Include="source\Engine\Collision.h" />
     <ClInclude Include="source\Engine\Constants.h" />
+    <ClInclude Include="source\Engine\Distribution.h" />
     <ClInclude Include="source\Engine\Gui.h" />
     <ClInclude Include="source\Engine\HotReload.h" />
     <ClInclude Include="source\Engine\Line.h" />

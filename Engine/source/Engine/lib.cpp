@@ -21,6 +21,7 @@
 #include "WindowManager.h"
 #include "alloc.h"
 #include "Particles.h"
+#include "Distribution.h"
 
 #include "Animator.cpp"
 #include "BoundingBox.cpp"
@@ -40,6 +41,7 @@
 #include "alloc.cpp"
 #include "glad.c"
 #include "Particles.cpp"
+#include "Distribution.cpp"
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION

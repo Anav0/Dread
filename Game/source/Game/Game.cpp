@@ -1,8 +1,10 @@
 #include "Engine/Base.h"
 #include "Engine/Buffers.h"
+#include "Engine/Misc.h"
 #include "Engine/Particles.h"
 #include "Engine/Gui.h"
 #include "Engine/Renderer.h"
+#include "Engine/Distribution.h"
 #include "Engine/alloc.h"
 
 #include "Atlas.h"
@@ -18,6 +20,7 @@
 #include "GameState.cpp"
 #include "RenderHelpers.cpp"
 #include "glad/glad.h"
+#include <execution>
 
 u64 frame_counter = 0;
 MouseInfo info;
@@ -37,7 +40,8 @@ MessageCallback(GLenum source,
 }
 
 PickingBuffer picking_buffer;
-ParticlesEmitter emitter = ParticlesEmitter({100,100}, {5, 5}, 20, 100);
+std::vector<Particle> particles;
+ParticlesEmitter emitter = ParticlesEmitter();
 BufferLayout emitter_layout {
 	{ BufferElementType::VFloat4, "model_0"},
 	{ BufferElementType::VFloat4, "model_1"},
@@ -161,13 +165,71 @@ void GameInitAfterReload(WindowManager* window)
     TR.UseFont("oswald.ttf");
 }
 
+/*
+ *
+ 
+ Emitter e;
+Vec<Particle>& particles = e.Reserve(256);
+
+	CircularPlacment(particles);
+	CircularVelocity(particles);
+	ShortLifespan(particles);
+ 
+ * */
+
+void CircularPlacement(std::vector<Particle>& particles, u64 n, v2 pos, v2 size, v2 bounds) {
+	for(auto& p : particles) {
+			 p.model = GetTransformMatrix(pos, size);
+		  pos.x += size.x + 10;
+	}
+}
+
 void Blink (std::vector<Particle>& parts, f32 dt) {
 	for(auto& p : parts) {
-		p.pos.y += 1.0;
-		p.ttl_s -= dt;
+		//if(ttl_s < 0) continue;
+		p.pos += p.velocity * dt * p.direction;
+		//p.ttl_s -= dt;
+
+		if(p.pos.y > 400) {
+			p.pos.y = 0;
+		}
 		p.UpdateMatrix();
 	}
 }
+
+void SetupEmitter(v2 pos, v2 size) {
+		u64 n = 250;
+
+		particles.reserve(n);
+
+		RandomDist dist = RandomDist(n, pos.x, pos.x + size.x);
+		std::vector<f32> xs = dist.Generate();
+
+		dist.SetParams(pos.y, pos.y + size.y);
+		std::vector<f32> ys = dist.Generate();
+
+		for(u64 i = 0; i < n; i++) {
+			v2 pos = { xs[i], ys[i] };
+			v2 p_size = {5, 5};
+			auto p = Particle {
+					GetTransformMatrix(pos, p_size),
+					RED,
+					pos,
+					p_size,
+					{0, 1},
+					0,
+					0,
+			};
+			particles.push_back(p);
+		}
+
+		emitter.Init(particles);
+		emitter.Allocate(emitter_layout);
+		emitter.update = &Blink;
+}
+
+v2 emitter_pos = {200, 200};
+v2 emitter_bounds = {200, 200};
 
 GameState* GameInit(WindowManager* window)
 {
@@ -190,8 +252,7 @@ GameState* GameInit(WindowManager* window)
 
     stbi_set_flip_vertically_on_load(true);
 
-		emitter.Allocate(emitter_layout);
-		emitter.update = &Blink;
+		SetupEmitter(emitter_pos, emitter_bounds);
     RM.LoadRequiredResources();
     u8 size = 38;
     TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
@@ -248,7 +309,7 @@ GameState* GameInitEx(GameState state, WindowManager* window)
 
     stbi_set_flip_vertically_on_load(true);
 
-		emitter.update = &Blink;
+		SetupEmitter(emitter_pos, emitter_bounds);
 
     RM.LoadRequiredResources();
     u8 size = 38;

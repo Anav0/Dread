@@ -1,7 +1,13 @@
 #include "Particles.h"
 #include "Buffers.h"
 
+void ParticlesEmitter::Init(std::vector<Particle> particles) {
+			this->particles = particles;
+			this->n         = particles.size();
+}
+
 void ParticlesEmitter::Allocate(BufferLayout layout) {
+	printf("N: %llu\n\n", n);
 	constexpr f32 vertices[] = {
 		0.5f, 0.5f, 0.0f, // top right
 		0.5f, -0.5f, 0.0f, // bottom right
