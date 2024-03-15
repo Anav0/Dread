@@ -12,16 +12,21 @@ std::vector<Particle> ParticlesEmitter::CreateParticles(u64 n) {
 		std::vector<f32> dir_xs = direction->Generate();
 		std::vector<f32> dir_ys = direction->Generate();
 
-		std::vector<f32> ttls   = ttl->Generate();
+		std::vector<f32> ttls = ttl->Generate();
+		std::vector<f32> rs   = rgb->Generate();
+		std::vector<f32> gs   = rgb->Generate();
+		std::vector<f32> bs   = rgb->Generate();
 
 		for(u64 i = 0; i < n; i++) {
-			v2 pos = { xs[i], ys[i] };
-			v2 p_size = {5, 5};
-			v2 dir = { dir_xs[i] / 100, dir_ys[i] / 100 };
-			f32 ttl = ttls[i] / 1000; //ms to s;
+			v2 pos    = { xs[i], ys[i] };
+			v2 p_size = { 5, 5 };
+			v2 dir    = { dir_xs[i] / 100, dir_ys[i] / 100 };
+			f32 ttl   = ttls[i] / 1000; //ms to s;
+			v4 color  = { rs[i] / 1000, gs[i] / 1000, bs[i] / 1000, 1.0 };
+
 			auto p = Particle {
 					GetTransformMatrix(pos, p_size),
-					RED,
+					color,
 					pos,
 					p_size,
 					dir,

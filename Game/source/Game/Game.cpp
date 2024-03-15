@@ -1,15 +1,12 @@
 #include "Engine/Base.h"
 #include "Engine/Buffers.h"
-#include "Engine/Misc.h"
 #include "Engine/Particles.h"
 #include "Engine/Gui.h"
 #include "Engine/Renderer.h"
 #include "Engine/Distribution.h"
-#include "Engine/alloc.h"
+#include "Engine/Animator.h"
 
-#include "Atlas.h"
 #include "Engine/WindowManager.h"
-#include "Entities.h"
 #include "EntityManager.h"
 #include "Game.h"
 #include "GameState.h"
@@ -46,8 +43,10 @@ RandomDist placement_x = RandomDist(0, 0, 0);
 RandomDist placement_y = RandomDist(0, 0, 0);
 RandomDist direction = RandomDist(0, 0, 0);
 RandomDist velocity  = RandomDist(0, 0, 0);
-RandomDist ttl  = RandomDist(0, 0, 0);
-ParticlesEmitter emitter = ParticlesEmitter(&placement_x, &placement_y, &direction, &velocity, &ttl);
+RandomDist ttl       = RandomDist(0, 0, 0);
+RandomDist rgb       = RandomDist(0, 0, 0);
+
+ParticlesEmitter emitter = ParticlesEmitter(&placement_x, &placement_y, &direction, &velocity, &ttl, &rgb);
 
 std::vector<Particle> particles;
 BufferLayout emitter_layout {
@@ -61,12 +60,6 @@ BufferLayout emitter_layout {
 	{ BufferElementType::VFloat2, "direction"},
 	{ BufferElementType::Float, "velocity"},
 	{ BufferElementType::Float, "ttl_s"},
-};
-
-struct ColorChange {
-		v4 from;
-		v4 to;
-		f32 dur;
 };
 
 void GameUpdateAndRender(WindowManager* window)
@@ -181,6 +174,7 @@ void SetupEmitter(v2 pos, v2 size) {
 		velocity.SetParams(n, 100, 400);
 		direction.SetParams(n, -100, 100);
 		ttl.SetParams(n, 100, 1500);
+		rgb.SetParams(n, 0, 1000);
 
 		emitter.Init(n, pos, size);
 		emitter.Allocate(emitter_layout);
