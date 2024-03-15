@@ -10,6 +10,7 @@ class BufferLayout;
 
 // order matters
 struct Particle {
+	std::string id;
 	m4 model;
 	v4 color;
 	v2 pos;
@@ -23,7 +24,9 @@ struct Particle {
 	}
 };
 
-typedef void (*pParticlesUpdate)(std::vector<Particle>&, f32 dt, v2 pos, v2 size);
+class WindowManager;
+
+typedef void (*pParticleUpdate)(WindowManager*, Particle&, f32 dt);
 
 struct ColorChange {
 	v4 from;
@@ -35,6 +38,7 @@ class ParticlesEmitter {
 	u32 VAO, VBO, EBO, instanced_VBO;
 	u64 n     = 0;
 	std::vector<Particle> particles;
+	WindowManager* window;
 
 	Distribution* placement_x;
 	Distribution* placement_y;
@@ -47,7 +51,7 @@ class ParticlesEmitter {
 	v2 size;
 
 	public:
-		pParticlesUpdate update;
+		pParticleUpdate update;
 
 		ParticlesEmitter(
 				Distribution* placement_x, 
@@ -66,7 +70,7 @@ class ParticlesEmitter {
 		};
 
 		std::vector<Particle> CreateParticles(u64 n);
-		void Init(u64 n, v2 pos, v2 size);
+		void Init(WindowManager* window, u64 n, v2 pos, v2 size);
 		void Update(f32 dt);
 		void Allocate(BufferLayout);
 		void Flush();

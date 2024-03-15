@@ -24,7 +24,9 @@ std::vector<Particle> ParticlesEmitter::CreateParticles(u64 n) {
 			f32 ttl   = ttls[i] / 1000; //ms to s;
 			v4 color  = { rs[i] / 1000, gs[i] / 1000, bs[i] / 1000, 1.0 };
 
+			auto id = std::to_string(i);
 			auto p = Particle {
+					id, //TODO: this ID is not unique!
 					GetTransformMatrix(pos, p_size),
 					color,
 					pos,
@@ -38,7 +40,8 @@ std::vector<Particle> ParticlesEmitter::CreateParticles(u64 n) {
 		return particles;
 }
 
-void ParticlesEmitter::Init(u64 n, v2 pos, v2 size) {
+void ParticlesEmitter::Init(WindowManager* window, u64 n, v2 pos, v2 size) {
+			this->window    = window;
 			this->pos       = pos;
 			this->size      = size;
 
@@ -124,15 +127,17 @@ void ParticlesEmitter::Draw(Shader& shader, const m4& projection) {
 }
 
 void ParticlesEmitter::Update(f32 dt) {
-			for(auto& p : particles) {
-				if(p.ttl_s < 0) {
-						p.ttl_s = static_cast<f32>(ttl->GenerateSingle() / 1000);
-						p.pos.y = pos.y;
-						p.pos.x = pos.x;
-				}
+	for(auto& p : particles) {
+		if(p.ttl_s < 0) {
+				p.ttl_s = static_cast<f32>(ttl->GenerateSingle() / 1000);
+				p.pos.y = pos.y;
+				p.pos.x = pos.x;
+	}
 
 		p.pos += p.velocity * dt * p.direction;
 		p.ttl_s -= dt;
+
+		this->update(window, p, dt);
 
 		p.UpdateMatrix();
 	}

@@ -17,8 +17,12 @@
 #include "GameState.cpp"
 #include "RenderHelpers.cpp"
 #include "glad/glad.h"
+
 #include <execution>
 #include <algorithm>
+#include <chrono>
+
+using namespace std::chrono;
 
 u64 frame_counter = 0;
 MouseInfo info;
@@ -50,6 +54,7 @@ ParticlesEmitter emitter = ParticlesEmitter(&placement_x, &placement_y, &directi
 
 std::vector<Particle> particles;
 BufferLayout emitter_layout {
+	{ BufferElementType::VFloat2, "id"},//NOTE: std::string which has a size of 2 Floats
 	{ BufferElementType::VFloat4, "model_0"},
 	{ BufferElementType::VFloat4, "model_1"},
 	{ BufferElementType::VFloat4, "model_2"},
@@ -166,7 +171,15 @@ void GameInitAfterReload(WindowManager* window)
     TR.UseFont("oswald.ttf");
 }
 
-void SetupEmitter(v2 pos, v2 size) {
+std::vector<KeyFrame<v3>> keyframes;
+
+void ColorChange(WindowManager* window, Particle& p, f32 dt) {
+	return;
+	auto base = A.RememberV3(p.id, p.color);
+	A.AnimateVec3(window, p.id, base, YELLOW, 2500ms);
+}
+
+void SetupEmitter(WindowManager* window, v2 pos, v2 size) {
 		u64 n = 150;
 	
 		placement_x.SetParams(n, pos.x, pos.x + size.x);
@@ -176,8 +189,9 @@ void SetupEmitter(v2 pos, v2 size) {
 		ttl.SetParams(n, 100, 1500);
 		rgb.SetParams(n, 0, 1000);
 
-		emitter.Init(n, pos, size);
+		emitter.Init(window, n, pos, size);
 		emitter.Allocate(emitter_layout);
+		emitter.update = ColorChange;
 }
 
 v2 emitter_pos = {200, 200};
@@ -204,7 +218,7 @@ GameState* GameInit(WindowManager* window)
 
     stbi_set_flip_vertically_on_load(true);
 
-		SetupEmitter(emitter_pos, emitter_bounds);
+		SetupEmitter(window, emitter_pos, emitter_bounds);
     RM.LoadRequiredResources();
     u8 size = 38;
     TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
@@ -261,7 +275,7 @@ GameState* GameInitEx(GameState state, WindowManager* window)
 
     stbi_set_flip_vertically_on_load(true);
 
-		SetupEmitter(emitter_pos, emitter_bounds);
+		SetupEmitter(window, emitter_pos, emitter_bounds);
 
     RM.LoadRequiredResources();
     u8 size = 38;
