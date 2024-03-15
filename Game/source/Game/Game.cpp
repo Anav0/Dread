@@ -54,7 +54,6 @@ ParticlesEmitter emitter = ParticlesEmitter(&placement_x, &placement_y, &directi
 
 std::vector<Particle> particles;
 BufferLayout emitter_layout {
-	{ BufferElementType::VFloat2, "id"},//NOTE: std::string which has a size of 2 Floats
 	{ BufferElementType::VFloat4, "model_0"},
 	{ BufferElementType::VFloat4, "model_1"},
 	{ BufferElementType::VFloat4, "model_2"},
@@ -173,10 +172,10 @@ void GameInitAfterReload(WindowManager* window)
 
 std::vector<KeyFrame<v3>> keyframes;
 
-void ColorChange(WindowManager* window, Particle& p, f32 dt) {
+void ColorChange(WindowManager* window, std::string& particle_id, Particle& p, f32 dt) {
 	return;
-	auto base = A.RememberV3(p.id, p.color);
-	A.AnimateVec3(window, p.id, base, YELLOW, 2500ms);
+	auto base = A.RememberV3(particle_id, p.color);
+	A.AnimateVec3(window, particle_id, base, YELLOW, 2500ms);
 }
 
 void SetupEmitter(WindowManager* window, v2 pos, v2 size) {

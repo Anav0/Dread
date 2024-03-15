@@ -3,6 +3,7 @@
 
 std::vector<Particle> ParticlesEmitter::CreateParticles(u64 n) {
 		particles.reserve(n);
+		ids.reserve(n);
 
 		std::vector<f32> xs = placement_x->Generate();
 		std::vector<f32> ys = placement_x->Generate();
@@ -25,8 +26,8 @@ std::vector<Particle> ParticlesEmitter::CreateParticles(u64 n) {
 			v4 color  = { rs[i] / 1000, gs[i] / 1000, bs[i] / 1000, 1.0 };
 
 			auto id = std::to_string(i);
+			ids.push_back(id);
 			auto p = Particle {
-					id, //TODO: this ID is not unique!
 					GetTransformMatrix(pos, p_size),
 					color,
 					pos,
@@ -127,6 +128,7 @@ void ParticlesEmitter::Draw(Shader& shader, const m4& projection) {
 }
 
 void ParticlesEmitter::Update(f32 dt) {
+	u64 i = 0;
 	for(auto& p : particles) {
 		if(p.ttl_s < 0) {
 				p.ttl_s = static_cast<f32>(ttl->GenerateSingle() / 1000);
@@ -137,8 +139,9 @@ void ParticlesEmitter::Update(f32 dt) {
 		p.pos += p.velocity * dt * p.direction;
 		p.ttl_s -= dt;
 
-		this->update(window, p, dt);
+		this->update(window, ids[i], p, dt);
 
 		p.UpdateMatrix();
+		i++;
 	}
 }
