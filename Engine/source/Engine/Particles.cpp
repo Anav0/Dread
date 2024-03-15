@@ -12,10 +12,13 @@ std::vector<Particle> ParticlesEmitter::CreateParticles(u64 n) {
 		std::vector<f32> dir_xs = direction->Generate();
 		std::vector<f32> dir_ys = direction->Generate();
 
+		std::vector<f32> ttls   = ttl->Generate();
+
 		for(u64 i = 0; i < n; i++) {
 			v2 pos = { xs[i], ys[i] };
 			v2 p_size = {5, 5};
 			v2 dir = { dir_xs[i] / 100, dir_ys[i] / 100 };
+			f32 ttl = ttls[i] / 1000; //ms to s;
 			auto p = Particle {
 					GetTransformMatrix(pos, p_size),
 					RED,
@@ -23,7 +26,7 @@ std::vector<Particle> ParticlesEmitter::CreateParticles(u64 n) {
 					p_size,
 					dir,
 					velos[i],
-					0,
+					ttl,
 			};
 			particles.push_back(p);
 		}
@@ -116,5 +119,16 @@ void ParticlesEmitter::Draw(Shader& shader, const m4& projection) {
 }
 
 void ParticlesEmitter::Update(f32 dt) {
-		this->update(this->particles, dt, pos, size);
+			for(auto& p : particles) {
+				if(p.ttl_s < 0) {
+						p.ttl_s = static_cast<f32>(ttl->GenerateSingle() / 1000);
+						p.pos.y = pos.y;
+						p.pos.x = pos.x;
+				}
+
+		p.pos += p.velocity * dt * p.direction;
+		p.ttl_s -= dt;
+
+		p.UpdateMatrix();
+	}
 }

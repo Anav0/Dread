@@ -7,6 +7,7 @@
 class Distribution {
 	public:
 		virtual std::vector<f32> Generate() = 0;
+		virtual f32 GenerateSingle() = 0;
 };
 
 class RandomDist : public Distribution {
@@ -18,6 +19,7 @@ class RandomDist : public Distribution {
 		RandomDist(u64 n, u64 from, u64 to) : n(n), from(from), to(to) {};
 
 		virtual std::vector<f32> Generate();
+		virtual f32 GenerateSingle();
 
 		void SetParams(u64 n, f32 from, f32 to) {
 			this->n = n;

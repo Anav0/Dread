@@ -46,7 +46,8 @@ RandomDist placement_x = RandomDist(0, 0, 0);
 RandomDist placement_y = RandomDist(0, 0, 0);
 RandomDist direction = RandomDist(0, 0, 0);
 RandomDist velocity  = RandomDist(0, 0, 0);
-ParticlesEmitter emitter = ParticlesEmitter(&placement_x, &placement_y, &direction, &velocity);
+RandomDist ttl  = RandomDist(0, 0, 0);
+ParticlesEmitter emitter = ParticlesEmitter(&placement_x, &placement_y, &direction, &velocity, &ttl);
 
 std::vector<Particle> particles;
 BufferLayout emitter_layout {
@@ -172,37 +173,21 @@ void GameInitAfterReload(WindowManager* window)
     TR.UseFont("oswald.ttf");
 }
 
-void Blink(std::vector<Particle>& parts, f32 dt, v2 pos, v2 size) {
-	for(auto& p : parts) {
-		//if(ttl_s < 0) continue;
-		p.pos += p.velocity * dt * p.direction;
-		//p.ttl_s -= dt;
-
-		if(p.pos.y > pos.y + size.y) {
-			p.pos.y = pos.y;
-		}
-		if(p.pos.x > pos.x + size.x) {
-			p.pos.x = pos.x;
-		}
-		p.UpdateMatrix();
-	}
-}
-
 void SetupEmitter(v2 pos, v2 size) {
-		u64 n = 250;
+		u64 n = 150;
 	
 		placement_x.SetParams(n, pos.x, pos.x + size.x);
 		placement_y.SetParams(n, pos.y, pos.y + size.y);
-		velocity.SetParams(n, 600, 800);
-		direction.SetParams(n, 0, 100);
+		velocity.SetParams(n, 100, 400);
+		direction.SetParams(n, -100, 100);
+		ttl.SetParams(n, 100, 1500);
 
 		emitter.Init(n, pos, size);
 		emitter.Allocate(emitter_layout);
-		emitter.update = &Blink;
 }
 
 v2 emitter_pos = {200, 200};
-v2 emitter_bounds = {400, 400};
+v2 emitter_bounds = {50, 50};
 
 GameState* GameInit(WindowManager* window)
 {

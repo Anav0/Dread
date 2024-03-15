@@ -34,6 +34,7 @@ class ParticlesEmitter {
 	Distribution* placement_y;
 	Distribution* direction;
 	Distribution* velocity;
+	Distribution* ttl;
 
 	v2 pos;
 	v2 size;
@@ -41,11 +42,12 @@ class ParticlesEmitter {
 	public:
 		pParticlesUpdate update;
 
-		ParticlesEmitter(Distribution* placement_x, Distribution* placement_y, Distribution* direction, Distribution* velocity) {
-			this->direction = direction;
+		ParticlesEmitter(Distribution* placement_x, Distribution* placement_y, Distribution* direction, Distribution* velocity, Distribution* ttl) {
+			this->direction   = direction;
 			this->placement_x = placement_x;
 			this->placement_y = placement_y;
-			this->velocity = velocity;
+			this->velocity    = velocity;
+			this->ttl         = ttl;
 		};
 
 		std::vector<Particle> CreateParticles(u64 n);
