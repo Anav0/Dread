@@ -68,6 +68,7 @@ void ParticlesEmitter::Flush() {
 	glBindVertexArray(0);
 }
 
+
 void ParticlesEmitter::Draw(Shader& shader, const m4& projection) { 
 	shader.Use();
 	shader.setMat4("projection", projection);
@@ -78,11 +79,5 @@ void ParticlesEmitter::Draw(Shader& shader, const m4& projection) {
 }
 
 void ParticlesEmitter::Update(f32 dt) {
-	for(Particle& p : particles) {
-		if(false) {
-			continue;
-		}
-		//p.pos += p.velocity * dt;
-		//p.ttl_s -= dt;
-	}
+		this->update(this->particles, dt);
 }

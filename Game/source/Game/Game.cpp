@@ -37,7 +37,7 @@ MessageCallback(GLenum source,
 }
 
 PickingBuffer picking_buffer;
-ParticlesEmitter emitter = ParticlesEmitter({100,100}, {50, 50}, 10, 100);
+ParticlesEmitter emitter = ParticlesEmitter({100,100}, {5, 5}, 20, 100);
 BufferLayout emitter_layout {
 	{ BufferElementType::VFloat4, "model_0"},
 	{ BufferElementType::VFloat4, "model_1"},
@@ -45,9 +45,16 @@ BufferLayout emitter_layout {
 	{ BufferElementType::VFloat4, "model_3"},
 	{ BufferElementType::VFloat4, "color"},
 	{ BufferElementType::VFloat2, "pos"},
+	{ BufferElementType::VFloat2, "size"},
 	{ BufferElementType::VFloat2, "direction"},
 	{ BufferElementType::Float, "velocity"},
 	{ BufferElementType::Float, "ttl_s"},
+};
+
+struct ColorChange {
+		v4 from;
+		v4 to;
+		f32 dur;
 };
 
 void GameUpdateAndRender(WindowManager* window)
@@ -154,6 +161,14 @@ void GameInitAfterReload(WindowManager* window)
     TR.UseFont("oswald.ttf");
 }
 
+void Blink (std::vector<Particle>& parts, f32 dt) {
+	for(auto& p : parts) {
+		p.pos.y += 1.0;
+		p.ttl_s -= dt;
+		p.UpdateMatrix();
+	}
+}
+
 GameState* GameInit(WindowManager* window)
 {
     gladLoadGL();
@@ -176,6 +191,7 @@ GameState* GameInit(WindowManager* window)
     stbi_set_flip_vertically_on_load(true);
 
 		emitter.Allocate(emitter_layout);
+		emitter.update = &Blink;
     RM.LoadRequiredResources();
     u8 size = 38;
     TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
@@ -231,6 +247,8 @@ GameState* GameInitEx(GameState state, WindowManager* window)
     glDebugMessageCallback(MessageCallback, 0);
 
     stbi_set_flip_vertically_on_load(true);
+
+		emitter.update = &Blink;
 
     RM.LoadRequiredResources();
     u8 size = 38;
