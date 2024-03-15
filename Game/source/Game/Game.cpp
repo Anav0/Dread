@@ -40,8 +40,14 @@ MessageCallback(GLenum source,
 }
 
 PickingBuffer picking_buffer;
+
+RandomDist placement_x = RandomDist(0, 0, 0);
+RandomDist placement_y = RandomDist(0, 0, 0);
+RandomDist direction = RandomDist(0, 0, 0);
+RandomDist velocity  = RandomDist(0, 0, 0);
+ParticlesEmitter emitter = ParticlesEmitter(&placement_x, &placement_y, &direction, &velocity);
+
 std::vector<Particle> particles;
-ParticlesEmitter emitter = ParticlesEmitter();
 BufferLayout emitter_layout {
 	{ BufferElementType::VFloat4, "model_0"},
 	{ BufferElementType::VFloat4, "model_1"},
@@ -165,26 +171,7 @@ void GameInitAfterReload(WindowManager* window)
     TR.UseFont("oswald.ttf");
 }
 
-/*
- *
- 
- Emitter e;
-Vec<Particle>& particles = e.Reserve(256);
-
-	CircularPlacment(particles);
-	CircularVelocity(particles);
-	ShortLifespan(particles);
- 
- * */
-
-void CircularPlacement(std::vector<Particle>& particles, u64 n, v2 pos, v2 size, v2 bounds) {
-	for(auto& p : particles) {
-			 p.model = GetTransformMatrix(pos, size);
-		  pos.x += size.x + 10;
-	}
-}
-
-void Blink (std::vector<Particle>& parts, f32 dt) {
+void Blink(std::vector<Particle>& parts, f32 dt) {
 	for(auto& p : parts) {
 		//if(ttl_s < 0) continue;
 		p.pos += p.velocity * dt * p.direction;
@@ -193,37 +180,22 @@ void Blink (std::vector<Particle>& parts, f32 dt) {
 		if(p.pos.y > 400) {
 			p.pos.y = 0;
 		}
+		if(p.pos.x > 400) {
+			p.pos.x = 0;
+		}
 		p.UpdateMatrix();
 	}
 }
 
 void SetupEmitter(v2 pos, v2 size) {
 		u64 n = 250;
+	
+		placement_x.SetParams(n, pos.x, pos.x + size.x);
+		placement_y.SetParams(n, pos.y, pos.y + size.y);
+		velocity.SetParams(n, 600, 800);
+		direction.SetParams(n, 0, 100);
 
-		particles.reserve(n);
-
-		RandomDist dist = RandomDist(n, pos.x, pos.x + size.x);
-		std::vector<f32> xs = dist.Generate();
-
-		dist.SetParams(pos.y, pos.y + size.y);
-		std::vector<f32> ys = dist.Generate();
-
-		for(u64 i = 0; i < n; i++) {
-			v2 pos = { xs[i], ys[i] };
-			v2 p_size = {5, 5};
-			auto p = Particle {
-					GetTransformMatrix(pos, p_size),
-					RED,
-					pos,
-					p_size,
-					{0, 1},
-					0,
-					0,
-			};
-			particles.push_back(p);
-		}
-
-		emitter.Init(particles);
+		emitter.Init(n, pos, size);
 		emitter.Allocate(emitter_layout);
 		emitter.update = &Blink;
 }

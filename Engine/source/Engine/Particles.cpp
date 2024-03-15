@@ -1,13 +1,44 @@
 #include "Particles.h"
 #include "Buffers.h"
 
-void ParticlesEmitter::Init(std::vector<Particle> particles) {
-			this->particles = particles;
+std::vector<Particle> ParticlesEmitter::CreateParticles(u64 n) {
+		particles.reserve(n);
+
+		std::vector<f32> xs = placement_x->Generate();
+		std::vector<f32> ys = placement_x->Generate();
+
+		std::vector<f32> velos = velocity->Generate();
+
+		std::vector<f32> dir_xs = direction->Generate();
+		std::vector<f32> dir_ys = direction->Generate();
+
+		for(u64 i = 0; i < n; i++) {
+			v2 pos = { xs[i], ys[i] };
+			v2 p_size = {5, 5};
+			v2 dir = { dir_xs[i] / 100, dir_ys[i] / 100 };
+			auto p = Particle {
+					GetTransformMatrix(pos, p_size),
+					RED,
+					pos,
+					p_size,
+					dir,
+					velos[i],
+					0,
+			};
+			particles.push_back(p);
+		}
+		return particles;
+}
+
+void ParticlesEmitter::Init(u64 n, v2 pos, v2 size) {
+			this->pos       = pos;
+			this->size      = size;
+
+			this->particles = CreateParticles(n);
 			this->n         = particles.size();
 }
 
 void ParticlesEmitter::Allocate(BufferLayout layout) {
-	printf("N: %llu\n\n", n);
 	constexpr f32 vertices[] = {
 		0.5f, 0.5f, 0.0f, // top right
 		0.5f, -0.5f, 0.0f, // bottom right

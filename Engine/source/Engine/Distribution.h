@@ -9,7 +9,7 @@ class Distribution {
 		virtual std::vector<f32> Generate() = 0;
 };
 
-class RandomDist : Distribution {
+class RandomDist : public Distribution {
 	u64 n;
 	u64 from; u64 to;
   std::random_device rd;  // a seed source for the random number engine
