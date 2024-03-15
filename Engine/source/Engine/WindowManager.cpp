@@ -1,4 +1,5 @@
 #include "WindowManager.h"
+#include "GLFW/glfw3.h"
 #include "Renderer.h"
 
 void WindowManager::onBeginOfTheLoop()
@@ -52,6 +53,15 @@ bool WindowManager::Init()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, 4);
 
+		//TODO: change after game is done
+		i32 number_of_monitors = 0;
+		auto monitors = glfwGetMonitors(&number_of_monitors);
+		auto monitor = monitors[0];
+		if(number_of_monitors > 1) monitor = monitors[1];
+
+		i32 x;
+		i32 y;
+		glfwGetMonitorPos(monitor, &x, &y);
     window = glfwCreateWindow(screen_size.x, screen_size.y, "Dread", NULL, NULL);
 
     if (window == NULL) {
@@ -60,7 +70,7 @@ bool WindowManager::Init()
         return -1;
     }
 
-    glfwSetWindowPos(window, 400, 200);
+		glfwSetWindowPos(window, x + 500, y + 200);
     glfwSetWindowUserPointer(window, this);
 
     auto mouse_click_lambda = [](GLFWwindow* w, int btn, int action, int mods) {
