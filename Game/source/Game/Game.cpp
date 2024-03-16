@@ -43,6 +43,8 @@ MessageCallback(GLenum source,
 
 PickingBuffer picking_buffer;
 
+std::vector<KeyFrame<v4>> keyframes;
+
 RandomDist placement_x = RandomDist(0, 0, 0);
 RandomDist placement_y = RandomDist(0, 0, 0);
 RandomDist direction = RandomDist(0, 0, 0);
@@ -170,12 +172,11 @@ void GameInitAfterReload(WindowManager* window)
     TR.UseFont("oswald.ttf");
 }
 
-std::vector<KeyFrame<v3>> keyframes;
 
 void ColorChange(WindowManager* window, std::string& particle_id, Particle& p, f32 dt) {
-	return;
-	auto base = A.RememberV3(particle_id, p.color);
-	A.AnimateVec3(window, particle_id, base, YELLOW, 2500ms);
+  A.Direction(RepetitionDirection::LoopBack);
+	A.Repeat(RepetitionMode::Infinite);
+  p.color = A.AnimateVec4(particle_id, window, keyframes);
 }
 
 void SetupEmitter(WindowManager* window, v2 pos, v2 size) {
@@ -191,6 +192,19 @@ void SetupEmitter(WindowManager* window, v2 pos, v2 size) {
 		emitter.Init(window, n, pos, size);
 		emitter.Allocate(emitter_layout);
 		emitter.update = ColorChange;
+
+		KeyFrame<v4> frame;
+		frame.duration = 1500ms;
+		frame.target_value = YELLOW;
+		keyframes.push_back(frame);
+
+		frame.duration = 2000ms;
+		frame.target_value = BLUE;
+		keyframes.push_back(frame);
+
+		frame.duration = 1000ms;
+		frame.target_value = RED;
+		keyframes.push_back(frame);
 }
 
 v2 emitter_pos = {200, 200};

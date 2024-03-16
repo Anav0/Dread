@@ -46,21 +46,16 @@ void Animator::RecalculateKeyframesStartAndEnd(std::string key, std::vector<KeyF
     auto anim_start_point = GetAnimationStartTime(key);
     auto this_keyframe_end_point = anim_start_point;
 
-    if (from_index > 0) {
-        keyframes[0].startpoint = anim_start_point - 2000ms;
-        keyframes[0].endpoint = anim_start_point - 1000ms;
-    }
-
-    for (int i = from_index; i < keyframes.size(); i++) {
+    for (int i = 0; i < keyframes.size(); i++) {
         auto keyframe = &keyframes.at(i);
 
         this_keyframe_end_point += keyframe->duration;
 
         keyframe->endpoint = this_keyframe_end_point;
 
-        if (i > from_index)
+				if (i > 0)
             keyframes[i].startpoint = keyframes[i - 1].endpoint;
-        else
+				else
             keyframes[i].startpoint = anim_start_point;
     }
 }
@@ -161,9 +156,6 @@ void Animator::AnimateVec2(std::string key, WindowManager* mgr, v2* final, std::
         return;
     }
 
-    auto keyframe_startpoint = current_keyframe->startpoint;
-    auto keyframe_endpoint = current_keyframe->endpoint;
-
     if (current_keyframe_index > 0) {
         auto prevIndex = prev_index[key];
 
@@ -186,55 +178,40 @@ void Animator::AnimateVec2(std::string key, WindowManager* mgr, v2* final, std::
     prev_index[key] = current_keyframe_index;
 }
 
-void Animator::AnimateVec4(std::string key, WindowManager* mgr, v4* final, std::vector<KeyFrame<v4>>& keyframes)
+v4 Animator::AnimateVec4(std::string key, WindowManager* mgr, std::vector<KeyFrame<v4>>& keyframes)
 {
     AdjustRepeatCounter(key);
 
-    auto& base_map = base_vec4;
-
-    if (!base_map.contains(key)) {
-        base_map.insert(std::pair(key, *final));
-        RecalculateKeyframesStartAndEnd(key, keyframes, 0);
-    }
+		if(!running_animations.contains(key)) {
+				running_animations.insert(key);
+				RecalculateKeyframesStartAndEnd(key, keyframes, 0);
+		}
 
     auto now = mgr->frame_start_time;
+
     int current_keyframe_index;
     auto current_keyframe = GetCurrentKeyframe(&current_keyframe_index, key, keyframes, &now);
 
-    if (!current_keyframe) {
-        if (SetupForRepeat(key, keyframes, current_keyframe_index, current_keyframe)) {
-            base_map[key] = v4(*final);
-        }
-        return;
+    if (!current_keyframe || current_keyframe_index == keyframes.size()-1) {
+        SetupForRepeat(key, keyframes, current_keyframe_index, current_keyframe);
+				return keyframes[0].target_value;
     }
-
-    auto keyframe_startpoint = current_keyframe->startpoint;
-    auto keyframe_endpoint = current_keyframe->endpoint;
-
-    if (current_keyframe_index > 0) {
-        auto prevIndex = prev_index[key];
-
-        if (prevIndex != current_keyframe_index) {
-            auto copy = v4(*final);
-            base_map[key] = copy;
-        }
-    }
-
-    auto source = &base_map[key];
 
     auto elapsed = GetElapsedTime(now, current_keyframe);
 
+		v4 source = keyframes.at(current_keyframe_index).target_value;
+		v4 target = keyframes.at(current_keyframe_index+1).target_value;
+
     if (elapsed >= 1.0)
-        return;
+        return source;
 
-    final->x = std::lerp(source->x, current_keyframe->target_value.x, elapsed);
-    final->y = std::lerp(source->y, current_keyframe->target_value.y, elapsed);
-    final->z = std::lerp(source->z, current_keyframe->target_value.z, elapsed);
-    final->w = std::lerp(source->w, current_keyframe->target_value.w, elapsed);
+		v4 final;
+    final.x = std::lerp(source.x, target.x, elapsed);
+    final.y = std::lerp(source.y, target.y, elapsed);
+    final.z = std::lerp(source.z, target.z, elapsed);
+    final.w = std::lerp(source.w, target.w, elapsed);
 
-    // printf("(%f) %i s: (%f, %f, %f) | f: (%f, %f, %f)\n", elapsed, current_keyframe_index, source->x, source->y, source->z, final->x, final->y, final->z);
-
-    prev_index[key] = current_keyframe_index;
+		return final;
 }
 
 void Animator::AnimateFloat(std::string key, WindowManager* mgr, f32* final, std::vector<KeyFrame<f32>>& keyframes)
@@ -258,9 +235,6 @@ void Animator::AnimateFloat(std::string key, WindowManager* mgr, f32* final, std
         }
         return;
     }
-
-    auto keyframe_startpoint = current_keyframe->startpoint;
-    auto keyframe_endpoint = current_keyframe->endpoint;
 
     if (current_keyframe_index > 0) {
         auto prevIndex = prev_index[key];
@@ -297,15 +271,11 @@ bool Animator::SetupForRepeat(std::string& key, std::vector<KeyFrame<T>>& keyfra
     }
 
     if (direction == RepetitionDirection::LoopBack) {
-        printf("LOOOOOOP\n");
         std::reverse(keyframes.begin(), keyframes.end());
         start_points.erase(key);
         RecalculateKeyframesStartAndEnd(key, keyframes, 1);
-        current_keyframe_index = 1;
-        if (keyframes.size() < 2)
-            current_keyframe_index = 0;
+        current_keyframe_index = 0;
         current_keyframe = &keyframes.at(current_keyframe_index);
-        prev_index[key] = current_keyframe_index;
         return true;
     }
 

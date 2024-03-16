@@ -23,7 +23,7 @@ std::vector<Particle> ParticlesEmitter::CreateParticles(u64 n) {
 			v2 p_size = { 5, 5 };
 			v2 dir    = { dir_xs[i] / 100, dir_ys[i] / 100 };
 			f32 ttl   = ttls[i] / 1000; //ms to s;
-			v4 color  = { rs[i] / 1000, gs[i] / 1000, bs[i] / 1000, 1.0 };
+			v4 color  = RED; //{ rs[i] / 1000, gs[i] / 1000, bs[i] / 1000, 1.0 };
 
 			auto id = std::to_string(i);
 			ids.push_back(id);
