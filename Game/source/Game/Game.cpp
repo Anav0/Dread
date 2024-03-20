@@ -120,12 +120,34 @@ void GameUpdateAndRender(WindowManager* window)
 				}
 			}
 		}
+		//--------------------------------------------------------------
 
+		auto p_shader = RM.GetShader("picking");
+		picking_buffer.Bind();
+    glClearColor(-1.0f, -1.0f, -1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    R.DrawModels(p_shader, &picking_buffer, window->camera, window->screen_size);
+		picking_buffer.Unbind();
+
+		//--------------------------------------------------------------
+						
+		auto single_color_shader = RM.GetShader("simple");
 		auto shader = RM.GetShader("object");
 
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    glStencilMask(0xFF);
+		R.ScaleAllModels(1.0);
+    R.DrawModels(shader, &picking_buffer, window->camera, window->screen_size);
 
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    glStencilMask(0x00);
+	  glDisable(GL_DEPTH_TEST);
+		R.ScaleAllModels(1.02);
+    R.DrawModels(single_color_shader, &picking_buffer, window->camera, window->screen_size);
+		
+		// Flushes 2D buffers only for now
 		emitter.Flush();
     R.Flush();
 
@@ -159,7 +181,11 @@ void GameInitAfterReload(WindowManager* window)
     glEnable(GL_MULTISAMPLE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDebugMessageCallback(MessageCallback, 0);
-
+   glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_STENCIL_TEST);
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     stbi_set_flip_vertically_on_load(true);
 
 		emitter.Allocate(emitter_layout);
@@ -235,7 +261,11 @@ GameState* GameInit(WindowManager* window)
     glEnable(GL_MULTISAMPLE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDebugMessageCallback(MessageCallback, 0);
-
+   glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_STENCIL_TEST);
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     stbi_set_flip_vertically_on_load(true);
 		SetupEmitter(window);
     RM.LoadRequiredResources();
@@ -287,11 +317,16 @@ GameState* GameInitEx(GameState state, WindowManager* window)
 
     glEnable(GL_BLEND);
     glEnable(GL_DEBUG_OUTPUT);
-    // glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
     glEnable(GL_MULTISAMPLE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDebugMessageCallback(MessageCallback, 0);
-
+   glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_STENCIL_TEST);
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     stbi_set_flip_vertically_on_load(true);
 
 		SetupEmitter(window);
