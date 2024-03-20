@@ -129,8 +129,8 @@ void GameUpdateAndRender(WindowManager* window)
 		emitter.Flush();
     R.Flush();
 
-    R.Draw(shader, &picking_buffer, window->camera, window->screen_size);
 		emitter.Draw(*particle_shader, R.ortho_projection);
+    R.Draw(shader, &picking_buffer, window->camera, window->screen_size);
 
 		auto& camera = window->camera;
     //printf("Camera: %f %f %f | %f %f\r", camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
@@ -176,14 +176,17 @@ void ColorChange(WindowManager* window, std::string& particle_id, Particle& p, f
 	p.color.w = p.ttl_s;
 }
 
-void SetupEmitter(WindowManager* window, v2 pos, v2 size) {
+void SetupEmitter(WindowManager* window) {
+
+		v2 pos  = { window->screen_size.x-62, window->screen_size.y-50 };
+		v2 size = { 200, 200 };
 		u64 n = 150;
 	
 		placement_x.SetParams(n, pos.x, pos.x + size.x);
 		placement_y.SetParams(n, pos.y, pos.y + size.y);
 		velocity.SetParams(n, 100, 400);
 		direction.SetParams(n, -100, 100);
-		ttl.SetParams(n, 100, 1500);
+		ttl.SetParams(n, 100, 800);
 		rgb.SetParams(3, 0, 1000);
 
 		std::vector<Keyframes<v4>> frames;
@@ -214,9 +217,6 @@ void SetupEmitter(WindowManager* window, v2 pos, v2 size) {
 		emitter.update = ColorChange;
 }
 
-v2 emitter_pos = {200, 200};
-v2 emitter_bounds = {50, 50};
-
 GameState* GameInit(WindowManager* window)
 {
     gladLoadGL();
@@ -237,8 +237,7 @@ GameState* GameInit(WindowManager* window)
     glDebugMessageCallback(MessageCallback, 0);
 
     stbi_set_flip_vertically_on_load(true);
-
-		SetupEmitter(window, emitter_pos, emitter_bounds);
+		SetupEmitter(window);
     RM.LoadRequiredResources();
     u8 size = 38;
     TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
@@ -295,7 +294,7 @@ GameState* GameInitEx(GameState state, WindowManager* window)
 
     stbi_set_flip_vertically_on_load(true);
 
-		SetupEmitter(window, emitter_pos, emitter_bounds);
+		SetupEmitter(window);
 
     RM.LoadRequiredResources();
     u8 size = 38;
