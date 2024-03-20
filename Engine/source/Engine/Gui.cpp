@@ -80,7 +80,7 @@ void Gui::DrawLabel(const std::string& label, v2 pos, TextStyle style, bool use_
     if (font_atlas == nullptr)
         font_atlas = RM.LoadTexture(font.path, font.path, true, true);
 
-    R.font_buffer.texture_key = font.path;
+    R.GetQuadBuffer(FONT_BUFFER_INDEX).texture_key = font.path;
 
     if (use_layout && !layouts.empty()) {
         Layout& parent = layouts.back();
@@ -103,7 +103,7 @@ void Gui::DrawLabel(const std::string& label, v2 pos, TextStyle style, bool use_
         texture_info.position = v2(glyph.x, glyph.y);
         texture_info.scale = v2(1.0f);
         texture_info.size = v2(glyph.w, glyph.h);
-        R.font_buffer.AddTexturedQuad(&texture_info, font_atlas, pos, texture_info.size, 0, color_to_use);
+        R.GetQuadBuffer(FONT_BUFFER_INDEX).AddTexturedQuad(&texture_info, font_atlas, pos, texture_info.size, 0, color_to_use);
 
         // pos.x += glyph.advance;
         pos.x += glyph.w;
@@ -143,7 +143,7 @@ bool Gui::DrawButton(const char* label, v2 pos, ButtonStyle style)
     CenterChildInParent(&parent_pos, &parent_size, &pos, &text_size);
     TextStyle text_style = default_style;
     text_style.font_size = style.font_size;
-    R.ui_buffer.AddQuad(position, size, bg_color);
+    R.GetQuadBuffer(UI_BUFFER_INDEX).AddQuad(position, size, bg_color);
 
     Gui::DrawLabel(label, pos, text_style, false);
 
@@ -166,7 +166,7 @@ bool Gui::DrawIcon(AtlasTextureInfo info, v2 pos, v2 offset)
 
     auto atlas = RM.GetTexture("icons");
 
-    R.ui_buffer.AddTexturedQuad(&info, atlas, pos, info.size);
+    R.GetQuadBuffer(UI_BUFFER_INDEX).AddTexturedQuad(&info, atlas, pos, info.size);
 
     auto mouse_x = mouse.pos.x;
     auto mouse_y = mouse.pos.y;
@@ -189,7 +189,7 @@ bool Gui::DrawIcon(IconParams icon_params, v2 pos, v2 offset)
     auto info = GetTextureInfoByIndex(icon_params.index, icon_size, "icons");
     info.scale = v2(icon_params.scale);
 
-    R.ui_buffer.AddTexturedQuad(&info, atlas, pos, icon_size);
+    R.GetQuadBuffer(UI_BUFFER_INDEX).AddTexturedQuad(&info, atlas, pos, icon_size);
 
     auto mouse_x = mouse.pos.x;
     auto mouse_y = mouse.pos.y;
@@ -214,7 +214,7 @@ void Gui::DrawIconAndLabel(IconParams icon_params, const std::string& label, v2 
     auto info = GetTextureInfoByIndex(icon_params.index, icon_size, "icons");
     info.scale = v2(icon_params.scale);
 
-    R.ui_buffer.AddTexturedQuad(&info, atlas, pos, icon_size);
+		R.GetQuadBuffer(UI_BUFFER_INDEX).AddTexturedQuad(&info, atlas, pos, icon_size);
 
     pos.x += icon_size.x * icon_params.scale + icon_params.padding;
     pos.y += (icon_size.y * icon_params.scale) / 2;

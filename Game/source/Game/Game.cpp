@@ -43,14 +43,12 @@ MessageCallback(GLenum source,
 
 PickingBuffer picking_buffer;
 
-
 RandomDist placement_x = RandomDist(0, 0, 0);
 RandomDist placement_y = RandomDist(0, 0, 0);
 RandomDist direction = RandomDist(0, 0, 0);
 RandomDist velocity  = RandomDist(0, 0, 0);
 RandomDist ttl       = RandomDist(0, 0, 0);
 RandomDist rgb       = RandomDist(0, 0, 0);
-
 
 std::vector<Particle> particles;
 BufferLayout emitter_layout {
@@ -106,8 +104,9 @@ void GameUpdateAndRender(WindowManager* window)
     R.gradient_buffer.AddGradient({ 0, window->screen_size.y - HEADER_H }, { window->screen_size.x, HEADER_H }, header_gradient);
     R.gradient_buffer.AddGradient({ 50, 50 }, { 260, 130 }, card_gradient);
 
-    DrawUI(window);
-		Shader* particle_shader = RM.GetShader("particles");
+	//DrawBeamQuad({200, 200}, { 50, 50}, window->screen_size, window->delta_time, GOLD);
+
+    //DrawUI(window);
 
 		if(info.action == MouseAction::PRESSED && info.type == MouseButton::LEFT) {
 			i32 entity_id = picking_buffer.ReadPixel(info.pos);
@@ -126,31 +125,31 @@ void GameUpdateAndRender(WindowManager* window)
     glClearColor(-1.0f, -1.0f, -1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     R.DrawModels(p_shader, &picking_buffer, window->camera, window->screen_size);
-		picking_buffer.Unbind();
+	picking_buffer.Unbind();
 
-		//--------------------------------------------------------------
+	//--------------------------------------------------------------
 						
-		auto single_color_shader = RM.GetShader("simple");
-		auto shader = RM.GetShader("object");
+	auto single_color_shader = RM.GetShader("simple");
+	auto shader = RM.GetShader("object");
 
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilMask(0xFF);
-		R.ScaleAllModels(1.0);
+	R.ScaleAllModels(1.0);
     R.DrawModels(shader, &picking_buffer, window->camera, window->screen_size);
 
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
     glStencilMask(0x00);
-	  glDisable(GL_DEPTH_TEST);
-		R.ScaleAllModels(1.02);
+	glDisable(GL_DEPTH_TEST);
+	R.ScaleAllModels(1.02);
     R.DrawModels(single_color_shader, &picking_buffer, window->camera, window->screen_size);
 		
     R.Flush();
 
-    R.Draw(shader, &picking_buffer, window->camera, window->screen_size);
+    R.Draw(shader, window->camera, window->screen_size);
 
-		auto& camera = window->camera;
+	auto& camera = window->camera;
     //printf("Camera: %f %f %f | %f %f\r", camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
 
     R.Reset();
@@ -188,6 +187,7 @@ void GameInitAfterReload(WindowManager* window)
 		GlInit(); 
     stbi_set_flip_vertically_on_load(true);
 
+		R.buffers.clear();
     R.Init(window->camera, window->screen_size);
 
     RM.LoadRequiredResources();

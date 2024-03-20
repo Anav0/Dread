@@ -225,6 +225,7 @@ class TexturedQuadBuffer {
 	TexturedQuadBufferElement elements[MAX_CAPACITY];
 
 public:
+	std::string shader_key;
   std::string texture_key;
   u16 rolling_index = 0;
 

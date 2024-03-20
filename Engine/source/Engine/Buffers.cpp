@@ -16,11 +16,11 @@ void InstancedMeshBuffer::Allocate()
     glBindVertexArray(mesh.VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    auto matrices_size = sizeof(m4)  * matrices.size();
-    auto colors_size   = sizeof(v4)  * colors.size();
-    auto ids_size      = sizeof(i32) * ids.size();
+    auto matrices_size = sizeof(m4) * matrices.size();
+    auto colors_size = sizeof(v4) * colors.size();
+    auto ids_size = sizeof(i32) * ids.size();
 
-		auto total_size = matrices_size + colors_size + ids_size;
+    auto total_size = matrices_size + colors_size + ids_size;
 
     std::size_t vec4Size = sizeof(v4);
 
@@ -37,7 +37,7 @@ void InstancedMeshBuffer::Allocate()
     glEnableVertexAttribArray(7);
     glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(v4), (void*)matrices_size);
     glEnableVertexAttribArray(8);
-		glVertexAttribIPointer(8, 1, GL_INT, sizeof(i32), (void*)(matrices_size + colors_size));
+    glVertexAttribIPointer(8, 1, GL_INT, sizeof(i32), (void*)(matrices_size + colors_size));
 
     glVertexAttribDivisor(3, 1); // Matrix transform
     glVertexAttribDivisor(4, 1);
@@ -64,7 +64,7 @@ void InstancedMeshBuffer::Draw(Shader* shader, v2 screen_size, PickingBuffer* pi
         atlas->Bind();
     }
 
-		glEnable(GL_BLEND);
+    glEnable(GL_BLEND);
     glViewport(0, 0, screen_size.x, screen_size.y);
 
     if (R.mode == RenderMode::WIREFRAME)
@@ -88,7 +88,7 @@ m4 InstancedMeshBuffer::GetMatrix(u32 index)
     return matrices[index];
 }
 
-MeshInBuffer InstancedMeshBuffer::AddMesh(v3 position, v3 size, v4 color, i32 entity_id, f32 rotation, f32 scale) 
+MeshInBuffer InstancedMeshBuffer::AddMesh(v3 position, v3 size, v4 color, i32 entity_id, f32 rotation, f32 scale)
 {
     auto mesh_in_buffer = MeshInBuffer();
 
@@ -123,15 +123,15 @@ u32 TexturedQuadBuffer::AddTexturedQuad(const AtlasTextureInfo* texture_info, co
 {
     assert(rolling_index >= 0);
     assert(rolling_index + 1 <= MAX_CAPACITY);
-	
-	TexturedQuadBufferElement el { };
+
+    TexturedQuadBufferElement el {};
 
     v2 size_to_use = size;
 
     if (size.x == 0 && size.y == 0)
         size_to_use = texture_info->size;
 
-    el.color    = color;
+    el.color = color;
     el.matrices = GetTransformMatrix(pos, size_to_use, rotation, texture_info->scale);
 
     float subtex_w = texture_info->size.x / atlas->Width;
@@ -144,7 +144,7 @@ u32 TexturedQuadBuffer::AddTexturedQuad(const AtlasTextureInfo* texture_info, co
     el.textures_coords[2] = { subtex_x, subtex_y }; // BL
     el.textures_coords[3] = { subtex_x, subtex_y + subtex_h }; // TL
 
-	elements[rolling_index] = el;
+    elements[rolling_index] = el;
 
     const int tmp = rolling_index;
     rolling_index += 1;
@@ -154,11 +154,11 @@ u32 TexturedQuadBuffer::AddTexturedQuad(const AtlasTextureInfo* texture_info, co
 u32 TexturedQuadBuffer::AddQuad(const v2 position, const v2 size, const v4 color, float rotation)
 {
     assert(rolling_index >= 0);
-    assert(rolling_index+1 <= MAX_CAPACITY);
-		
-	TexturedQuadBufferElement el { };
+    assert(rolling_index + 1 <= MAX_CAPACITY);
 
-    el.color    = color;
+    TexturedQuadBufferElement el {};
+
+    el.color = color;
     el.matrices = GetTransformMatrix(position, size, rotation);
 
     el.textures_coords[0] = { -1, -1 };
@@ -166,7 +166,7 @@ u32 TexturedQuadBuffer::AddQuad(const v2 position, const v2 size, const v4 color
     el.textures_coords[2] = { -1, -1 };
     el.textures_coords[3] = { -1, -1 };
 
-	elements[rolling_index] = el;
+    elements[rolling_index] = el;
 
     const int tmp = rolling_index;
     rolling_index += 1;
@@ -240,112 +240,116 @@ u8 GetBufferElementTypeLength(BufferElementType type) {
 
 void TexturedQuadBuffer::Allocate(u32 buffer_size, BufferLayout layout)
 {
-	constexpr f32 vertices[] = {
-		0.5f, 0.5f, 0.0f, // top right
-		0.5f, -0.5f, 0.0f, // bottom right
-		-0.5f, -0.5f, 0.0f, // bottom left
-		-0.5f, 0.5f, 0.0f // top left
-	};
+    constexpr f32 vertices[] = {
+        0.5f, 0.5f, 0.0f, // top right
+        0.5f, -0.5f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f, // bottom left
+        -0.5f, 0.5f, 0.0f // top left
+    };
 
-	constexpr u32 indices[] = {
-		// note that we start from 0!
-		0, 1, 3, // first triangle
-		1, 2, 3 // second triangle
-	};
+    constexpr u32 indices[] = {
+        // note that we start from 0!
+        0, 1, 3, // first triangle
+        1, 2, 3 // second triangle
+    };
 
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-	glGenBuffers(1, &instanced_VBO);
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+    glGenBuffers(1, &instanced_VBO);
 
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		
-	glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
-	glBufferData(GL_ARRAY_BUFFER, buffer_size * sizeof(TexturedQuadBufferElement), NULL, GL_DYNAMIC_DRAW);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-	u8 position = 3;
-	for (BufferElement& el : layout.elements) {
-		GLenum gl_type = BufferElementTypeToOpenGLType(el.type);
-		printf("glEnableVertexAttribArray(%i)\n", position);
-		printf("glVertexAttribPointer(%i, %i, %i, GL_FALSE, %u, (void*)%u);\n", position, el.length, gl_type, layout.size, el.offset);
-		printf("glVertexAttribDivisor(%i, 1)\n", position);
-		printf("\n");
-			
-		glEnableVertexAttribArray(position);
-		if (el.IsInt()) {
-			glVertexAttribIPointer(position, el.length, gl_type, layout.size, (void*)el.offset);
-		} else {
-			glVertexAttribPointer(position, el.length, gl_type, GL_FALSE, layout.size, (void*)el.offset);
-		}
-		
-		glVertexAttribDivisor(position, 1);
-		position++;
-	}
+    glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
+    glBufferData(GL_ARRAY_BUFFER, buffer_size * sizeof(TexturedQuadBufferElement), NULL, GL_DYNAMIC_DRAW);
 
-	glBindVertexArray(0);
+    u8 position = 3;
+    for (BufferElement& el : layout.elements) {
+        GLenum gl_type = BufferElementTypeToOpenGLType(el.type);
+        printf("glEnableVertexAttribArray(%i)\n", position);
+        printf("glVertexAttribPointer(%i, %i, %i, GL_FALSE, %u, (void*)%u);\n", position, el.length, gl_type, layout.size, el.offset);
+        printf("glVertexAttribDivisor(%i, 1)\n", position);
+        printf("\n");
+
+        glEnableVertexAttribArray(position);
+        if (el.IsInt()) {
+            glVertexAttribIPointer(position, el.length, gl_type, layout.size, (void*)el.offset);
+        } else {
+            glVertexAttribPointer(position, el.length, gl_type, GL_FALSE, layout.size, (void*)el.offset);
+        }
+
+        glVertexAttribDivisor(position, 1);
+        position++;
+    }
+
+    glBindVertexArray(0);
 }
 
-void TexturedQuadBuffer::Flush() { 
-	if (rolling_index == 0) return;
+void TexturedQuadBuffer::Flush()
+{
+    if (rolling_index == 0)
+        return;
 
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
 
-	u64 size = rolling_index * sizeof(TexturedQuadBufferElement);
-	
-	assert(size > 0);
+    u64 size = rolling_index * sizeof(TexturedQuadBufferElement);
 
-	glBufferSubData(GL_ARRAY_BUFFER, 0, size, &elements[0]);
+    assert(size > 0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, size, &elements[0]);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 void TexturedQuadBuffer::Draw(Shader* shader, m4& projection)
 {
-	if (rolling_index == 0) return;
+    if (rolling_index == 0)
+        return;
 
-	shader->Use();
-	shader->setInt("imageSampler", 0);
-	shader->setMat4("projection", projection);
-	auto atlas = RM.GetTexture(this->texture_key);
+    shader->Use();
+    shader->setInt("imageSampler", 0);
+    shader->setMat4("projection", projection);
 
-	if (atlas != nullptr) {
-		glActiveTexture(GL_TEXTURE0);
-		atlas->Bind();
-	}
+    if (this->texture_key != "") {
+        auto atlas = RM.GetTexture(this->texture_key);
+        glActiveTexture(GL_TEXTURE0);
+        atlas->Bind();
+    }
 
-	glBindVertexArray(VAO);
-	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, rolling_index);
-	glBindVertexArray(0);
+    glBindVertexArray(VAO);
+    glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, rolling_index);
+    glBindVertexArray(0);
 }
 
-void TexturedQuadBuffer::Reset() {
-	//This should be enough
-	rolling_index = 0;
+void TexturedQuadBuffer::Reset()
+{
+    // This should be enough
+    rolling_index = 0;
 }
 
 u32 GradientBuffer::AddGradient(const v2 pos, const v2 size, const Gradient gradient)
 {
     assert(rolling_index >= 0);
-    assert(rolling_index+1 <= MAX_CAPACITY);
-		
-	GradientBufferElement el { };
+    assert(rolling_index + 1 <= MAX_CAPACITY);
 
-  el.matrices        = GetTransformMatrix(pos, size, 0);
-	el.colors          = gradient.colors;
-	el.gradient_type   = static_cast<u32>(gradient.gradient_type);
-	el.middle          = gradient.middle;
-	el.radial_position = gradient.radial_position;
-	el.radial_factor   = gradient.radial_factor;
+    GradientBufferElement el {};
 
-	elements[rolling_index] = el;
+    el.matrices = GetTransformMatrix(pos, size, 0);
+    el.colors = gradient.colors;
+    el.gradient_type = static_cast<u32>(gradient.gradient_type);
+    el.middle = gradient.middle;
+    el.radial_position = gradient.radial_position;
+    el.radial_factor = gradient.radial_factor;
+
+    elements[rolling_index] = el;
 
     const int tmp = rolling_index;
     rolling_index += 1;
@@ -354,138 +358,145 @@ u32 GradientBuffer::AddGradient(const v2 pos, const v2 size, const Gradient grad
 
 void GradientBuffer::Allocate(u32 buffer_size, BufferLayout layout)
 {
-	constexpr f32 vertices[] = {
-		0.5f, 0.5f, 0.0f, // top right
-		0.5f, -0.5f, 0.0f, // bottom right
-		-0.5f, -0.5f, 0.0f, // bottom left
-		-0.5f, 0.5f, 0.0f // top left
-	};
+    constexpr f32 vertices[] = {
+        0.5f, 0.5f, 0.0f, // top right
+        0.5f, -0.5f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f, // bottom left
+        -0.5f, 0.5f, 0.0f // top left
+    };
 
-	constexpr u32 indices[] = {
-		// note that we start from 0!
-		0, 1, 3, // first triangle
-		1, 2, 3 // second triangle
-	};
+    constexpr u32 indices[] = {
+        // note that we start from 0!
+        0, 1, 3, // first triangle
+        1, 2, 3 // second triangle
+    };
 
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-	glGenBuffers(1, &instanced_VBO);
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+    glGenBuffers(1, &instanced_VBO);
 
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		
-	glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
-	glBufferData(GL_ARRAY_BUFFER, buffer_size * sizeof(GradientBufferElement), NULL, GL_DYNAMIC_DRAW);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-	u8 position = 3;
-	for (BufferElement& el : layout.elements) {
-		GLenum gl_type = BufferElementTypeToOpenGLType(el.type);
-		printf("glEnableVertexAttribArray(%i)\n", position);
-		printf("glVertexAttribPointer(%i, %i, %i, GL_FALSE, %u, (void*)%u);\n", position, el.length, gl_type, layout.size, el.offset);
-		printf("glVertexAttribDivisor(%i, 1)\n", position);
-		printf("\n");
-			
-		glEnableVertexAttribArray(position);
-		if (el.IsInt()) {
-			glVertexAttribIPointer(position, el.length, gl_type, layout.size, (void*)el.offset);
-		} else {
-			glVertexAttribPointer(position, el.length, gl_type, GL_FALSE, layout.size, (void*)el.offset);
-		}
-		glVertexAttribDivisor(position, 1);
-		position++;
-	}
+    glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
+    glBufferData(GL_ARRAY_BUFFER, buffer_size * sizeof(GradientBufferElement), NULL, GL_DYNAMIC_DRAW);
 
-	glBindVertexArray(0);
+    u8 position = 3;
+    for (BufferElement& el : layout.elements) {
+        GLenum gl_type = BufferElementTypeToOpenGLType(el.type);
+        printf("glEnableVertexAttribArray(%i)\n", position);
+        printf("glVertexAttribPointer(%i, %i, %i, GL_FALSE, %u, (void*)%u);\n", position, el.length, gl_type, layout.size, el.offset);
+        printf("glVertexAttribDivisor(%i, 1)\n", position);
+        printf("\n");
+
+        glEnableVertexAttribArray(position);
+        if (el.IsInt()) {
+            glVertexAttribIPointer(position, el.length, gl_type, layout.size, (void*)el.offset);
+        } else {
+            glVertexAttribPointer(position, el.length, gl_type, GL_FALSE, layout.size, (void*)el.offset);
+        }
+        glVertexAttribDivisor(position, 1);
+        position++;
+    }
+
+    glBindVertexArray(0);
 }
 
-void GradientBuffer::Flush() { 
-	if (rolling_index == 0) return;
+void GradientBuffer::Flush()
+{
+    if (rolling_index == 0)
+        return;
 
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
 
-	u64 size = rolling_index * sizeof(GradientBufferElement);
-	
-	assert(size > 0);
+    u64 size = rolling_index * sizeof(GradientBufferElement);
 
-	glBufferSubData(GL_ARRAY_BUFFER, 0, size, &elements[0]);
+    assert(size > 0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, size, &elements[0]);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 void GradientBuffer::Draw(v2 screen_size, Shader* shader, m4& projection)
 {
-	if (rolling_index == 0) return;
+    if (rolling_index == 0)
+        return;
 
-	shader->Use();
-	shader->setMat4("projection", projection);
-	shader->setVec2("resolution", screen_size);
+    shader->Use();
+    shader->setMat4("projection", projection);
+    shader->setVec2("resolution", screen_size);
 
-	glBindVertexArray(VAO);
-	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, rolling_index);
-	glBindVertexArray(0);
+    glBindVertexArray(VAO);
+    glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, rolling_index);
+    glBindVertexArray(0);
 }
 
-void GradientBuffer::Reset() {
-	//This should be enough
-	rolling_index = 0;
+void GradientBuffer::Reset()
+{
+    // This should be enough
+    rolling_index = 0;
 }
 
-void PickingBuffer::Allocate(v2 screen_size) {
-	glGenFramebuffers(1, &FBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+void PickingBuffer::Allocate(v2 screen_size)
+{
+    glGenFramebuffers(1, &FBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 
-	glGenTextures(1, &picking_texture);
-	glBindTexture(GL_TEXTURE_2D, picking_texture);
+    glGenTextures(1, &picking_texture);
+    glBindTexture(GL_TEXTURE_2D, picking_texture);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, screen_size.x, screen_size.y, 0, GL_RGB, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, screen_size.x, screen_size.y, 0, GL_RGB, GL_FLOAT, NULL);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, picking_texture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, picking_texture, 0);
 
-	glReadBuffer(GL_NONE);
-	glDrawBuffer(GL_COLOR_ATTACHMENT0);
+    glReadBuffer(GL_NONE);
+    glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
-  assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+    assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);  
-	glBindTexture(GL_TEXTURE_2D, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-
-void PickingBuffer::Bind() {
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FBO);  
-	glBindTexture(GL_TEXTURE_2D, picking_texture);
+void PickingBuffer::Bind()
+{
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FBO);
+    glBindTexture(GL_TEXTURE_2D, picking_texture);
 }
 
-void PickingBuffer::Unbind() {
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);  
-	glBindTexture(GL_TEXTURE_2D, 0);
+void PickingBuffer::Unbind()
+{
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-f32 PickingBuffer::ReadPixel(v2 pos) {
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	glBindTexture(GL_TEXTURE_2D, picking_texture);
+f32 PickingBuffer::ReadPixel(v2 pos)
+{
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    glBindTexture(GL_TEXTURE_2D, picking_texture);
 
-	f32 pixel[3];
+    f32 pixel[3];
 
-	glReadPixels(pos.x, pos.y, 1, 1, GL_RGB, GL_FLOAT, &pixel);
+    glReadPixels(pos.x, pos.y, 1, 1, GL_RGB, GL_FLOAT, &pixel);
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);  
-	glBindTexture(GL_TEXTURE_2D, 0);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
-	return pixel[0];
+    return pixel[0];
 }

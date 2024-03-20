@@ -29,4 +29,6 @@ void DrawTurnUI(WindowManager*);
 void DrawSupportPackage(SupportPackage& package);
 void DrawOblastInfo();
 
+void DrawBeamQuad(v2 pos, v2 size, v2 screen_size, f32 dt, v4 beam_color = GOLD);
+
 #endif

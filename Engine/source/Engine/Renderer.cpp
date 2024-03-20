@@ -6,7 +6,6 @@
 
 #include <glad/glad.h>
 
-
 void Renderer::Init(Camera& camera, v2 screen_size) {
 	UpdateProjection(camera, screen_size);
 
@@ -37,12 +36,20 @@ void Renderer::Init(Camera& camera, v2 screen_size) {
 		{ BufferElementType::VFloat4, "color_3"},
 	};
 
-
 	gradient_buffer.Allocate(MAX_CAPACITY, gradient_layout);
-	font_buffer.Allocate(MAX_CAPACITY, textured_quad_layout);
-	ui_buffer.Allocate(MAX_CAPACITY, textured_quad_layout);
 
-	ui_buffer.texture_key = "icons";
+	//UI buffer
+	CreateQuadBuffer("texture", "icons");
+	//Font buffer
+	CreateQuadBuffer("fonts", "");
+	//Beam buffer
+	CreateQuadBuffer("beam", "");
+
+	for(auto& b : quad_buffers) {
+		b.Allocate(MAX_CAPACITY, textured_quad_layout);
+	}
+
+	//ui_buffer.texture_key = "icons";
 }
 
 void Renderer::UpdateProjection(Camera& camera, v2 screen_size) {
@@ -64,20 +71,23 @@ void Renderer::DrawModels(Shader* pshader, PickingBuffer* picking, Camera& camer
     }
 }
 
-void Renderer::Draw(Shader* pshader, PickingBuffer* picking, Camera& camera, v2 screen_size)
+void Renderer::Draw(Shader* pshader, Camera& camera, v2 screen_size)
 {
-  auto texture_shader   = RM.GetShader("texture");
 	auto gradient_shader  = RM.GetShader("gradient");
 	auto particles_shader = RM.GetShader("particles");
 
 	auto view = camera.GetViewMatrix();
 
 	gradient_buffer.Draw(screen_size, gradient_shader, ortho_projection);
+
 	for(ParticlesEmitter& e : emitters) {
 		e.Draw(particles_shader , ortho_projection);
 	}
-	ui_buffer.Draw(texture_shader, ortho_projection);
-	font_buffer.Draw(texture_shader, ortho_projection);
+
+	for(auto& b : quad_buffers) {
+		auto shader = RM.GetShader(b.shader_key);
+		b.Draw(shader, ortho_projection);
+	}
 }
 
 void Renderer::Flush() {
@@ -85,14 +95,18 @@ void Renderer::Flush() {
 	for(ParticlesEmitter& e : emitters) {
 		e.Flush();
 	}
-	ui_buffer.Flush();
-	font_buffer.Flush();
+
+	for(auto& b : quad_buffers) {
+		b.Flush();
+	}
 }
 
 void Renderer::Reset() {
 	gradient_buffer.Reset();
-	ui_buffer.Reset();
-	font_buffer.Reset();
+
+	for(auto& b : quad_buffers) {
+		b.Reset();
+	}
 }
 
 void Renderer::ScaleAllModels(f32 scale) {
@@ -121,6 +135,18 @@ InstancedMeshBuffer* Renderer::GetBuffer(const std::string& mesh_name)
 InstancedMeshBuffer* Renderer::GetBufferByIndex(u32 index)
 {
     return &buffers[index];
+}
+
+u32 Renderer::CreateQuadBuffer(std::string shader_key, std::string texture_key) {
+	TexturedQuadBuffer buffer;
+	buffer.shader_key = shader_key;
+	buffer.texture_key = texture_key;
+	quad_buffers.push_back(buffer);
+	return quad_buffers.size()-1;
+}
+
+TexturedQuadBuffer& Renderer::GetQuadBuffer(u32 index) {
+	return quad_buffers[index];
 }
 
 Renderer R;

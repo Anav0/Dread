@@ -20,6 +20,10 @@ class MeshInBuffer;
 
 constexpr bool HIDE_ALPHA = true;
 
+constexpr u32 UI_BUFFER_INDEX   = 0;
+constexpr u32 FONT_BUFFER_INDEX = 1;
+constexpr u32 BEAM_BUFFER_INDEX = 2;
+
 enum class RenderMode {
     WIREFRAME,
     NORMAL,
@@ -32,9 +36,9 @@ public:
   std::vector<InstancedMeshBuffer> buffers;
   RenderMode mode = RenderMode::NORMAL;
 
-	TexturedQuadBuffer font_buffer;
-	TexturedQuadBuffer ui_buffer;
-	GradientBuffer     gradient_buffer;
+	std::vector<TexturedQuadBuffer> quad_buffers;
+
+	GradientBuffer gradient_buffer;
 
 	std::vector<ParticlesEmitter> emitters;
 
@@ -45,7 +49,7 @@ public:
   std::map<std::string, u32> mesh_by_buffor_index;
 
 	void Init(Camera& camera, v2 screen_size);
-  void Draw(Shader* shader, PickingBuffer*, Camera&, v2 screen_size);
+  void Draw(Shader* shader, Camera&, v2 screen_size);
   void DrawModels(Shader* shader, PickingBuffer*, Camera&, v2 screen_size);
 	void ScaleAllModels(f32 scale);
 	void Flush();
@@ -56,6 +60,10 @@ public:
   InstancedMeshBuffer* GetBuffer(const std::string& mesh_name);
   InstancedMeshBuffer* GetBufferByIndex(u32 index);
   InstancedMeshBuffer* CreateBuffer(Mesh mesh);
+
+	u32 CreateQuadBuffer(std::string shader_key, std::string texture_key);
+	TexturedQuadBuffer& GetQuadBuffer(u32 index);
+
 };
 
 extern Renderer R;

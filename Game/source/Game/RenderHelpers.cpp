@@ -1,5 +1,6 @@
 #include "Engine/Gui.h"
 #include "Engine/Model.h"
+#include "Engine/Renderer.h"
 #include "Engine/ResourceManager.h"
 #include "Engine/TextRenderer.h"
 #include <Engine/Collision.h>
@@ -212,4 +213,13 @@ void DrawUI(WindowManager* window) {
 
 	DrawResources(window);
 	DrawTurnUI(window);
+}
+
+void DrawBeamQuad(v2 pos, v2 size, v2 screen_size, f32 dt, v4 beam_color) {
+	auto shader = RM.GetShader("beam");
+	shader->Use();
+	shader->setVec2("resolution", screen_size);
+	shader->setFloat("u_time", dt);
+
+	R.GetQuadBuffer(BEAM_BUFFER_INDEX).AddQuad(pos, size, beam_color);
 }

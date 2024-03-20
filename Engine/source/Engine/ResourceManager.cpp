@@ -31,10 +31,11 @@ void ResourceManager::LoadRequiredResources()
     LoadShader("texture.vert", "texture.frag", "texture");
     LoadShader("gradient.vert", "gradient.frag", "gradient");
     
-		LoadShader("particles.vert", "particles.frag", "particles");
-		LoadShader("simple.vert", "simple.frag", "simple");
-		LoadShader("picking.vert", "picking.frag", "picking");
-		LoadShader("object.vert", "object.frag", "object");
+	LoadShader("beam.vert", "beam.frag", "beam");
+	LoadShader("particles.vert", "particles.frag", "particles");
+	LoadShader("simple.vert", "simple.frag", "simple");
+	LoadShader("picking.vert", "picking.frag", "picking");
+	LoadShader("object.vert", "object.frag", "object");
     LoadShader("debug.vert", "debug.frag", "debug");
     LoadShader("mesh.vert", "mesh.frag", "mesh");
 
@@ -225,6 +226,10 @@ void ResourceManager::LoadModel(const std::string& file_path, const std::string&
 
 Shader* ResourceManager::LoadShader(const std::string& vs, const std::string& fs, const const std::string& resource_key, const std::string& gs)
 {
+    assert(resource_key != "");
+    assert(vs != "");
+    assert(fs != "");
+
     std::string vertexCode;
     std::string fragmentCode;
 
