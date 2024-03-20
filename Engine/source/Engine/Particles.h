@@ -47,6 +47,7 @@ class ParticlesEmitter {
 	v2 pos;
 	v2 size;
 
+	void DrawInner(Shader* shader, const m4& projection);
 	public:
 		pParticleUpdate update;
 
@@ -73,4 +74,5 @@ class ParticlesEmitter {
 		void Allocate(BufferLayout);
 		void Flush();
 		void Draw(Shader& shader, const m4& projection);
+		void Draw(Shader* shader, const m4& projection);
 };

@@ -123,14 +123,20 @@ void ParticlesEmitter::SetKeyframes(std::vector<Keyframes<v4>> particles_frames)
 }
 
 void ParticlesEmitter::Draw(Shader& shader, const m4& projection) { 
-	shader.Use();
-	shader.setMat4("projection", projection);
+	DrawInner(&shader, projection);	
+}
+
+void ParticlesEmitter::Draw(Shader* shader, const m4& projection) { 
+	DrawInner(shader, projection);
+}
+void ParticlesEmitter::DrawInner(Shader* shader, const m4& projection) { 
+	shader->Use();
+	shader->setMat4("projection", projection);
 
 	glBindVertexArray(VAO);
 	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, n);
 	glBindVertexArray(0);
 }
-
 void ParticlesEmitter::Update(f32 dt) {
 	u64 i = 0;
 	for(auto& p : particles) {

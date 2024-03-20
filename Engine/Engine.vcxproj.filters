@@ -72,6 +72,9 @@
     <ClInclude Include="source\Engine\alloc.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="source\Engine\Distribution.h" />
+    <ClInclude Include="source\Engine\Particles.h" />
+    <ClInclude Include="source\Engine\Picking.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Engine\lib.cpp" />

@@ -51,7 +51,6 @@ RandomDist velocity  = RandomDist(0, 0, 0);
 RandomDist ttl       = RandomDist(0, 0, 0);
 RandomDist rgb       = RandomDist(0, 0, 0);
 
-ParticlesEmitter emitter = ParticlesEmitter(&placement_x, &placement_y, &direction, &velocity, &ttl, &rgb);
 
 std::vector<Particle> particles;
 BufferLayout emitter_layout {
@@ -80,8 +79,7 @@ void GameUpdateAndRender(WindowManager* window)
 
     UI.onFrameBegin(info);
 
-    R.Update();
-		emitter.Update(window->delta_time);
+    R.Update(window->delta_time);
 
     if (frame_counter++ > 144) {
         RM.HotReloadShaders();
@@ -147,11 +145,8 @@ void GameUpdateAndRender(WindowManager* window)
 		R.ScaleAllModels(1.02);
     R.DrawModels(single_color_shader, &picking_buffer, window->camera, window->screen_size);
 		
-		// Flushes 2D buffers only for now
-		emitter.Flush();
     R.Flush();
 
-		emitter.Draw(*particle_shader, R.ortho_projection);
     R.Draw(shader, &picking_buffer, window->camera, window->screen_size);
 
 		auto& camera = window->camera;
@@ -163,6 +158,24 @@ void GameUpdateAndRender(WindowManager* window)
     STATE.turn_changed = false;
 }
 
+void GlInit() {
+#if CULLING
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+#endif
+    glEnable(GL_BLEND);
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_MULTISAMPLE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDebugMessageCallback(MessageCallback, 0);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_STENCIL_TEST);
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+ 
+}
+
 void GameInitAfterReload(WindowManager* window)
 {
     gladLoadGL();
@@ -171,24 +184,9 @@ void GameInitAfterReload(WindowManager* window)
 
     glViewport(0, 0, window->screen_size.x, window->screen_size.y);
 
-#if CULLING
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-#endif
-    glEnable(GL_BLEND);
-    glEnable(GL_DEBUG_OUTPUT);
-    // glEnable(GL_DEPTH_TEST);
-    glEnable(GL_MULTISAMPLE);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDebugMessageCallback(MessageCallback, 0);
-   glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    glEnable(GL_STENCIL_TEST);
-    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+		GlInit(); 
     stbi_set_flip_vertically_on_load(true);
 
-		emitter.Allocate(emitter_layout);
     R.Init(window->camera, window->screen_size);
 
     RM.LoadRequiredResources();
@@ -199,20 +197,23 @@ void GameInitAfterReload(WindowManager* window)
 
 
 void ColorChange(WindowManager* window, std::string& particle_id, Particle& p, f32 dt) {
-	p.color.w = p.ttl_s;
+	p.color.w = p.ttl_s * 1.1;
 }
 
 void SetupEmitter(WindowManager* window) {
-
+	  //TODO: tmp
+		R.emitters.clear();
+		ParticlesEmitter emitter = ParticlesEmitter(&placement_x, &placement_y, &direction, &velocity, &ttl, &rgb);
+		emitter.Allocate(emitter_layout);
 		v2 pos  = { window->screen_size.x-62, window->screen_size.y-50 };
 		v2 size = { 200, 200 };
 		u64 n = 150;
 	
 		placement_x.SetParams(n, pos.x, pos.x + size.x);
 		placement_y.SetParams(n, pos.y, pos.y + size.y);
-		velocity.SetParams(n, 100, 400);
+		velocity.SetParams(n, 40, 70);
 		direction.SetParams(n, -100, 100);
-		ttl.SetParams(n, 100, 800);
+		ttl.SetParams(n, 500, 1500);
 		rgb.SetParams(3, 0, 1000);
 
 		std::vector<Keyframes<v4>> frames;
@@ -241,6 +242,8 @@ void SetupEmitter(WindowManager* window) {
 		emitter.SetKeyframes(frames);
 		emitter.Allocate(emitter_layout);
 		emitter.update = ColorChange;
+
+		R.emitters.push_back(emitter);
 }
 
 GameState* GameInit(WindowManager* window)
@@ -255,18 +258,9 @@ GameState* GameInit(WindowManager* window)
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 #endif
-    glEnable(GL_BLEND);
-    glEnable(GL_DEBUG_OUTPUT);
-    // glEnable(GL_DEPTH_TEST);
-    glEnable(GL_MULTISAMPLE);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDebugMessageCallback(MessageCallback, 0);
-   glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    glEnable(GL_STENCIL_TEST);
-    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+		GlInit(); 
     stbi_set_flip_vertically_on_load(true);
+
 		SetupEmitter(window);
     RM.LoadRequiredResources();
     u8 size = 38;
@@ -310,23 +304,7 @@ GameState* GameInitEx(GameState state, WindowManager* window)
 
     glViewport(0, 0, window->screen_size.x, window->screen_size.y);
 
-#if CULLING
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-#endif
-
-    glEnable(GL_BLEND);
-    glEnable(GL_DEBUG_OUTPUT);
-    glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LESS);
-    glEnable(GL_MULTISAMPLE);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDebugMessageCallback(MessageCallback, 0);
-   glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    glEnable(GL_STENCIL_TEST);
-    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+		GlInit(); 
     stbi_set_flip_vertically_on_load(true);
 
 		SetupEmitter(window);

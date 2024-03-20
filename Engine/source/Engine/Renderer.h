@@ -4,6 +4,7 @@
 #define Renderer_H
 
 #include "BoundingBox.h"
+#include "Particles.h"
 #include "Buffers.h"
 #include "Constants.h"
 
@@ -35,6 +36,8 @@ public:
 	TexturedQuadBuffer ui_buffer;
 	GradientBuffer     gradient_buffer;
 
+	std::vector<ParticlesEmitter> emitters;
+
   m4 projection;
   m4 ortho_projection;
 
@@ -46,7 +49,7 @@ public:
   void DrawModels(Shader* shader, PickingBuffer*, Camera&, v2 screen_size);
 	void ScaleAllModels(f32 scale);
 	void Flush();
-  void Update();
+  void Update(f32 dt);
 	void UpdateProjection(Camera& camera, v2 screen_size);
 	void Reset();
 

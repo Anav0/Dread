@@ -1,6 +1,8 @@
 #include "Renderer.h"
 #include "Buffers.h"
+#include "Buffers.h"
 #include "Model.h"
+#include "Particles.h"
 
 #include <glad/glad.h>
 
@@ -48,8 +50,11 @@ void Renderer::UpdateProjection(Camera& camera, v2 screen_size) {
 	ortho_projection = glm::ortho(0.0f, (f32)screen_size.x, 0.0f, (f32)screen_size.y);
 }
 
-void Renderer::Update()
+void Renderer::Update(f32 dt)
 {
+	for(auto& e : emitters) {
+		e.Update(dt);
+	}
 }
 
 void Renderer::DrawModels(Shader* pshader, PickingBuffer* picking, Camera& camera, v2 screen_size) {
@@ -61,18 +66,25 @@ void Renderer::DrawModels(Shader* pshader, PickingBuffer* picking, Camera& camer
 
 void Renderer::Draw(Shader* pshader, PickingBuffer* picking, Camera& camera, v2 screen_size)
 {
-  auto texture_shader  = RM.GetShader("texture");
-	auto gradient_shader = RM.GetShader("gradient");
+  auto texture_shader   = RM.GetShader("texture");
+	auto gradient_shader  = RM.GetShader("gradient");
+	auto particles_shader = RM.GetShader("particles");
 
 	auto view = camera.GetViewMatrix();
 
 	gradient_buffer.Draw(screen_size, gradient_shader, ortho_projection);
+	for(ParticlesEmitter& e : emitters) {
+		e.Draw(particles_shader , ortho_projection);
+	}
 	ui_buffer.Draw(texture_shader, ortho_projection);
 	font_buffer.Draw(texture_shader, ortho_projection);
 }
 
 void Renderer::Flush() {
 	gradient_buffer.Flush();
+	for(ParticlesEmitter& e : emitters) {
+		e.Flush();
+	}
 	ui_buffer.Flush();
 	font_buffer.Flush();
 }
