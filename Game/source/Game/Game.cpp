@@ -61,6 +61,7 @@ BufferLayout emitter_layout {
 	{ BufferElementType::VFloat4, "color"},
 	{ BufferElementType::VFloat2, "pos"},
 	{ BufferElementType::VFloat2, "size"},
+	{ BufferElementType::VFloat2, "initial_size"},
 	{ BufferElementType::VFloat2, "direction"},
 	{ BufferElementType::Float, "velocity"},
 	{ BufferElementType::Float, "ttl_s"},
@@ -195,9 +196,18 @@ void GameInitAfterReload(WindowManager* window)
     TR.UseFont("oswald.ttf");
 }
 
-
 void ColorChange(WindowManager* window, std::string& particle_id, Particle& p, f32 dt) {
+	static f32 change_dir_every_ms_b = 100;
+	static f32 change_dir_every_ms = change_dir_every_ms_b;
+	change_dir_every_ms -= dt;
+
+	if(change_dir_every_ms < 0) {
+		p.direction = v2(direction.GenerateSingle() / 100, direction.GenerateSingle() / 100);
+		change_dir_every_ms = change_dir_every_ms_b;
+	}
+
 	p.color.w = p.ttl_s * 1.1;
+	p.size *= p.ttl_s / p.size;
 }
 
 void SetupEmitter(WindowManager* window) {
@@ -205,15 +215,16 @@ void SetupEmitter(WindowManager* window) {
 		R.emitters.clear();
 		ParticlesEmitter emitter = ParticlesEmitter(&placement_x, &placement_y, &direction, &velocity, &ttl, &rgb);
 		emitter.Allocate(emitter_layout);
-		v2 pos  = { window->screen_size.x-62, window->screen_size.y-50 };
-		v2 size = { 200, 200 };
-		u64 n = 150;
+		v2 pos  = { window->screen_size.x-100, window->screen_size.y-85 };
+		//v2 pos  = {200, 200};
+		v2 size = v2(85);
+		u64 n = 75;
 	
 		placement_x.SetParams(n, pos.x, pos.x + size.x);
 		placement_y.SetParams(n, pos.y, pos.y + size.y);
-		velocity.SetParams(n, 40, 70);
+		velocity.SetParams(n, 10, 20);
 		direction.SetParams(n, -100, 100);
-		ttl.SetParams(n, 500, 1500);
+		ttl.SetParams(n, 1000, 3000);
 		rgb.SetParams(3, 0, 1000);
 
 		std::vector<Keyframes<v4>> frames;
@@ -227,18 +238,20 @@ void SetupEmitter(WindowManager* window) {
 		Keyframes<v4> keyframes;
 		KeyFrame<v4> frame;
 
-		frame.duration = duration_cast<milliseconds>(duration<u32>(static_cast<u32>(velocity.GenerateSingle() / 100)));
+		//frame.duration = duration_cast<milliseconds>(duration<u32>(static_cast<u32>(velocity.GenerateSingle() / 100)));
+		frame.duration = 1000ms;
 		frame.target_value = YELLOW;
 		keyframes.push_back(frame);
 
-		frame.duration = duration_cast<milliseconds>(duration<u32>(static_cast<u32>(velocity.GenerateSingle() / 100)));
+		//frame.duration = duration_cast<milliseconds>(duration<u32>(static_cast<u32>(velocity.GenerateSingle() / 100)));
+		frame.duration = 1000ms;
 		frame.target_value = RED;
 		keyframes.push_back(frame);
 
 		frames.push_back(keyframes);
 		}
 
-		emitter.Init(window, n, pos, size);
+		emitter.Init(window, n, pos, size, v2(200));
 		emitter.SetKeyframes(frames);
 		emitter.Allocate(emitter_layout);
 		emitter.update = ColorChange;

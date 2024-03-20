@@ -14,6 +14,7 @@ struct Particle {
 	m4 model;
 	v4 color;
 	v2 pos;
+	v2 initial_size;
 	v2 size;
 	v2 direction;
 	f32 velocity;
@@ -67,8 +68,8 @@ class ParticlesEmitter {
 			this->rgb         = rgb;
 		};
 
-		std::vector<Particle> CreateParticles(u64 n);
-		void Init(WindowManager* window, u64 n, v2 pos, v2 size);
+		std::vector<Particle> CreateParticles(u64 n, v2 size);
+		void Init(WindowManager* window, u64 n, v2 pos, v2 size, v2 p_size);
 		void SetKeyframes(std::vector<Keyframes<v4>> particles_frames);
 		void Update(f32 dt);
 		void Allocate(BufferLayout);

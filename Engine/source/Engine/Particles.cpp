@@ -1,7 +1,7 @@
 #include "Particles.h"
 #include "Buffers.h"
 
-std::vector<Particle> ParticlesEmitter::CreateParticles(u64 n) {
+std::vector<Particle> ParticlesEmitter::CreateParticles(u64 n, v2 p_size) {
 		particles.reserve(n);
 		ids.reserve(n);
 
@@ -20,7 +20,6 @@ std::vector<Particle> ParticlesEmitter::CreateParticles(u64 n) {
 
 		for(u64 i = 0; i < n; i++) {
 			v2 pos    = { xs[i], ys[i] };
-			v2 p_size = { 5, 5 };
 			v2 dir    = { dir_xs[i] / 100, dir_ys[i] / 100 };
 			f32 ttl   = ttls[i] / 1000; //ms to s;
 			v4 color  = RED; //{ rs[i] / 1000, gs[i] / 1000, bs[i] / 1000, 1.0 };
@@ -32,6 +31,7 @@ std::vector<Particle> ParticlesEmitter::CreateParticles(u64 n) {
 					color,
 					pos,
 					p_size,
+					p_size,
 					dir,
 					velos[i],
 					ttl,
@@ -41,12 +41,12 @@ std::vector<Particle> ParticlesEmitter::CreateParticles(u64 n) {
 		return particles;
 }
 
-void ParticlesEmitter::Init(WindowManager* window, u64 n, v2 pos, v2 size) {
+void ParticlesEmitter::Init(WindowManager* window, u64 n, v2 pos, v2 size, v2 p_size) {
 			this->window    = window;
 			this->pos       = pos;
 			this->size      = size;
 
-			this->particles = CreateParticles(n);
+			this->particles = CreateParticles(n, p_size);
 			this->n         = particles.size();
 }
 
@@ -142,8 +142,8 @@ void ParticlesEmitter::Update(f32 dt) {
 	for(auto& p : particles) {
 		if(p.ttl_s < 0) {
 				p.ttl_s = static_cast<f32>(ttl->GenerateSingle() / 1000);
-				p.pos.y = pos.y;
-				p.pos.x = pos.x;
+				p.pos.y = placement_y->GenerateSingle();
+				p.pos.x = placement_x->GenerateSingle();
 	}
 
 		p.pos += p.velocity * dt * p.direction;
