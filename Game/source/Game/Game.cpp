@@ -85,28 +85,32 @@ void GameUpdateAndRender(WindowManager* window)
         frame_counter = 0;
     }
 
-    const Gradient card_gradient {
+		const Gradient card_gradient2{
         GradientType::Radial,
-        v2(0.25, 0.5),
-        { 0.777, -0.56 },
-        1.0,
-        { YELLOW, BLACK },
+        v2(0.5, 0.5),
+				window->screen_size / v2(2.12, 2.1),
+				v2(-0.7, 3.0),
+				9.0,
+        { YELLOW },
     };
 
     const Gradient header_gradient {
         GradientType::ThreeColor,
-        v2(0.5, 0.65),
-        { 0.0, 0.0 },
-        1.0,
+        v2(0.5, 0.65), // Middle
+        { 0.0, 0.0 },  // Radial pos
+				v2(0.0, 1.0),  //Smoothing
+        1.0,           //Factor
         { RED, BLACK, YELLOW },
     };
 
     R.gradient_buffer.AddGradient({ 0, window->screen_size.y - HEADER_H }, { window->screen_size.x, HEADER_H }, header_gradient);
-    R.gradient_buffer.AddGradient({ 50, 50 }, { 260, 130 }, card_gradient);
 
-	//DrawBeamQuad({200, 200}, { 50, 50}, window->screen_size, window->delta_time, GOLD);
+		//--------------------
+    R.gradient_buffer.AddGradient(v2(0), window->screen_size, card_gradient2);
 
-    //DrawUI(window);
+		//DrawBeamQuad({20, 220}, {150, 150}, window->time_since_start_s, GOLD);
+
+    DrawUI(window);
 
 		if(info.action == MouseAction::PRESSED && info.type == MouseButton::LEFT) {
 			i32 entity_id = picking_buffer.ReadPixel(info.pos);
@@ -118,44 +122,43 @@ void GameUpdateAndRender(WindowManager* window)
 				}
 			}
 		}
-		//--------------------------------------------------------------
 
 		auto p_shader = RM.GetShader("picking");
 		picking_buffer.Bind();
     glClearColor(-1.0f, -1.0f, -1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     R.DrawModels(p_shader, &picking_buffer, window->camera, window->screen_size);
-	picking_buffer.Unbind();
+		picking_buffer.Unbind();
 
-	//--------------------------------------------------------------
-						
-	auto single_color_shader = RM.GetShader("simple");
-	auto shader = RM.GetShader("object");
+		auto single_color_shader = RM.GetShader("simple");
+		auto shader = RM.GetShader("object");
 
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilMask(0xFF);
-	R.ScaleAllModels(1.0);
+		R.ScaleAllModels(1.0);
     R.DrawModels(shader, &picking_buffer, window->camera, window->screen_size);
 
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
     glStencilMask(0x00);
-	glDisable(GL_DEPTH_TEST);
-	R.ScaleAllModels(1.02);
+		glDisable(GL_DEPTH_TEST);
+		R.ScaleAllModels(1.02);
     R.DrawModels(single_color_shader, &picking_buffer, window->camera, window->screen_size);
-		
+
     R.Flush();
 
-    R.Draw(shader, window->camera, window->screen_size);
+    R.Draw(window->camera, window->screen_size);
 
-	auto& camera = window->camera;
+		//auto& camera = window->camera;
     //printf("Camera: %f %f %f | %f %f\r", camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
 
     R.Reset();
     UI.Reset();
 
     STATE.turn_changed = false;
+
+		assert(false);
 }
 
 void GlInit() {
@@ -188,6 +191,7 @@ void GameInitAfterReload(WindowManager* window)
     stbi_set_flip_vertically_on_load(true);
 
 		R.buffers.clear();
+
     R.Init(window->camera, window->screen_size);
 
     RM.LoadRequiredResources();
@@ -218,7 +222,7 @@ void SetupEmitter(WindowManager* window) {
 		v2 pos  = { window->screen_size.x-100, window->screen_size.y-85 };
 		//v2 pos  = {200, 200};
 		v2 size = v2(85);
-		u64 n = 75;
+		u64 n = 35;
 	
 		placement_x.SetParams(n, pos.x, pos.x + size.x);
 		placement_y.SetParams(n, pos.y, pos.y + size.y);
@@ -239,13 +243,13 @@ void SetupEmitter(WindowManager* window) {
 		KeyFrame<v4> frame;
 
 		//frame.duration = duration_cast<milliseconds>(duration<u32>(static_cast<u32>(velocity.GenerateSingle() / 100)));
-		frame.duration = 1000ms;
-		frame.target_value = YELLOW;
+		frame.duration = 600ms;
+		frame.target_value = GOLD;
 		keyframes.push_back(frame);
 
 		//frame.duration = duration_cast<milliseconds>(duration<u32>(static_cast<u32>(velocity.GenerateSingle() / 100)));
-		frame.duration = 1000ms;
-		frame.target_value = RED;
+		frame.duration = 600ms;
+		frame.target_value = YELLOW;
 		keyframes.push_back(frame);
 
 		frames.push_back(keyframes);

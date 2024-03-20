@@ -215,11 +215,6 @@ void DrawUI(WindowManager* window) {
 	DrawTurnUI(window);
 }
 
-void DrawBeamQuad(v2 pos, v2 size, v2 screen_size, f32 dt, v4 beam_color) {
-	auto shader = RM.GetShader("beam");
-	shader->Use();
-	shader->setVec2("resolution", screen_size);
-	shader->setFloat("u_time", dt);
-
+void DrawBeamQuad(v2 pos, v2 size, f32 dt, v4 beam_color) {
 	R.GetQuadBuffer(BEAM_BUFFER_INDEX).AddQuad(pos, size, beam_color);
 }

@@ -131,6 +131,7 @@ u32 TexturedQuadBuffer::AddTexturedQuad(const AtlasTextureInfo* texture_info, co
     if (size.x == 0 && size.y == 0)
         size_to_use = texture_info->size;
 
+    el.size = size_to_use;
     el.color = color;
     el.matrices = GetTransformMatrix(pos, size_to_use, rotation, texture_info->scale);
 
@@ -158,6 +159,7 @@ u32 TexturedQuadBuffer::AddQuad(const v2 position, const v2 size, const v4 color
 
     TexturedQuadBufferElement el {};
 
+    el.size = size;
     el.color = color;
     el.matrices = GetTransformMatrix(position, size, rotation);
 
@@ -175,65 +177,100 @@ u32 TexturedQuadBuffer::AddQuad(const v2 position, const v2 size, const v4 color
 
 GLenum BufferElementTypeToOpenGLType(BufferElementType type)
 {
-	switch (type) {
-		case BufferElementType::Float:     return GL_FLOAT;
-		case BufferElementType::VFloat2:   return GL_FLOAT;
-		case BufferElementType::VFloat3:   return GL_FLOAT;
-		case BufferElementType::VFloat4:   return GL_FLOAT;
-		case BufferElementType::Int:       return GL_INT;
-		case BufferElementType::UInt:      return GL_UNSIGNED_INT;
-		case BufferElementType::VUInt2:    return GL_UNSIGNED_INT;
-		case BufferElementType::VUInt3:    return GL_UNSIGNED_INT;
-		case BufferElementType::VUInt4:    return GL_UNSIGNED_INT;
-		case BufferElementType::VInt2:     return GL_INT;
-		case BufferElementType::VInt3:     return GL_INT;
-		case BufferElementType::VInt4:     return GL_INT;
-		case BufferElementType::Bool:      return GL_BOOL;
-	}
-	return 0;
+    switch (type) {
+    case BufferElementType::Float:
+        return GL_FLOAT;
+    case BufferElementType::VFloat2:
+        return GL_FLOAT;
+    case BufferElementType::VFloat3:
+        return GL_FLOAT;
+    case BufferElementType::VFloat4:
+        return GL_FLOAT;
+    case BufferElementType::Int:
+        return GL_INT;
+    case BufferElementType::UInt:
+        return GL_UNSIGNED_INT;
+    case BufferElementType::VUInt2:
+        return GL_UNSIGNED_INT;
+    case BufferElementType::VUInt3:
+        return GL_UNSIGNED_INT;
+    case BufferElementType::VUInt4:
+        return GL_UNSIGNED_INT;
+    case BufferElementType::VInt2:
+        return GL_INT;
+    case BufferElementType::VInt3:
+        return GL_INT;
+    case BufferElementType::VInt4:
+        return GL_INT;
+    case BufferElementType::Bool:
+        return GL_BOOL;
+    }
+    return 0;
 }
 
-u8 GetBufferElementSize(BufferElementType type) {
-	switch (type) {
-		case BufferElementType::Bool: return 1;
-		case BufferElementType::VBool2: return 2;
-		case BufferElementType::VBool3: return 3;
-		case BufferElementType::VBool4: return 4;
-		     
-		case BufferElementType::Float:
-		case BufferElementType::Int: return 4;
-		     
-		case BufferElementType::VFloat2:
-		case BufferElementType::VUInt2:
-		case BufferElementType::VInt2: return 4*2;
-		     
-		case BufferElementType::VFloat3:
-		case BufferElementType::VUInt3:
-		case BufferElementType::VInt3: return 4*3;
-		     
-		case BufferElementType::VFloat4:
-		case BufferElementType::VUInt4:
-		case BufferElementType::VInt4: return 4*4;
-	}
+u8 GetBufferElementSize(BufferElementType type)
+{
+    switch (type) {
+    case BufferElementType::Bool:
+        return 1;
+    case BufferElementType::VBool2:
+        return 2;
+    case BufferElementType::VBool3:
+        return 3;
+    case BufferElementType::VBool4:
+        return 4;
+
+    case BufferElementType::Float:
+    case BufferElementType::Int:
+        return 4;
+
+    case BufferElementType::VFloat2:
+    case BufferElementType::VUInt2:
+    case BufferElementType::VInt2:
+        return 4 * 2;
+
+    case BufferElementType::VFloat3:
+    case BufferElementType::VUInt3:
+    case BufferElementType::VInt3:
+        return 4 * 3;
+
+    case BufferElementType::VFloat4:
+    case BufferElementType::VUInt4:
+    case BufferElementType::VInt4:
+        return 4 * 4;
+    }
 }
 
-u8 GetBufferElementTypeLength(BufferElementType type) {
-	switch (type) {
-		case BufferElementType::Bool: return 1;
-		case BufferElementType::VBool2: return 2;
-		case BufferElementType::VBool3: return 3;
-		case BufferElementType::VBool4: return 4;
+u8 GetBufferElementTypeLength(BufferElementType type)
+{
+    switch (type) {
+    case BufferElementType::Bool:
+        return 1;
+    case BufferElementType::VBool2:
+        return 2;
+    case BufferElementType::VBool3:
+        return 3;
+    case BufferElementType::VBool4:
+        return 4;
 
-		case BufferElementType::Int: return 1;
-		case BufferElementType::VInt2: return 2;
-		case BufferElementType::VInt3: return 3;
-		case BufferElementType::VInt4: return 4;
+    case BufferElementType::Int:
+        return 1;
+    case BufferElementType::VInt2:
+        return 2;
+    case BufferElementType::VInt3:
+        return 3;
+    case BufferElementType::VInt4:
+        return 4;
 
-		case BufferElementType::Float: return 1;
-		case BufferElementType::VFloat2: return 2;
-		case BufferElementType::VFloat3: return 3;
-		case BufferElementType::VFloat4: return 4;
-	}
+    case BufferElementType::Float:
+        return 1;
+    case BufferElementType::VFloat2:
+        return 2;
+    case BufferElementType::VFloat3:
+        return 3;
+    case BufferElementType::VFloat4:
+        return 4;
+    }
 }
 
 //------------------------------------------------------------------------
@@ -309,14 +346,21 @@ void TexturedQuadBuffer::Flush()
     glBindVertexArray(0);
 }
 
-void TexturedQuadBuffer::Draw(Shader* shader, m4& projection)
+void TexturedQuadBuffer::Draw(m4& projection)
 {
     if (rolling_index == 0)
         return;
 
-    shader->Use();
-    shader->setInt("imageSampler", 0);
-    shader->setMat4("projection", projection);
+    auto shader = RM.GetShader(this->shader_key);
+
+    switch (shader->type) {
+    case ShaderType::Beam:
+        UseBeamShader(shader, projection);
+        break;
+    case ShaderType::TexturedQuad:
+        UseTextureShader(shader, projection);
+        break;
+    }
 
     if (this->texture_key != "") {
         auto atlas = RM.GetTexture(this->texture_key);
@@ -342,12 +386,15 @@ u32 GradientBuffer::AddGradient(const v2 pos, const v2 size, const Gradient grad
 
     GradientBufferElement el {};
 
+		el.size = size;
+		el.pos = pos;
     el.matrices = GetTransformMatrix(pos, size, 0);
     el.colors = gradient.colors;
     el.gradient_type = static_cast<u32>(gradient.gradient_type);
     el.middle = gradient.middle;
     el.radial_position = gradient.radial_position;
     el.radial_factor = gradient.radial_factor;
+    el.smoothing = gradient.smoothing;
 
     elements[rolling_index] = el;
 

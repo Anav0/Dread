@@ -49,7 +49,7 @@ public:
   std::map<std::string, u32> mesh_by_buffor_index;
 
 	void Init(Camera& camera, v2 screen_size);
-  void Draw(Shader* shader, Camera&, v2 screen_size);
+  void Draw(Camera&, v2 screen_size);
   void DrawModels(Shader* shader, PickingBuffer*, Camera&, v2 screen_size);
 	void ScaleAllModels(f32 scale);
 	void Flush();
@@ -63,7 +63,6 @@ public:
 
 	u32 CreateQuadBuffer(std::string shader_key, std::string texture_key);
 	TexturedQuadBuffer& GetQuadBuffer(u32 index);
-
 };
 
 extern Renderer R;

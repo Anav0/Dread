@@ -8,6 +8,8 @@ void WindowManager::onBeginOfTheLoop()
     delta_time = currentFrame - last_frame;
     last_frame = currentFrame;
 
+		time_since_start_s += 0.1;
+
     frame_start_time = std::chrono::high_resolution_clock::now();
 
     glfwGetCursorPos(window, &mouse_x, &mouse_y);

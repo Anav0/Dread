@@ -1,12 +1,14 @@
 #version 420 core
 
 layout (location = 0) in vec3 position;
-layout (location = 3) in mat4 model;
-layout (location = 7) in vec2 textureCoords;
-layout (location = 8) in vec2 textureCoords1;
-layout (location = 9) in vec2 textureCoords2;
-layout (location = 10) in vec2 textureCoords3;
-layout (location = 11) in vec4 color;
+layout (location = 3) in vec2 pos;
+layout (location = 4) in vec2 size;
+layout (location = 5) in mat4 model;
+layout (location = 9) in vec2 textureCoords;
+layout (location = 10) in vec2 textureCoords1;
+layout (location = 11) in vec2 textureCoords2;
+layout (location = 12) in vec2 textureCoords3;
+layout (location = 13) in vec4 color;
 
 uniform mat4 projection;
 

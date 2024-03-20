@@ -34,7 +34,7 @@ public:
 
     TimeManager time_manager;
 
-    f32 delta_time, last_frame;
+    f32 delta_time, last_frame, time_since_start_s;
     high_resolution_clock::time_point frame_start_time;
 
     bool Init();

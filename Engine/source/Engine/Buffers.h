@@ -176,12 +176,15 @@ public:
 
 constexpr u32 GRADIENT_MAX_COLORS = 4;
 struct GradientBufferElement {
+	v2 pos;
+	v2 size;
 	m4 matrices;
 	u32 gradient_type;
 	v2 middle;
 	f32 radial_factor;
 	v2 radial_position;
-    std::array<v4, GRADIENT_MAX_COLORS> colors;
+	v2 smoothing;
+  std::array<v4, GRADIENT_MAX_COLORS> colors;
 };
 
 enum class GradientType : i32 {
@@ -193,6 +196,7 @@ struct Gradient {
 	GradientType gradient_type;
 	v2 middle;
 	v2 radial_position;
+	v2 smoothing;
 	f32 radial_factor;
 	std::array<v4, GRADIENT_MAX_COLORS> colors;
 };
@@ -214,10 +218,14 @@ public:
 };
 
 struct TexturedQuadBufferElement {
+    v2 pos;
+    v2 size;
 	m4 matrices;
 	v2 textures_coords[4];
-  v4 color;
+    v4 color;
 };
+
+typedef void (*pSetupShader) (Shader*, m4 projection);
 
 class TexturedQuadBuffer {
   unsigned int VAO, VBO, EBO, instanced_VBO;
@@ -225,16 +233,16 @@ class TexturedQuadBuffer {
 	TexturedQuadBufferElement elements[MAX_CAPACITY];
 
 public:
-	std::string shader_key;
   std::string texture_key;
+  std::string shader_key;
   u16 rolling_index = 0;
 
   void Allocate(u32 buffer_size, BufferLayout);
 	void Flush();
-	void Draw(Shader* shader, m4& projection);
+	void Draw(m4& projection);
 	void Reset();
 	
-	u32 AddQuad(const v2 position, const v2 size, const v4 color, float rotation = 0);
+  u32 AddQuad(const v2 position, const v2 size, const v4 color, float rotation = 0);
   u32 AddTexturedQuad(const AtlasTextureInfo* texture_info, const Texture* atlas, const v2 pos, const v2 size = { 0, 0 }, const float rotation = 0, v4 color = WHITE);
 
 };

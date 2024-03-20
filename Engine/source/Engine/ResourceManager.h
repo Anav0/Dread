@@ -18,6 +18,9 @@ using std::string;
 static std::string ASSETS_PATH = "D:/Projects/Dread/Game/Assets/";
 static std::string FONTS_PATH  = "D:/Projects/Dread/Game/Fonts";
 
+void UseTextureShader(Shader* shader, m4 projection);
+void UseBeamShader(Shader* shader, m4 projection);
+
 class ResourceManager {
 private:
     std::string SHADERS_PATH;
@@ -45,7 +48,7 @@ public:
     Model*              GetModel(const std::string& resource_key);
     vector<std::string> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, const string& typeName, const string& directory);
     Texture*            LoadTexture(std::string file_path, const std::string& resource_key, bool absolute_path = false, bool alpha = false);
-    Shader*             LoadShader(const std::string& vs, const std::string& fs, const std::string& resource_key, const std::string& gs = "");
+    Shader*             LoadShader(ShaderType type, const std::string& vs, const std::string& fs, const std::string& resource_key, const std::string& gs = "");
 	void                HotReloadShaders();
     Texture*            GetTextureByKey(const std::string&);
                     

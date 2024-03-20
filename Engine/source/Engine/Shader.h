@@ -15,9 +15,22 @@
 
 using namespace std::filesystem;
 
+enum class ShaderType {
+    Beam,
+    Particles,
+    TexturedQuad,
+    Debug,
+    Gradient,
+    Picking,
+    Simple,
+    Object,
+    Mesh,
+};
+
 class Shader {
 public:
     u32 ID;
+    ShaderType type;
     file_time_type vertex_last_written;
     file_time_type fragment_last_written;
     file_time_type geometry_last_written;
@@ -59,8 +72,9 @@ public:
         return success;
     }
 
-    Shader(const char* vertexPath, const char* fragmentPath)
+    Shader(ShaderType type, const char* vertexPath, const char* fragmentPath)
     {
+        this->type = type;
         this->vertexPath   = vertexPath;
         this->fragmentPath = fragmentPath;
 

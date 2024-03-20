@@ -24,20 +24,38 @@ ResourceManager RM;
 
 using namespace std::filesystem;
 
+void UseTextureShader(Shader* shader, m4 projection)
+{
+    shader->Use();
+    shader->setMat4("projection", projection);
+    shader->setBool("hideAlpha", false);
+    shader->setInt("imageSampler", 0);
+}
+
+void UseBeamShader(Shader* shader, m4 projection)
+{
+    shader->Use();
+    shader->setMat4("projection", projection);
+    shader->setBool("hideAlpha", false);
+    shader->setInt("imageSampler", 0);
+    shader->setVec2("u_resolution", {1920,1080});
+    // shader->setVec2("u_time", window.time_since_start_s);
+}
+
 void ResourceManager::LoadRequiredResources()
 {
     LoadTexture("icons.png", "icons", false, true);
 
-    LoadShader("texture.vert", "texture.frag", "texture");
-    LoadShader("gradient.vert", "gradient.frag", "gradient");
-    
-	LoadShader("beam.vert", "beam.frag", "beam");
-	LoadShader("particles.vert", "particles.frag", "particles");
-	LoadShader("simple.vert", "simple.frag", "simple");
-	LoadShader("picking.vert", "picking.frag", "picking");
-	LoadShader("object.vert", "object.frag", "object");
-    LoadShader("debug.vert", "debug.frag", "debug");
-    LoadShader("mesh.vert", "mesh.frag", "mesh");
+    LoadShader(ShaderType::TexturedQuad, "texture.vert", "texture.frag", "texture");
+    LoadShader(ShaderType::Gradient, "gradient.vert", "gradient.frag", "gradient");
+
+    LoadShader(ShaderType::Beam, "beam.vert", "beam.frag", "beam");
+    LoadShader(ShaderType::Particles, "particles.vert", "particles.frag", "particles");
+    LoadShader(ShaderType::Simple, "simple.vert", "simple.frag", "simple");
+    LoadShader(ShaderType::Picking, "picking.vert", "picking.frag", "picking");
+    LoadShader(ShaderType::Object, "object.vert", "object.frag", "object");
+    LoadShader(ShaderType::Debug, "debug.vert", "debug.frag", "debug");
+    LoadShader(ShaderType::Mesh, "mesh.vert", "mesh.frag", "mesh");
 
     LoadModel("map/map.obj", "map");
 }
@@ -62,12 +80,12 @@ Texture* ResourceManager::GetTexture(const std::string& resource_key)
     if (!loaded_textures.contains(resource_key))
         return nullptr;
 
-    return &loaded_textures[resource_key];
+    return &loaded_textures.at(resource_key);
 }
 
 Shader* ResourceManager::GetShader(const std::string& shader_name)
 {
-    return &loaded_shaders[shader_name];
+    return &loaded_shaders.at(shader_name);
 }
 
 Texture* ResourceManager::LoadTexture(std::string file_path, const std::string& resource_key, bool absolute_path, bool alpha)
@@ -108,7 +126,7 @@ Texture* ResourceManager::LoadTexture(std::string file_path, const std::string& 
 
     loaded_textures.insert(std::pair(resource_key, texture));
 
-    return &loaded_textures[resource_key];
+    return &loaded_textures.at(resource_key);
 }
 
 u32 ResourceManager::TextureFromFile(const char* path, const string& directory, bool gamma)
@@ -224,7 +242,7 @@ void ResourceManager::LoadModel(const std::string& file_path, const std::string&
     return;
 }
 
-Shader* ResourceManager::LoadShader(const std::string& vs, const std::string& fs, const const std::string& resource_key, const std::string& gs)
+Shader* ResourceManager::LoadShader(ShaderType type, const std::string& vs, const std::string& fs, const const std::string& resource_key, const std::string& gs)
 {
     assert(resource_key != "");
     assert(vs != "");
@@ -247,11 +265,11 @@ Shader* ResourceManager::LoadShader(const std::string& vs, const std::string& fs
         return nullptr;
     }
 
-    Shader shader = *new Shader(vs_path.c_str(), fs_path.c_str());
+    Shader shader = *new Shader(type, vs_path.c_str(), fs_path.c_str());
 
     loaded_shaders.insert(std::pair(resource_key, shader));
 
-    return &loaded_shaders[resource_key];
+    return &loaded_shaders.at(resource_key);
 }
 
 AtlasTextureInfo GetTextureInfoByIndex(u16 index, v2 icon_size, const std::string& atlas_key)
@@ -266,7 +284,7 @@ AtlasTextureInfo GetTextureInfoByIndex(u16 index, v2 icon_size, const std::strin
     info.position.x = (index % row_size) * icon_size.x;
     info.position.y = (atlas->Height - (index / column_size * icon_size.y)) - icon_size.y;
 
-    info.size  = icon_size;
+    info.size = icon_size;
     info.scale = v3(1.0);
 
     return info;
@@ -277,10 +295,10 @@ void ResourceManager::HotReloadShaders()
     for (auto& pair : loaded_shaders) {
         Shader& shader = pair.second;
 
-        auto vertex_last_written   = last_write_time(shader.vertexPath);
+        auto vertex_last_written = last_write_time(shader.vertexPath);
         auto fragment_last_written = last_write_time(shader.fragmentPath);
 
-        bool was_vertex_updated   = vertex_last_written > shader.vertex_last_written;
+        bool was_vertex_updated = vertex_last_written > shader.vertex_last_written;
         bool was_fragment_updated = fragment_last_written > shader.fragment_last_written;
 
         if (was_fragment_updated || was_vertex_updated) {
@@ -290,10 +308,11 @@ void ResourceManager::HotReloadShaders()
             bool v_success = shader.Load(new_shader_program_id, shader.vertexPath, GL_VERTEX_SHADER, "VERTEX", v_id);
             bool f_success = shader.Load(new_shader_program_id, shader.fragmentPath, GL_FRAGMENT_SHADER, "FRAGMENT", f_id);
 
-						shader.vertex_last_written   = vertex_last_written;
+            shader.vertex_last_written = vertex_last_written;
             shader.fragment_last_written = fragment_last_written;
 
-            if (!v_success || !f_success) return;
+            if (!v_success || !f_success)
+                return;
 
             glDeleteProgram(shader.ID);
             shader.ID = new_shader_program_id;
@@ -302,6 +321,6 @@ void ResourceManager::HotReloadShaders()
 
             glDeleteShader(f_id);
             glDeleteShader(v_id);
-        } 
+        }
     }
 }
