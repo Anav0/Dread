@@ -118,6 +118,10 @@ void ParticlesEmitter::Flush() {
 }
 
 
+void ParticlesEmitter::SetKeyframes(std::vector<Keyframes<v4>> particles_frames) {
+	this->particles_frames = particles_frames;
+}
+
 void ParticlesEmitter::Draw(Shader& shader, const m4& projection) { 
 	shader.Use();
 	shader.setMat4("projection", projection);
@@ -138,6 +142,11 @@ void ParticlesEmitter::Update(f32 dt) {
 
 		p.pos += p.velocity * dt * p.direction;
 		p.ttl_s -= dt;
+
+		Keyframes<v4>& frames = particles_frames[i];
+		A.Direction(RepetitionDirection::LoopBack);
+		A.Repeat(RepetitionMode::Infinite);
+		p.color = A.AnimateVec4(ids[i], window, frames);
 
 		this->update(window, ids[i], p, dt);
 

@@ -38,6 +38,9 @@ struct KeyFrame {
     steady_clock::time_point endpoint;
 };
 
+template <typename T>
+using Keyframes = std::vector<KeyFrame<T>>;
+
 class Animator {
     std::map<std::string, steady_clock::time_point> start_points;
 

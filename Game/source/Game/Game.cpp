@@ -43,7 +43,6 @@ MessageCallback(GLenum source,
 
 PickingBuffer picking_buffer;
 
-std::vector<KeyFrame<v4>> keyframes;
 
 RandomDist placement_x = RandomDist(0, 0, 0);
 RandomDist placement_y = RandomDist(0, 0, 0);
@@ -174,9 +173,7 @@ void GameInitAfterReload(WindowManager* window)
 
 
 void ColorChange(WindowManager* window, std::string& particle_id, Particle& p, f32 dt) {
-  A.Direction(RepetitionDirection::LoopBack);
-	A.Repeat(RepetitionMode::Infinite);
-  p.color = A.AnimateVec4(particle_id, window, keyframes);
+	p.color.w = p.ttl_s;
 }
 
 void SetupEmitter(WindowManager* window, v2 pos, v2 size) {
@@ -187,24 +184,34 @@ void SetupEmitter(WindowManager* window, v2 pos, v2 size) {
 		velocity.SetParams(n, 100, 400);
 		direction.SetParams(n, -100, 100);
 		ttl.SetParams(n, 100, 1500);
-		rgb.SetParams(n, 0, 1000);
+		rgb.SetParams(3, 0, 1000);
 
-		emitter.Init(window, n, pos, size);
-		emitter.Allocate(emitter_layout);
-		emitter.update = ColorChange;
+		std::vector<Keyframes<v4>> frames;
+		frames.reserve(n);
 
+		for(u64 i = 0; i < n; i++) {
+			auto a = rgb.Generate();
+			auto b = rgb.Generate();
+			auto c = rgb.Generate();
+
+		Keyframes<v4> keyframes;
 		KeyFrame<v4> frame;
-		frame.duration = 1500ms;
+
+		frame.duration = duration_cast<milliseconds>(duration<u32>(static_cast<u32>(velocity.GenerateSingle() / 100)));
 		frame.target_value = YELLOW;
 		keyframes.push_back(frame);
 
-		frame.duration = 2000ms;
-		frame.target_value = BLUE;
-		keyframes.push_back(frame);
-
-		frame.duration = 1000ms;
+		frame.duration = duration_cast<milliseconds>(duration<u32>(static_cast<u32>(velocity.GenerateSingle() / 100)));
 		frame.target_value = RED;
 		keyframes.push_back(frame);
+
+		frames.push_back(keyframes);
+		}
+
+		emitter.Init(window, n, pos, size);
+		emitter.SetKeyframes(frames);
+		emitter.Allocate(emitter_layout);
+		emitter.update = ColorChange;
 }
 
 v2 emitter_pos = {200, 200};

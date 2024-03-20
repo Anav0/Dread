@@ -3,6 +3,7 @@
 #include "Base.h"
 #include "Constants.h"
 #include "Distribution.h"
+#include "Animator.h"
 #include <vector>
 
 class Shader;
@@ -27,17 +28,13 @@ class WindowManager;
 
 typedef void (*pParticleUpdate)(WindowManager*, std::string& particle_id, Particle&, f32 dt);
 
-struct ColorChange {
-	v4 from;
-	v4 to;
-	f32 duration_ms;
-};
-
 class ParticlesEmitter {
 	u32 VAO, VBO, EBO, instanced_VBO;
 	u64 n     = 0;
-	std::vector<std::string> ids;
-	std::vector<Particle>    particles;
+	std::vector<std::string>   ids;
+	std::vector<Particle>      particles;
+	std::vector<Keyframes<v4>> particles_frames;
+
 	WindowManager* window;
 
 	Distribution* placement_x;
@@ -71,6 +68,7 @@ class ParticlesEmitter {
 
 		std::vector<Particle> CreateParticles(u64 n);
 		void Init(WindowManager* window, u64 n, v2 pos, v2 size);
+		void SetKeyframes(std::vector<Keyframes<v4>> particles_frames);
 		void Update(f32 dt);
 		void Allocate(BufferLayout);
 		void Flush();
