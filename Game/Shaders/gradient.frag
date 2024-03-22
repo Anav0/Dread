@@ -4,21 +4,22 @@
 
 uniform vec2 resolution;
 
-in vec4 ourColors[4];
-in vec4 ourMiddle;
-in vec2 ourRadialPosition;
-in vec2 ourSize;
-in vec2 ourPosition;
-in vec2 ourSmoothing;
-in float ourRadialFactor;
-flat in int ourGradientType;
+in vec4     ourColors[4];
+in vec2     ourMiddle;
+out int ourGradientType;
+in vec4     ourRadialPosAndSmoothing;
+in vec4     ourPosAndSize;
+in float    ourRadialFactor;
 
 out vec4 myOutputColor;
 
 void radial(vec2 st, vec4 bg_color, vec4 radial_color, vec2 radial_pos, float factor = 1.0) {
+
+	vec2 smoothing = ourRadialPosAndSmoothing.zw;
+
 	float d = distance(st, radial_pos) * factor;
 
-	d = smoothstep(ourSmoothing.x, ourSmoothing.y, d);
+	d = smoothstep(smoothing.x, smoothing.y, d);
 
 	myOutputColor = mix(bg_color, radial_color, d);
 }
@@ -50,8 +51,12 @@ void three_color(vec2 st) {
 void main() {
   vec2 st = gl_FragCoord.xy / resolution.xy;
 
-	vec2 relative = (ourPosition + ourSize * 0.5) / resolution;
-	relative += ourRadialPosition / resolution;
+	vec2 rect_pos = ourPosAndSize.xy;
+	vec2 rect_size = ourPosAndSize.xy;
+	vec2 radial_pos = ourRadialPosAndSmoothing.xy;
+
+	vec2 relative = (rect_pos + rect_size * 0.5) / resolution;
+	relative += radial_pos / resolution;
 
 	switch(ourGradientType) {
 		case 0:

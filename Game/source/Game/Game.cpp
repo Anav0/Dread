@@ -88,9 +88,9 @@ void GameUpdateAndRender(WindowManager* window)
 		const Gradient card_gradient2{
         GradientType::Radial,
         v2(0.5, 0.5),
-				window->screen_size / v2(2.12, 2.1),
-				v2(-0.7, 3.0),
-				9.0,
+				window->screen_size - v2(45),
+				v2(-0.7, 1.5),
+				13.0,
         { YELLOW },
     };
 
@@ -157,8 +157,6 @@ void GameUpdateAndRender(WindowManager* window)
     UI.Reset();
 
     STATE.turn_changed = false;
-
-		assert(false);
 }
 
 void GlInit() {

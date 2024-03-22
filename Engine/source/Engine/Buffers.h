@@ -176,14 +176,12 @@ public:
 
 constexpr u32 GRADIENT_MAX_COLORS = 4;
 struct GradientBufferElement {
-	v2 pos;
-	v2 size;
+	v4 pos_and_size;
 	m4 matrices;
 	u32 gradient_type;
 	v2 middle;
 	f32 radial_factor;
-	v2 radial_position;
-	v2 smoothing;
+	v4 radial_pos_and_smoothing;
   std::array<v4, GRADIENT_MAX_COLORS> colors;
 };
 

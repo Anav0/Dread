@@ -386,15 +386,13 @@ u32 GradientBuffer::AddGradient(const v2 pos, const v2 size, const Gradient grad
 
     GradientBufferElement el {};
 
-		el.size = size;
-		el.pos = pos;
+		el.pos_and_size = { pos, size };
     el.matrices = GetTransformMatrix(pos, size, 0);
     el.colors = gradient.colors;
     el.gradient_type = static_cast<u32>(gradient.gradient_type);
     el.middle = gradient.middle;
-    el.radial_position = gradient.radial_position;
+    el.radial_pos_and_smoothing = { gradient.radial_position, gradient.smoothing };
     el.radial_factor = gradient.radial_factor;
-    el.smoothing = gradient.smoothing;
 
     elements[rolling_index] = el;
 
@@ -435,6 +433,8 @@ void GradientBuffer::Allocate(u32 buffer_size, BufferLayout layout)
     glBufferData(GL_ARRAY_BUFFER, buffer_size * sizeof(GradientBufferElement), NULL, GL_DYNAMIC_DRAW);
 
     u8 position = 3;
+		printf("GRADIENT LAYOUT\n");
+		printf("====================================\n");
     for (BufferElement& el : layout.elements) {
         GLenum gl_type = BufferElementTypeToOpenGLType(el.type);
         printf("glEnableVertexAttribArray(%i)\n", position);
@@ -451,6 +451,7 @@ void GradientBuffer::Allocate(u32 buffer_size, BufferLayout layout)
         glVertexAttribDivisor(position, 1);
         position++;
     }
+		printf("====================================\n");
 
     glBindVertexArray(0);
 }

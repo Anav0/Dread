@@ -25,8 +25,7 @@ void Renderer::Init(Camera& camera, v2 screen_size)
     };
 
     BufferLayout gradient_layout {
-        { BufferElementType::VFloat2, "pos" },
-        { BufferElementType::VFloat2, "size" },
+        { BufferElementType::VFloat4, "pos_and_size" },
         { BufferElementType::VFloat4, "model_0" },
         { BufferElementType::VFloat4, "model_1" },
         { BufferElementType::VFloat4, "model_2" },
@@ -34,8 +33,7 @@ void Renderer::Init(Camera& camera, v2 screen_size)
         { BufferElementType::Int, "gradient_type" },
         { BufferElementType::VFloat2, "middle" },
         { BufferElementType::Float, "radial_factor" },
-        { BufferElementType::VFloat2, "radial_position" },
-        { BufferElementType::VFloat2, "smoothing" },
+        { BufferElementType::VFloat4, "radial_position_and_smoothing" },
         { BufferElementType::VFloat4, "color_0" },
         { BufferElementType::VFloat4, "color_1" },
         { BufferElementType::VFloat4, "color_2" },
