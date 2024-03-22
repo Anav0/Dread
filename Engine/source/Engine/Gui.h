@@ -89,6 +89,7 @@ public:
 	void Reset();
     void onFrameBegin(MouseInfo mouse);
 
+	void Spacer(u32 width);
 	bool DrawButton(const char* label, v2 pos = { 0, 0 }, ButtonStyle style = DEFAULT_BTN_SYTLE);
 	void DrawLabel(const std::string& label, v2 pos = { 0, 0 }, TextStyle style = default_style, bool use_layout = true);
 	bool DrawIcon(IconParams params, v2 pos = { 0, 0 }, v2 offset = { 0, 0 });

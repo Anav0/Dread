@@ -222,6 +222,14 @@ void Gui::DrawIconAndLabel(IconParams icon_params, const std::string& label, v2 
     DrawLabel(label, pos, style, false);
 }
 
+void Gui::Spacer(u32 width) {
+	assert(!layouts.empty());
+  Layout& parent = layouts.back();
+	v2 pos;
+  parent.PositionChild(pos, v2(width));
+	R.GetQuadBuffer(UI_BUFFER_INDEX).AddQuad(pos, v2(width), TRANS, 0);
+}
+
 //------------------------------------------------------------------------
 
 void Gui::Reset()
