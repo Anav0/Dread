@@ -23,13 +23,32 @@ void ChangeControl(f32 by)
     }
 }
 
-void ComputerPhase() {
-
-}
+void DeliverSupport();
 
 void GoToNextPhase() {
-	ComputerPhase();
-	GoToNextTurn();
+
+	switch(STATE.phase) {
+		case GamePhase::Inital:
+			STATE.phase = GamePhase::Events;
+			break;
+		case GamePhase::Events:
+			STATE.phase = GamePhase::AllocateAssets;
+			break;
+		case GamePhase::AllocateAssets:
+			STATE.phase = GamePhase::CPU;
+			break;
+		case GamePhase::CPU:
+			STATE.phase = GamePhase::Resolution;
+			break;
+		case GamePhase::Resolution:
+			STATE.current_turn += 1;
+			STATE.phase = GamePhase::Events;
+			break;
+	};
+
+	DeliverSupport();
+
+	STATE.turn_changed = true;
 }
 
 void DrawEndScreen() {}
@@ -82,11 +101,7 @@ Country& GetCountryByCode(CountryCode code) {
 }
 
 void GoToNextTurn() {
-	STATE.current_turn += 1;
-
-	DeliverSupport();
-
-	STATE.turn_changed = true;
+	
 }
 
 void GetDateStr(std::string& date_str) {

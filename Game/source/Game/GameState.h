@@ -35,7 +35,24 @@ constexpr const char* MONTHS[] = {
     "December",
 };
 
+constexpr const char* PHASES[] = {
+	"So it begins",
+	"Events",
+	"Player action",
+	"Main phase",
+	"Russia",
+};
+
+enum class GamePhase {
+	Inital,
+	Events,
+	AllocateAssets,
+	Resolution,
+	CPU,
+};
+
 enum class WeaponSystemType {
+	Infantry,
 	Twardy,
 	BMP1,
 	BMP2,
@@ -57,6 +74,7 @@ struct WeaponSystem {
 	u16 image_pos_on_atlas;
 	u32 cost_in_dollars;
 
+	u8 AA;
 	u8 attack;
 	u8 defence;
 	f32 state = 1.0;
@@ -81,6 +99,7 @@ struct GameState {
 	std::string game_date_str;
 
 	OblastCode selected_oblast;
+	GamePhase phase = GamePhase::Inital;
 
 	f32 popular_support = 0.8;
 	u64 reserve         = 600'000;

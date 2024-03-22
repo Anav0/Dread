@@ -45,11 +45,15 @@ void DrawTurnUI(WindowManager* window)
 	v2 pos;
 	v2 header_size = v2(0, HEADER_H);
 	v2 header_pos  = v2(0, window->screen_size.y - HEADER_H);
-	CenterChildInParentY(&header_pos, &header_size, &pos, &size);
-    UI.Stack(Direction::Horizontal, 10, { window->screen_size.x - 265, pos.y });
-    	UI.DrawLabel(STATE.game_date_str);
-    UI.EndLayout();
 
+	u32 i = static_cast<u32>(STATE.phase);
+
+	CenterChildInParentY(&header_pos, &header_size, &pos, &size);
+    UI.Stack(Direction::Horizontal, 10, { window->screen_size.x - 430, pos.y });
+    	UI.DrawLabel(STATE.game_date_str);
+			UI.Spacer(30);
+    	UI.DrawLabel(PHASES[i]);
+    UI.EndLayout();
 	if (UI.DrawIcon(END_TURN_ICON, {window->screen_size.x - 100, pos.y - 45})) {
 		GoToNextPhase();
 	}
@@ -167,7 +171,7 @@ void AddSupportingCountries() {
 void AddMap()
 {
     int i = 0;
-    Model* map_model = RM.GetModel("map2");
+    Model* map_model = RM.GetModel("map");
 
     for (auto& mesh : map_model->meshes) {
         if (i > NUMBER_OF_OBLASTS - 1)

@@ -85,7 +85,7 @@ void GameUpdateAndRender(WindowManager* window)
         frame_counter = 0;
     }
 
-		const Gradient card_gradient2{
+		const Gradient turn_btn_gradient{
         GradientType::Radial,
         v2(0.5, 0.5),
 				window->screen_size - v2(45),
@@ -104,9 +104,7 @@ void GameUpdateAndRender(WindowManager* window)
     };
 
     R.gradient_buffer.AddGradient({ 0, window->screen_size.y - HEADER_H }, { window->screen_size.x, HEADER_H }, header_gradient);
-
-		//--------------------
-    R.gradient_buffer.AddGradient(v2(0), window->screen_size, card_gradient2);
+    R.gradient_buffer.AddGradient(v2(0), window->screen_size, turn_btn_gradient);
 
     DrawUI(window);
 
