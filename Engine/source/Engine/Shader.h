@@ -16,7 +16,6 @@
 using namespace std::filesystem;
 
 enum class ShaderType {
-    Beam,
     Particles,
     TexturedQuad,
     Debug,

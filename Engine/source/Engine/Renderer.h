@@ -22,7 +22,6 @@ constexpr bool HIDE_ALPHA = true;
 
 constexpr u32 UI_BUFFER_INDEX   = 0;
 constexpr u32 FONT_BUFFER_INDEX = 1;
-constexpr u32 BEAM_BUFFER_INDEX = 2;
 
 enum class RenderMode {
     WIREFRAME,

@@ -354,9 +354,6 @@ void TexturedQuadBuffer::Draw(m4& projection)
     auto shader = RM.GetShader(this->shader_key);
 
     switch (shader->type) {
-    case ShaderType::Beam:
-        UseBeamShader(shader, projection);
-        break;
     case ShaderType::TexturedQuad:
         UseTextureShader(shader, projection);
         break;

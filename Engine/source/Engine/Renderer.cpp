@@ -46,8 +46,6 @@ void Renderer::Init(Camera& camera, v2 screen_size)
     CreateQuadBuffer("texture", "icons");
     // Font buffer
     CreateQuadBuffer("texture", "");
-    // Beam buffer
-    CreateQuadBuffer("beam", "");
 
     for (auto& b : quad_buffers) {
         b.Allocate(MAX_CAPACITY, textured_quad_layout);

@@ -32,16 +32,6 @@ void UseTextureShader(Shader* shader, m4 projection)
     shader->setInt("imageSampler", 0);
 }
 
-void UseBeamShader(Shader* shader, m4 projection)
-{
-    shader->Use();
-    shader->setMat4("projection", projection);
-    shader->setBool("hideAlpha", false);
-    shader->setInt("imageSampler", 0);
-    shader->setVec2("u_resolution", {1920,1080});
-    // shader->setVec2("u_time", window.time_since_start_s);
-}
-
 void ResourceManager::LoadRequiredResources()
 {
     LoadTexture("icons.png", "icons", false, true);
@@ -49,7 +39,6 @@ void ResourceManager::LoadRequiredResources()
     LoadShader(ShaderType::TexturedQuad, "texture.vert", "texture.frag", "texture");
     LoadShader(ShaderType::Gradient, "gradient.vert", "gradient.frag", "gradient");
 
-    LoadShader(ShaderType::Beam, "beam.vert", "beam.frag", "beam");
     LoadShader(ShaderType::Particles, "particles.vert", "particles.frag", "particles");
     LoadShader(ShaderType::Simple, "simple.vert", "simple.frag", "simple");
     LoadShader(ShaderType::Picking, "picking.vert", "picking.frag", "picking");
@@ -58,6 +47,7 @@ void ResourceManager::LoadRequiredResources()
     LoadShader(ShaderType::Mesh, "mesh.vert", "mesh.frag", "mesh");
 
     LoadModel("map/map.obj", "map");
+    LoadModel("map/map2.obj", "map2");
 }
 
 void ResourceManager::LoadAllResources()

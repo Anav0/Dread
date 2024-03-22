@@ -167,7 +167,7 @@ void AddSupportingCountries() {
 void AddMap()
 {
     int i = 0;
-    Model* map_model = RM.GetModel("map");
+    Model* map_model = RM.GetModel("map2");
 
     for (auto& mesh : map_model->meshes) {
         if (i > NUMBER_OF_OBLASTS - 1)
@@ -213,8 +213,4 @@ void DrawUI(WindowManager* window) {
 
 	DrawResources(window);
 	DrawTurnUI(window);
-}
-
-void DrawBeamQuad(v2 pos, v2 size, f32 dt, v4 beam_color) {
-	R.GetQuadBuffer(BEAM_BUFFER_INDEX).AddQuad(pos, size, beam_color);
 }

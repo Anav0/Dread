@@ -100,15 +100,13 @@ void GameUpdateAndRender(WindowManager* window)
         { 0.0, 0.0 },  // Radial pos
 				v2(0.0, 1.0),  //Smoothing
         1.0,           //Factor
-        { RED, BLACK, YELLOW },
+        { RED, BLACK, GOLD },
     };
 
     R.gradient_buffer.AddGradient({ 0, window->screen_size.y - HEADER_H }, { window->screen_size.x, HEADER_H }, header_gradient);
 
 		//--------------------
     R.gradient_buffer.AddGradient(v2(0), window->screen_size, card_gradient2);
-
-		//DrawBeamQuad({20, 220}, {150, 150}, window->time_since_start_s, GOLD);
 
     DrawUI(window);
 

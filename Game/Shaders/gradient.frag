@@ -6,7 +6,7 @@ uniform vec2 resolution;
 
 in vec4     ourColors[4];
 in vec2     ourMiddle;
-out int ourGradientType;
+flat in int ourGradientType;
 in vec4     ourRadialPosAndSmoothing;
 in vec4     ourPosAndSize;
 in float    ourRadialFactor;
@@ -35,12 +35,12 @@ void three_color(vec2 st) {
 	vec4 color;
 
     if(v < middle_l) {
-		color = mix(ourColors[0], ourColors[1], pct / middle_l);
-	}
+				color = mix(ourColors[0], ourColors[1], pct / middle_l);
+		}
     
     if(v > middle_h) {
         color = mix(ourColors[1], ourColors[2], pct - middle_h);
-	}
+		}
     
     if(v > middle_l && v < middle_h)
         color = ourColors[1];
