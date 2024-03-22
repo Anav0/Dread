@@ -96,16 +96,27 @@ const std::map<OblastCode, const char*> OBLAST_NAMES = {
     { OblastCode::Cherkasy, "Cherkasy" },
 };
 
+enum class FactorToShow  {
+	Air,
+	Combat,
+	Damage,
+	Infrastructure,
+	GroundPower,
+};
 class Oblast {
 public:
-    const char* name = "";
+    const char*  name = "";
     MeshInBuffer mesh;
-    OblastCode code = OblastCode::Kiev;
+    OblastCode   code = OblastCode::Kiev;
     f32 ukrainian_control = 0.0f;
 
     Oblast() { }
 
     void UpdateColorBasedOnControl();
+    void UpdateColorBasedOnFactor(FactorToShow factor);
+
+		u32 GetUkrainianFactor(FactorToShow factor);
+		u32 GetRussianFactor(FactorToShow factor);
 
     Oblast(MeshInBuffer mesh, OblastCode code, const char* name, f32 ukrainian_control = 0.0f)
     {

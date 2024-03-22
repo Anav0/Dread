@@ -25,7 +25,8 @@ void EntityManager::Update()
             break;
         case EntityType::Oblast:
 						if(e->oblast.code == STATE.selected_oblast) continue;
-						e->oblast.UpdateColorBasedOnControl();
+						//e->oblast.UpdateColorBasedOnControl();
+						e->oblast.UpdateColorBasedOnFactor(FactorToShow::Air);
             break;
         }
 

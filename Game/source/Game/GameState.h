@@ -51,6 +51,13 @@ enum class GamePhase {
 	CPU,
 };
 
+enum class WeaponDomain {
+	Cyber,
+	Ground,
+	Air,
+	Sea,
+};
+
 enum class WeaponSystemType {
 	Infantry,
 	Twardy,
@@ -70,6 +77,8 @@ enum class WeaponSystemType {
 
 struct WeaponSystem {
 	WeaponSystemType type;
+	WeaponDomain domain;
+
 	std::string name;
 	u16 image_pos_on_atlas;
 	u32 cost_in_dollars;
@@ -137,7 +146,8 @@ extern GameState STATE;
 WeaponSystem GetBmp1()
 {
     WeaponSystem vehicle;
-	vehicle.type = WeaponSystemType::BMP1;
+		vehicle.domain = WeaponDomain::Ground;
+		vehicle.type = WeaponSystemType::BMP1;
     vehicle.name = "BMP-1";
     vehicle.image_pos_on_atlas = 0;
     vehicle.cost_in_dollars = 50'000;
@@ -152,7 +162,8 @@ WeaponSystem GetBmp1()
 WeaponSystem GetT72()
 {
     WeaponSystem vehicle;
-	vehicle.type = WeaponSystemType::Twardy;
+		vehicle.type = WeaponSystemType::Twardy;
+		vehicle.domain = WeaponDomain::Ground;
     vehicle.name = "T72 Twardy";
     vehicle.image_pos_on_atlas = 0;
     vehicle.cost_in_dollars = 100'000;
