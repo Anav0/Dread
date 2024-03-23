@@ -9,12 +9,10 @@ uniform sampler2D texture_diffuse1;
 
 void main()
 {    
-
     if(TexCoords.x <= 0) {
-            FragColor = Color;
-        }
-        else {
-           FragColor = texture(texture_diffuse1, TexCoords) * Color;
-        }
-
+          FragColor = Color;
+     }
+     else {
+         FragColor = texture(texture_diffuse1, TexCoords) * Color;
+     }
 }

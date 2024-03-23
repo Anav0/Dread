@@ -44,7 +44,6 @@ void ResourceManager::LoadRequiredResources()
     LoadShader(ShaderType::Picking, "picking.vert", "picking.frag", "picking");
     LoadShader(ShaderType::Object, "object.vert", "object.frag", "object");
     LoadShader(ShaderType::Debug, "debug.vert", "debug.frag", "debug");
-    LoadShader(ShaderType::Mesh, "mesh.vert", "mesh.frag", "mesh");
 
     LoadModel("map/map.obj", "map");
     //LoadModel("map/map2.obj", "map2");

@@ -23,7 +23,6 @@ enum class ShaderType {
     Picking,
     Simple,
     Object,
-    Mesh,
 };
 
 class Shader {
