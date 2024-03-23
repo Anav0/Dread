@@ -123,7 +123,7 @@ void GameUpdateAndRender(WindowManager* window)
 		picking_buffer.Bind();
     glClearColor(-1.0f, -1.0f, -1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    R.DrawModels(p_shader, &picking_buffer, window->camera, window->screen_size);
+    R.DrawModels(p_shader, window->camera, window->screen_size);
 		picking_buffer.Unbind();
 
 		auto single_color_shader = RM.GetShader("simple");
@@ -134,13 +134,13 @@ void GameUpdateAndRender(WindowManager* window)
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilMask(0xFF);
 		R.ScaleAllModels(1.0);
-    R.DrawModels(shader, &picking_buffer, window->camera, window->screen_size);
+    R.DrawModels(shader, window->camera, window->screen_size);
 
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
     glStencilMask(0x00);
 		glDisable(GL_DEPTH_TEST);
 		R.ScaleAllModels(1.02);
-    R.DrawModels(single_color_shader, &picking_buffer, window->camera, window->screen_size);
+    R.DrawModels(single_color_shader, window->camera, window->screen_size);
 
     R.Flush();
 

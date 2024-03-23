@@ -65,11 +65,11 @@ void Renderer::Update(f32 dt)
     }
 }
 
-void Renderer::DrawModels(Shader* pshader, PickingBuffer* picking, Camera& camera, v2 screen_size)
+void Renderer::DrawModels(Shader* shader, Camera& camera, v2 screen_size)
 {
     auto view = camera.GetViewMatrix();
     for (auto& buffer : buffers) {
-        buffer.Draw(pshader, screen_size, picking, projection, view, nullptr);
+        buffer.Draw(shader, screen_size, projection, view, nullptr);
     }
 }
 

@@ -49,7 +49,7 @@ public:
 
 	void Init(Camera& camera, v2 screen_size);
   void Draw(Camera&, v2 screen_size);
-  void DrawModels(Shader* shader, PickingBuffer*, Camera&, v2 screen_size);
+  void DrawModels(Shader* shader, Camera&, v2 screen_size);
 	void ScaleAllModels(f32 scale);
 	void Flush();
   void Update(f32 dt);

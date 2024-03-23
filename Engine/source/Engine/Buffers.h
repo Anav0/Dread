@@ -167,7 +167,7 @@ public:
         glBindVertexArray(0);
     }
 
-    void Draw(Shader* shader, v2 screen_size, PickingBuffer* picking, m4& projection, m4& view, Texture* atlas);
+    void Draw(Shader* shader, v2 screen_size, m4& projection, m4& view, Texture* atlas);
     m4 GetMatrix(u32 index);
 
     MeshInBuffer AddMesh(v3 position, v3 size, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, i32 entity_id = -1, f32 rotation = 0.0f, f32 scale = 1.0f);

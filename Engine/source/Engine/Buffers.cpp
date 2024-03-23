@@ -54,7 +54,7 @@ void InstancedMeshBuffer::Allocate()
     glBindVertexArray(0);
 }
 
-void InstancedMeshBuffer::Draw(Shader* shader, v2 screen_size, PickingBuffer* picking_buffer, m4& projection, m4& view, Texture* atlas)
+void InstancedMeshBuffer::Draw(Shader* shader, v2 screen_size, m4& projection, m4& view, Texture* atlas)
 {
     if (colors.size() == 0)
         return;
