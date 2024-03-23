@@ -82,6 +82,29 @@ struct BufferLayout {
 		CalculateStrideAndTotalSize();
 	}
 
+	void Enable() {
+
+    u8 position = 3;
+	for (BufferElement& el : elements) {
+        GLenum gl_type = BufferElementTypeToOpenGLType(el.type);
+        printf("%s\n", el.name.c_str());
+        printf("glEnableVertexAttribArray(%i)\n", position);
+        printf("glVertexAttribPointer(%i, %i, %i, GL_FALSE, %u, (void*)%u);\n", position, el.length, gl_type, size, el.offset);
+        printf("glVertexAttribDivisor(%i, 1)\n", position);
+        printf("\n");
+
+        glEnableVertexAttribArray(position);
+        if (el.IsInt()) {
+            glVertexAttribIPointer(position, el.length, gl_type, size, (void*)el.offset);
+        } else {
+            glVertexAttribPointer(position, el.length, gl_type, GL_FALSE, size, (void*)el.offset);
+        }
+
+        glVertexAttribDivisor(position, 1);
+        position++;
+    }
+	}
+
 	void CalculateStrideAndTotalSize() {
 		u64 offset = 0;
 		for (BufferElement& el : elements) {
@@ -94,81 +117,38 @@ struct BufferLayout {
 
 //------------------------------------------------------------------------
 
+struct MeshBufferElement {
+	m4 matrice;
+	v4 color;
+	i32 id;
+};
+
 class InstancedMeshBuffer {
     u32 VBO = 0;
 
-    // Dynamic
-    std::vector<m4> matrices;
-    std::vector<v4> colors;
-    std::vector<i32> ids;
+		std::vector<MeshBufferElement> elements;
 
 public:
     Mesh mesh;
     InstancedMeshBuffer(Mesh mesh);
-    void Allocate();
 
-    void UpdateMatrix(const u32 index, v3 size, v3 pos, f32 rotation = 0.0f)
-    {
-        glBindVertexArray(mesh.VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-        assert(index >= 0);
-        this->matrices[index] = GetTransformMatrix(pos, size, rotation);
-
-        auto offset = sizeof(m4) * index;
-        glBufferSubData(GL_ARRAY_BUFFER, offset, sizeof(m4), &matrices[index]);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-    }
+		void Draw(Shader* shader, v2 screen_size, m4& projection, m4& view, Texture* atlas);
+		void Flush();
+    void Allocate(u32 size, BufferLayout);
 
 		void ScaleAll(f32 scale) {
-			for(u32 i = 0; i < matrices.size(); i++) {
-				matrices[i] = glm::scale(m4(1.0), v3(scale));
-				UpdateMatrix(i, matrices[i]);
+			for(u32 i = 0; i < elements.size(); i++) {
+				//elements.at(i).matrice = glm::scale(m4(1.0), v3(scale));
 			}
 		}
 
-    void UpdateMatrix(const u32 index, m4 matrix)
-    {
-        glBindVertexArray(mesh.VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		m4 GetMatrix(const u32 index) {
+			return elements.at(index).matrice;
+		}
 
-        assert(index >= 0);
-        matrices[index] = matrix;
-
-        auto size = sizeof(m4);
-        auto offset = size * index;
-        glBufferSubData(GL_ARRAY_BUFFER, offset, size, &matrices[index]);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-    }
-
-    void UpdateColor(const int index, v4 color)
-    {
-        glBindVertexArray(mesh.VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-        assert(index >= 0);
-        this->colors[index] = color;
-
-        auto matrices_size = sizeof(m4) * matrices.size();
-
-        auto size = sizeof(v4);
-        auto offset = matrices_size + (size * index);
-        glBufferSubData(
-            GL_ARRAY_BUFFER,
-            offset,
-            size,
-            &colors[index]);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-    }
-
-    void Draw(Shader* shader, v2 screen_size, m4& projection, m4& view, Texture* atlas);
-    m4 GetMatrix(u32 index);
+		void UpdateColor(const u32 index, v4 color) {
+			elements.at(index).color = color;
+		}
 
     MeshInBuffer AddMesh(v3 position, v3 size, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, i32 entity_id = -1, f32 rotation = 0.0f, f32 scale = 1.0f);
     MeshInBuffer AddMesh(v3 position, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, i32 entity_id = -1, f32 rotation = 0.0f, f32 scale = 1.0f);

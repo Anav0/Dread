@@ -28,8 +28,8 @@ public:
 
 class Mesh {
 public:
-    std::string id;
     u32 VAO;
+    std::string id;
     vector<Vertex> vertices;
     vector<u32> indices;
     vector<std::string> textures;
@@ -46,9 +46,6 @@ public:
 
         Setup();
     }
-
-    void Update();
-    void UpdateBuffer();
 
 private:
     u32 VBO, EBO;

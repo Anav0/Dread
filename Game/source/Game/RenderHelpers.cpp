@@ -14,6 +14,7 @@
 
 std::vector<MeshInBuffer> AddModel(v3 position, const std::string& model_name, v4 color, f32 rotation, f32 scale)
 {
+
     Model* model = RM.GetModel(model_name);
 
     std::vector<MeshInBuffer> meshes;
@@ -22,8 +23,9 @@ std::vector<MeshInBuffer> AddModel(v3 position, const std::string& model_name, v
     for (auto& mesh : model->meshes) {
         InstancedMeshBuffer* buffer;
         buffer = R.GetBuffer(mesh.id);
-        if (buffer == nullptr)
-            buffer = R.CreateBuffer(mesh);
+        if (buffer == nullptr) {
+            buffer = R.CreateBuffer(1, mesh);
+				}
 
         auto mesh_in_buffer = buffer->AddMesh(position, color, rotation, scale);
         mesh_in_buffer.buffer_index = R.buffers.size() - 1;
@@ -90,7 +92,7 @@ std::vector<MeshInBuffer> AddModel(v3 position, v3 size, const std::string& mode
         InstancedMeshBuffer* buffer;
         buffer = R.GetBuffer(mesh.id);
         if (buffer == nullptr)
-            buffer = R.CreateBuffer(mesh);
+            buffer = R.CreateBuffer(1, mesh);
 
         auto mesh_in_buffer = buffer->AddMesh(position, size, color, rotation, scale);
         mesh_in_buffer.buffer_index = R.buffers.size() - 1;
@@ -205,7 +207,7 @@ void AddMap()
     int i = 0;
     Model* map_model = RM.GetModel("map");
 
-		v3 position = {0, 2, 0};
+		v3 position = {0, 0, 0};
     for (auto& mesh : map_model->meshes) {
         if (i > NUMBER_OF_OBLASTS - 1)
             continue;
@@ -219,10 +221,10 @@ void AddMap()
 				InstancedMeshBuffer* buffer;
         buffer = R.GetBuffer(mesh.id);
         if (buffer == nullptr)
-            buffer = R.CreateBuffer(mesh);
+            buffer = R.CreateBuffer(1, mesh);
 
 				// Add instance to instanced mesh rendering
-				auto mesh_in_buffer = buffer->AddMesh({0, 2, 0}, GREY, static_cast<i32>(id));
+				auto mesh_in_buffer = buffer->AddMesh(position, GREY, static_cast<i32>(id));
         mesh_in_buffer.buffer_index = R.buffers.size() - 1;
 
 				E.GetEntityById(id)->oblast.SetMesh(mesh_in_buffer);

@@ -5,22 +5,6 @@
 
 #include "Renderer.h"
 
-void Mesh::Update()
-{
-    // m4* model = &R.transformations[model_id];
-    // model = glm::translate(model, v3(0.0, 0.05, 0.0));
-    // BoundingBox* box = &R.boxes.at(bounding_box_id);
-    // box->is_dirty = true;
-}
-
-void Mesh::UpdateBuffer()
-{
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
-    glBindVertexArray(0);
-}
-
 void Mesh::Setup()
 {
     glGenVertexArrays(1, &VAO);

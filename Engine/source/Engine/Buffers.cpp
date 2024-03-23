@@ -11,54 +11,40 @@ InstancedMeshBuffer::InstancedMeshBuffer(Mesh mesh)
     glGenBuffers(1, &VBO);
 }
 
-void InstancedMeshBuffer::Allocate()
+void InstancedMeshBuffer::Allocate(u32 buffer_size, BufferLayout layout)
+{
+    elements.reserve(buffer_size);
+
+    glBindVertexArray(mesh.VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, buffer_size * sizeof(MeshBufferElement), NULL, GL_DYNAMIC_DRAW);
+
+    printf("InstancedMeshBuffer\n");
+    layout.Enable();
+    printf("===================\n");
+    glBindVertexArray(0);
+}
+
+void InstancedMeshBuffer::Flush()
 {
     glBindVertexArray(mesh.VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    auto matrices_size = sizeof(m4) * matrices.size();
-    auto colors_size = sizeof(v4) * colors.size();
-    auto ids_size = sizeof(i32) * ids.size();
+    u64 size = elements.size() * sizeof(MeshBufferElement);
 
-    auto total_size = matrices_size + colors_size + ids_size;
+    assert(size > 0);
 
-    std::size_t vec4Size = sizeof(v4);
+    //elements.at(0).matrice = GetTransformMatrix({ 2, 2, 2 }, 0.0, { 2.0, 2.0, 2.0 });
 
-    auto stride = 4 * sizeof(v4);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, size, &elements[0]);
 
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, stride, (void*)0);
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, stride, (void*)(1 * vec4Size));
-    glEnableVertexAttribArray(5);
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, stride, (void*)(2 * vec4Size));
-    glEnableVertexAttribArray(6);
-    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * vec4Size));
-    glEnableVertexAttribArray(7);
-    glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(v4), (void*)matrices_size);
-    glEnableVertexAttribArray(8);
-    glVertexAttribIPointer(8, 1, GL_INT, sizeof(i32), (void*)(matrices_size + colors_size));
-
-    glVertexAttribDivisor(3, 1); // Matrix transform
-    glVertexAttribDivisor(4, 1);
-    glVertexAttribDivisor(5, 1);
-    glVertexAttribDivisor(6, 1);
-    glVertexAttribDivisor(7, 1); // Color
-    glVertexAttribDivisor(8, 1); // EntityId
-
-    glBufferData(GL_ARRAY_BUFFER, total_size, NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, matrices_size, &matrices[0]);
-    glBufferSubData(GL_ARRAY_BUFFER, matrices_size, colors_size, &colors[0]);
-    glBufferSubData(GL_ARRAY_BUFFER, matrices_size + colors_size, ids_size, &ids[0]);
-
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
 
 void InstancedMeshBuffer::Draw(Shader* shader, v2 screen_size, m4& projection, m4& view, Texture* atlas)
 {
-    if (colors.size() == 0)
-        return;
-
     if (atlas != nullptr) {
         glActiveTexture(GL_TEXTURE0);
         atlas->Bind();
@@ -69,48 +55,41 @@ void InstancedMeshBuffer::Draw(Shader* shader, v2 screen_size, m4& projection, m
 
     shader->Use();
     shader->setInt("imageSampler", 0);
-    shader->setBool("hideAlpha", HIDE_ALPHA);
     shader->setMat4("projection", projection);
     shader->setMat4("view", view);
 
     glBindVertexArray(mesh.VAO);
-    glDrawElementsInstanced(GL_TRIANGLES, static_cast<u32>(mesh.indices.size()), GL_UNSIGNED_INT, 0, matrices.size());
+    glDrawElementsInstanced(GL_TRIANGLES, static_cast<u32>(mesh.indices.size()), GL_UNSIGNED_INT, 0, elements.size());
     glBindVertexArray(0);
-}
-
-m4 InstancedMeshBuffer::GetMatrix(u32 index)
-{
-    return matrices[index];
 }
 
 MeshInBuffer InstancedMeshBuffer::AddMesh(v3 position, v3 size, v4 color, i32 entity_id, f32 rotation, f32 scale)
 {
+    assert(false);
+    MeshBufferElement el;
+    el.matrice = GetTransformMatrix(position, size, rotation, v3(scale));
+    el.color = color;
+    el.id = entity_id;
+    elements.push_back(el);
+
     auto mesh_in_buffer = MeshInBuffer();
 
-    this->colors.push_back(color);
-    this->matrices.push_back(GetTransformMatrix(position, size, rotation, v3(scale)));
-    this->ids.push_back(entity_id);
-
-    mesh_in_buffer.pos_in_buffer = this->colors.size() - 1;
-
-    // Speed: slow and not ideal
-    Allocate();
+    mesh_in_buffer.pos_in_buffer = this->elements.size() - 1;
 
     return mesh_in_buffer;
 }
 
 MeshInBuffer InstancedMeshBuffer::AddMesh(v3 position, v4 color, i32 entity_id, f32 rotation, f32 scale)
 {
+    MeshBufferElement el;
+    el.matrice = GetTransformMatrix(position, rotation, v3(scale));
+    el.color = color;
+    el.id = entity_id;
+    elements.push_back(el);
+
     auto mesh_in_buffer = MeshInBuffer();
 
-    this->colors.push_back(color);
-    this->matrices.push_back(GetTransformMatrix(position, rotation, v3(scale)));
-    this->ids.push_back(entity_id);
-
-    mesh_in_buffer.pos_in_buffer = this->colors.size() - 1;
-
-    // Speed: slow and not ideal
-    Allocate();
+    mesh_in_buffer.pos_in_buffer = this->elements.size() - 1;
 
     return mesh_in_buffer;
 }
@@ -302,24 +281,9 @@ void TexturedQuadBuffer::Allocate(u32 buffer_size, BufferLayout layout)
     glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
     glBufferData(GL_ARRAY_BUFFER, buffer_size * sizeof(TexturedQuadBufferElement), NULL, GL_DYNAMIC_DRAW);
 
-    u8 position = 3;
-    for (BufferElement& el : layout.elements) {
-        GLenum gl_type = BufferElementTypeToOpenGLType(el.type);
-        printf("glEnableVertexAttribArray(%i)\n", position);
-        printf("glVertexAttribPointer(%i, %i, %i, GL_FALSE, %u, (void*)%u);\n", position, el.length, gl_type, layout.size, el.offset);
-        printf("glVertexAttribDivisor(%i, 1)\n", position);
-        printf("\n");
-
-        glEnableVertexAttribArray(position);
-        if (el.IsInt()) {
-            glVertexAttribIPointer(position, el.length, gl_type, layout.size, (void*)el.offset);
-        } else {
-            glVertexAttribPointer(position, el.length, gl_type, GL_FALSE, layout.size, (void*)el.offset);
-        }
-
-        glVertexAttribDivisor(position, 1);
-        position++;
-    }
+    printf("TexturedQuadBuffer\n");
+    layout.Enable();
+    printf("===================\n");
 
     glBindVertexArray(0);
 }
@@ -379,7 +343,7 @@ u32 GradientBuffer::AddGradient(const v2 pos, const v2 size, const Gradient grad
 
     GradientBufferElement el {};
 
-		el.pos_and_size = { pos, size };
+    el.pos_and_size = { pos, size };
     el.matrices = GetTransformMatrix(pos, size, 0);
     el.colors = gradient.colors;
     el.gradient_type = static_cast<u32>(gradient.gradient_type);
@@ -425,26 +389,9 @@ void GradientBuffer::Allocate(u32 buffer_size, BufferLayout layout)
     glBindBuffer(GL_ARRAY_BUFFER, instanced_VBO);
     glBufferData(GL_ARRAY_BUFFER, buffer_size * sizeof(GradientBufferElement), NULL, GL_DYNAMIC_DRAW);
 
-    u8 position = 3;
-		printf("GRADIENT LAYOUT\n");
-		printf("====================================\n");
-    for (BufferElement& el : layout.elements) {
-        GLenum gl_type = BufferElementTypeToOpenGLType(el.type);
-        printf("glEnableVertexAttribArray(%i)\n", position);
-        printf("glVertexAttribPointer(%i, %i, %i, GL_FALSE, %u, (void*)%u);\n", position, el.length, gl_type, layout.size, el.offset);
-        printf("glVertexAttribDivisor(%i, 1)\n", position);
-        printf("\n");
-
-        glEnableVertexAttribArray(position);
-        if (el.IsInt()) {
-            glVertexAttribIPointer(position, el.length, gl_type, layout.size, (void*)el.offset);
-        } else {
-            glVertexAttribPointer(position, el.length, gl_type, GL_FALSE, layout.size, (void*)el.offset);
-        }
-        glVertexAttribDivisor(position, 1);
-        position++;
-    }
-		printf("====================================\n");
+    printf("GradientBuffer\n");
+    layout.Enable();
+    printf("===================\n");
 
     glBindVertexArray(0);
 }

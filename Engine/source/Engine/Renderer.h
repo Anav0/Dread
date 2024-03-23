@@ -52,15 +52,16 @@ public:
   void DrawModels(Shader* shader, Camera&, v2 screen_size);
 	void ScaleAllModels(f32 scale);
 	void Flush();
+	void FlushModels();
   void Update(f32 dt);
 	void UpdateProjection(Camera& camera, v2 screen_size);
 	void Reset();
 
   InstancedMeshBuffer* GetBuffer(const std::string& mesh_name);
   InstancedMeshBuffer* GetBufferByIndex(u32 index);
-  InstancedMeshBuffer* CreateBuffer(Mesh mesh);
+  InstancedMeshBuffer* CreateBuffer(u32 size, Mesh mesh);
 
-	u32 CreateQuadBuffer(std::string shader_key, std::string texture_key);
+	u32 CreateQuadBuffer(u32 size, std::string shader_key, std::string texture_key);
 	TexturedQuadBuffer& GetQuadBuffer(u32 index);
 };
 

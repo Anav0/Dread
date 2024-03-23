@@ -120,27 +120,31 @@ void GameUpdateAndRender(WindowManager* window)
 			}
 		}
 
-		auto p_shader = RM.GetShader("picking");
+
+		auto p_shader            = RM.GetShader("picking");
+		auto single_color_shader = RM.GetShader("simple");
+		auto shader              = RM.GetShader("object");
+
 		picking_buffer.Bind();
     glClearColor(-1.0f, -1.0f, -1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		R.FlushModels();
     R.DrawModels(p_shader, window->camera, window->screen_size);
 		picking_buffer.Unbind();
-
-		auto single_color_shader = RM.GetShader("simple");
-		auto shader = RM.GetShader("object");
 
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilMask(0xFF);
 		R.ScaleAllModels(1.0);
+		R.FlushModels();
     R.DrawModels(shader, window->camera, window->screen_size);
 
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
     glStencilMask(0x00);
 		glDisable(GL_DEPTH_TEST);
 		R.ScaleAllModels(1.02);
+		R.FlushModels();
     R.DrawModels(single_color_shader, window->camera, window->screen_size);
 
     R.Flush();
@@ -213,7 +217,6 @@ void SetupEmitter(WindowManager* window) {
 	  //TODO: tmp
 		R.emitters.clear();
 		ParticlesEmitter emitter = ParticlesEmitter(&placement_x, &placement_y, &direction, &velocity, &ttl, &rgb);
-		emitter.Allocate(emitter_layout);
 		v2 pos  = { window->screen_size.x-100, window->screen_size.y-85 };
 		//v2 pos  = {200, 200};
 		v2 size = v2(85);
