@@ -103,9 +103,11 @@ enum class FactorToShow  {
 	Infrastructure,
 	GroundPower,
 };
+
 class Oblast {
 public:
     const char*  name = "";
+		v3 position;
     MeshInBuffer mesh;
     OblastCode   code = OblastCode::Kiev;
     f32 ukrainian_control = 0.0f;
@@ -118,8 +120,9 @@ public:
 		u32 GetUkrainianFactor(FactorToShow factor);
 		u32 GetRussianFactor(FactorToShow factor);
 
-    Oblast(MeshInBuffer mesh, OblastCode code, const char* name, f32 ukrainian_control = 0.0f)
+    Oblast(MeshInBuffer mesh, OblastCode code, v3 position, const char* name, f32 ukrainian_control = 0.0f)
     {
+				this->position = position;
         this->mesh = mesh;
         this->code = code;
         this->name = name;
@@ -128,8 +131,9 @@ public:
         UpdateColorBasedOnControl();
     }
 
-		Oblast(OblastCode code, const char* name, f32 ukrainian_control = 0.0f)
+		Oblast(OblastCode code, v3 position, const char* name, f32 ukrainian_control = 0.0f)
     {
+				this->position = position;
         this->code = code;
         this->name = name;
         this->ukrainian_control = ukrainian_control;

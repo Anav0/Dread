@@ -168,11 +168,44 @@ void AddSupportingCountries() {
   STATE.countries.push_back(Country(CountryCode::UK, "United Kingdom", 0.95, 0));
 }
 
+void AddWeapons(Unit& unit, WeaponSystem weapon,u32 n) {
+	u32 i=0;
+	for(WeaponSystem& w : unit.weapons) {
+		if(w.name == weapon.name && w.type == weapon.type) {
+			unit.weapons_counter.at(i) += n;
+			return;
+		}
+		i++;
+	}
+	unit.weapons.push_back(weapon);
+	unit.weapons_counter.push_back(n);
+}
+
+void AddUnits() {
+	Unit unit;
+	unit.name = "3rd Assault Brigade";
+	unit.size = UnitSize::Brigade;
+	AddWeapons(unit, GetT72(), 10);
+	AddWeapons(unit, GetT72(), 10);
+	AddWeapons(unit, GetBmp1(), 100);
+	STATE.troops_deployment.ukr_units.push_back(unit);
+	STATE.troops_deployment.ukr_assigned.push_back(OblastCode::Kharkiv);
+
+	unit.name = "82nd Air Assault Brigade";
+	unit.size = UnitSize::Brigade;
+	AddWeapons(unit, GetT72(), 5);
+	AddWeapons(unit, GetT72(), 5);
+	AddWeapons(unit, GetBmp1(), 75);
+	STATE.troops_deployment.ukr_units.push_back(unit);
+	STATE.troops_deployment.ukr_assigned.push_back(OblastCode::Donetsk);
+}
+
 void AddMap()
 {
     int i = 0;
     Model* map_model = RM.GetModel("map");
 
+		v3 position = {0, 2, 0};
     for (auto& mesh : map_model->meshes) {
         if (i > NUMBER_OF_OBLASTS - 1)
             continue;
@@ -180,7 +213,7 @@ void AddMap()
 				//Create entity
         auto code = static_cast<OblastCode>(i);
         auto control = INITIAL_CONTROL.at(code);
-        ID id = E.CreateOblast(Oblast(static_cast<OblastCode>(i), OBLAST_NAMES.at(code), control));
+        ID id = E.CreateOblast(Oblast(static_cast<OblastCode>(i), position, OBLAST_NAMES.at(code), control));
 
 				// Create buffer for mesh or use existing one
 				InstancedMeshBuffer* buffer;
@@ -217,4 +250,19 @@ void DrawUI(WindowManager* window) {
 
 	DrawResources(window);
 	DrawTurnUI(window);
+}
+
+void DrawDeployedUnits() {
+
+	u32 i = 0;
+	for(auto& c : STATE.troops_deployment.ukr_assigned) {
+		Unit&   unit   = STATE.troops_deployment.ukr_units.at(i);
+		Oblast* oblast = GetOblast(c);
+
+		UI.DrawLabel(unit.name, oblast->position);
+
+		i++;
+	}
+	
+
 }

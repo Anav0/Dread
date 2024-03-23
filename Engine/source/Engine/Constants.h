@@ -69,8 +69,6 @@ constexpr v4 GREY   = v4(0.5f, 0.5f, 0.5f, 1.0f);
 
 //FACTORS
 
-constexpr v4 AIR_FACTOR_COLOR = BLUE;
-
 constexpr v4 UI_BTN_BG = GREY;
 constexpr v4 UI_BTN_HOVER_BG = GREY;
 

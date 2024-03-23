@@ -67,11 +67,6 @@ void InstancedMeshBuffer::Draw(Shader* shader, v2 screen_size, m4& projection, m
     glEnable(GL_BLEND);
     glViewport(0, 0, screen_size.x, screen_size.y);
 
-    if (R.mode == RenderMode::WIREFRAME)
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    else
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
     shader->Use();
     shader->setInt("imageSampler", 0);
     shader->setBool("hideAlpha", HIDE_ALPHA);
@@ -103,6 +98,7 @@ MeshInBuffer InstancedMeshBuffer::AddMesh(v3 position, v3 size, v4 color, i32 en
 
     return mesh_in_buffer;
 }
+
 MeshInBuffer InstancedMeshBuffer::AddMesh(v3 position, v4 color, i32 entity_id, f32 rotation, f32 scale)
 {
     auto mesh_in_buffer = MeshInBuffer();

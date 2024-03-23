@@ -104,6 +104,37 @@ struct SupportPackage {
 
 //------------------------------------------------------------------------
 
+enum class UnitSize {
+	Division,
+	Brigade,
+	Regiment,
+	Battalion,
+	Company,
+	Platoon,
+	Squad,
+	Teram,
+};
+
+struct Commander {
+	char* name;
+};
+
+struct Unit {
+	std::string name;
+	UnitSize size;
+	Commander commander;
+
+	std::vector<WeaponSystem> weapons;
+	std::vector<u16>          weapons_counter;
+};
+
+struct Deployment {
+	std::vector<Unit>       ukr_units;
+	std::vector<OblastCode> ukr_assigned;
+	std::vector<Unit>       ru_units;
+	std::vector<OblastCode> ru_assigned;
+};
+
 struct GameState {
 	std::string game_date_str;
 
@@ -117,6 +148,8 @@ struct GameState {
 
 	std::vector<SupportPackage> promised_support;
 	std::vector<Delivery>       weapons_in_reserve;
+
+	Deployment troops_deployment;
 
 	u8 current_turn = 1;
 	u8 max_turn     = 12 * 3; //Three years, 12 months per year 3 years

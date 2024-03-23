@@ -107,6 +107,7 @@ void GameUpdateAndRender(WindowManager* window)
     R.gradient_buffer.AddGradient(v2(0), window->screen_size, turn_btn_gradient);
 
     DrawUI(window);
+		DrawDeployedUnits();
 
 		if(info.action == MouseAction::PRESSED && info.type == MouseButton::LEFT) {
 			i32 entity_id = picking_buffer.ReadPixel(info.pos);
@@ -282,6 +283,7 @@ GameState* GameInit(WindowManager* window)
 
     AddMap();
     AddSupportingCountries();
+		AddUnits();
 
     SupportPackage p1 {
         "Polish support",

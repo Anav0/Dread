@@ -120,3 +120,5 @@ std::string GetYear() {
 void GameState::Reset() {
 	STATE.turn_changed = false;
 }
+
+
