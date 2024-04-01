@@ -27,6 +27,8 @@ using namespace std::chrono;
 u64 frame_counter = 0;
 MouseInfo info;
 
+static std::vector<u8> FONT_SIZES = { 38, 64 };
+
 void GLAPIENTRY
 MessageCallback(GLenum source,
     GLenum type,
@@ -194,8 +196,7 @@ void GameInitAfterReload(WindowManager* window)
     R.Init(window->camera, window->screen_size);
 
     RM.LoadRequiredResources();
-    u8 size = 38;
-    TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
+    TR.BakeFont("oswald.ttf", "oswald", FONT_SIZES, BakeMode::WriteIfNoneExist);
     TR.UseFont("oswald.ttf");
 }
 
@@ -278,8 +279,7 @@ GameState* GameInit(WindowManager* window)
 
 		SetupEmitter(window);
     RM.LoadRequiredResources();
-    u8 size = 38;
-    TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
+    TR.BakeFont("oswald.ttf", "oswald", FONT_SIZES, BakeMode::WriteIfNoneExist);
     TR.UseFont("oswald.ttf");
 
     R.Init(window->camera, window->screen_size);
@@ -326,8 +326,7 @@ GameState* GameInitEx(GameState state, WindowManager* window)
 		SetupEmitter(window);
 
     RM.LoadRequiredResources();
-    u8 size = 38;
-    TR.BakeFont("oswald.ttf", "oswald", { size }, BakeMode::WriteIfNoneExist);
+    TR.BakeFont("oswald.ttf", "oswald", FONT_SIZES, BakeMode::WriteIfNoneExist);
     TR.UseFont("oswald.ttf");
 
     R.Init(window->camera, window->screen_size);
