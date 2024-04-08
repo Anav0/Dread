@@ -20,8 +20,19 @@ class MeshInBuffer;
 
 constexpr bool HIDE_ALPHA = true;
 
-constexpr u32 UI_BUFFER_INDEX   = 0;
-constexpr u32 FONT_BUFFER_INDEX = 1;
+constexpr u32 UI_BUFFER_INDEX       = 0;
+constexpr u32 INSIGNIA_BUFFER_INDEX = 1;
+constexpr u32 FONT_BUFFER_INDEX     = 2;
+
+static BufferInfo UI_BUFFER_INFO {
+	UI_BUFFER_INDEX,
+	"icons",
+};
+
+static BufferInfo INSIGNIA_BUFFER_INFO {
+	INSIGNIA_BUFFER_INDEX,
+	"insignia",
+};
 
 enum class RenderMode {
     WIREFRAME,

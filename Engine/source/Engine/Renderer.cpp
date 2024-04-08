@@ -30,9 +30,10 @@ void Renderer::Init(Camera& camera, v2 screen_size)
 
     // UI buffer
     CreateQuadBuffer(MAX_CAPACITY, "texture", "icons");
+	// Insignia buffer
+    CreateQuadBuffer(MAX_CAPACITY, "texture", "insignia");
     // Font buffer
     CreateQuadBuffer(MAX_CAPACITY, "texture", "");
-    
 }
 
 void Renderer::UpdateProjection(Camera& camera, v2 screen_size)

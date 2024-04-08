@@ -7,6 +7,7 @@
 #include "Constants.h"
 #include "Renderer.h"
 #include "TextRenderer.h"
+#include "Buffers.h"
 
 #include <queue>
 #include <string>
@@ -32,8 +33,13 @@ constexpr TextStyle default_style {
 };
 
 // TODO: move
+constexpr v2 ICON_SIZE(64);
 constexpr u16 SWORD     = 12;
 constexpr u16 MEGAPHONE = 5;
+
+constexpr v2 INSIGNIA_SIZE(80, 94);
+constexpr u16 AIR_92 = 0;
+constexpr u16 AZOV_3 = 1;
 
 struct IconParams {
     u16 index;
@@ -94,7 +100,7 @@ public:
 	void DrawLabel(const std::string& label, v2 pos = { 0, 0 }, TextStyle style = default_style, bool use_layout = true);
 	bool DrawIcon(IconParams params, v2 pos = { 0, 0 }, v2 offset = { 0, 0 });
 	bool DrawIcon(AtlasTextureInfo info, v2 pos = { 0, 0 }, v2 offset = { 0, 0 });
-	void DrawIconAndLabel(IconParams icon_params, const std::string& label, v2 pos = { 0, 0 }, TextStyle style = default_style);
+	void DrawIconAndLabel(BufferInfo, IconParams, const std::string& label, v2 pos = { 0, 0 }, TextStyle style = default_style);
 };
 
 extern Gui UI;

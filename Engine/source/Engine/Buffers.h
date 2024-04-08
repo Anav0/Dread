@@ -21,6 +21,7 @@ class MeshInBuffer;
 
 static constexpr int MAX_CAPACITY = 512;
 
+
 enum class BufferElementType {
 	Bool,
 	VBool2,
@@ -46,6 +47,11 @@ enum class BufferElementType {
 GLenum BufferElementTypeToOpenGLType(BufferElementType type);
 u8 GetBufferElementSize(BufferElementType type);
 u8 GetBufferElementTypeLength(BufferElementType type);
+
+struct BufferInfo {
+	u32 index;
+	const std::string texture_key;
+};
 
 struct BufferElement {
 	BufferElementType type;

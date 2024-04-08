@@ -35,6 +35,7 @@ void UseTextureShader(Shader* shader, m4 projection)
 void ResourceManager::LoadRequiredResources()
 {
     LoadTexture("icons.png", "icons", false, true);
+    LoadTexture("insignia.png", "insignia", false, true);
 
     LoadShader(ShaderType::TexturedQuad, "texture.vert", "texture.frag", "texture");
     LoadShader(ShaderType::Gradient, "gradient.vert", "gradient.frag", "gradient");

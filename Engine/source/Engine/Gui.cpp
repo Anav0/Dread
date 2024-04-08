@@ -198,7 +198,7 @@ bool Gui::DrawIcon(IconParams icon_params, v2 pos, v2 offset)
     return is_mouse_over && mouse.type == MouseButton::LEFT && mouse.action == MouseAction::RELEASED;
 }
 
-void Gui::DrawIconAndLabel(IconParams icon_params, const std::string& label, v2 pos, TextStyle style)
+void Gui::DrawIconAndLabel(BufferInfo info, IconParams icon_params, const std::string& label, v2 pos, TextStyle style)
 {
     assert(pos.x >= 0.0);
     assert(pos.y >= 0.0);
@@ -210,11 +210,11 @@ void Gui::DrawIconAndLabel(IconParams icon_params, const std::string& label, v2 
 
     auto icon_size = icon_params.size;
 
-    auto atlas = RM.GetTexture("icons");
-    auto info = GetTextureInfoByIndex(icon_params.index, icon_size, "icons");
-    info.scale = v2(icon_params.scale);
+    auto atlas = RM.GetTexture(info.texture_key);
+    auto texture_info = GetTextureInfoByIndex(icon_params.index, icon_size, info.texture_key);
+    texture_info.scale = v2(icon_params.scale);
 
-		R.GetQuadBuffer(UI_BUFFER_INDEX).AddTexturedQuad(&info, atlas, pos, icon_size);
+		R.GetQuadBuffer(info.index).AddTexturedQuad(&texture_info, atlas, pos, icon_size);
 
     pos.x += icon_size.x * icon_params.scale + icon_params.padding;
     pos.y += (icon_size.y * icon_params.scale) / 2;
