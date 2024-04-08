@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <string>
+#include <random>
+#include <set>
 
 #include "Engine/Constants.h"
 
@@ -23,6 +25,11 @@ enum class WeaponDomain {
 	Sea,
 };
 
+enum class Armor {
+	Soft,
+	Hard,
+};
+
 enum class WeaponSystemType {
 	Infantry,
 	Twardy,
@@ -41,26 +48,38 @@ enum class WeaponSystemType {
 	Gozdik,
 };
 
-struct Device {
+struct Accuracy {
+	u32 range_in_meters;
+	//NOTE: change to hit stationary target
+	f32 change_to_hit;
+};
+
+struct Ammo {
 	std::string name;
 	WeaponDomain domain;
 	u16 soft;
 	u16 hard;
 	u16 AA;
-	u32 range;
-	u32 accuracy;
+	std::vector<Accuracy> accuracy;
 };
+
+struct Device {
+	std::string name;  
+	std::set<u32> ammunition;
+};  
 
 struct WeaponSystem {
 	WeaponSystemType type;
+	Armor armor;
 
 	std::string name;
 	u32 speed;
+	f32 state = 1000.0;
 
 	u16 image_pos_on_atlas;
 	u32 cost_in_dollars;
 
-	std::vector<Device> devices;
+	std::vector<u32> devices;
 };
 
 struct Commander {
@@ -73,6 +92,7 @@ struct Unit {
 	Commander commander;
 
 	std::vector<WeaponSystem> weapons;
+	std::vector<f32>          morale;
 	std::vector<u16>          weapons_counter;
 };
 
@@ -133,5 +153,6 @@ void TestFight();
 
 bool MoralBroke(std::vector<BattleGroup>& groups);
 bool AttackerSufferedHeavyLosses(std::vector<BattleGroup>& groups);
+bool TryToHitTarget(u32 distance, Device& device);
 
 void Fire(u32 distance_in_m, std::vector<BattleGroup>& fire, std::vector<BattleGroup>& target);

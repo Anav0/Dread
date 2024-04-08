@@ -185,6 +185,8 @@ void AddWeapons(Unit& unit, WeaponSystem weapon, u32 n)
         }
         i++;
     }
+
+		unit.morale.push_back(1.0f);
     unit.weapons.push_back(weapon);
     unit.weapons_counter.push_back(n);
 }
@@ -194,18 +196,18 @@ void AddUnits()
     Unit unit;
     unit.name = "3rd Assault Brigade";
     unit.size = UnitSize::Brigade;
-    AddWeapons(unit, GetEliteSquad(), 170);
-    AddWeapons(unit, GetT72(), 50);
-    AddWeapons(unit, GetBmp1(), 100);
+    //AddWeapons(unit, GetEliteSquad(), 170);
+    //AddWeapons(unit, GetT72(), 50);
+    //AddWeapons(unit, GetBmp1(), 100);
     STATE.troops_deployment.ukr_units.push_back(unit);
     STATE.troops_deployment.ukr_assigned.push_back(OblastCode::Donetsk);
 
 		unit = Unit();
     unit.name = "82nd Air Assault Brigade";
     unit.size = UnitSize::Brigade;
-    AddWeapons(unit, GetEliteSquad(), 170);
-    AddWeapons(unit, GetT72(), 50);
-    AddWeapons(unit, GetBmp1(), 100);
+    //AddWeapons(unit, GetEliteSquad(), 170);
+    //AddWeapons(unit, GetT72(), 50);
+    //AddWeapons(unit, GetBmp1(), 100);
     STATE.troops_deployment.ukr_units.push_back(unit);
     STATE.troops_deployment.ukr_assigned.push_back(OblastCode::Donetsk);
 
@@ -213,18 +215,18 @@ void AddUnits()
 		unit = Unit();
     unit.name = "4td Motorized Brigade";
     unit.size = UnitSize::Brigade;
-    AddWeapons(unit, GetSquad(), 180);
-    AddWeapons(unit, GetT72(), 50);
-    AddWeapons(unit, GetBmp1(), 100);
+    //AddWeapons(unit, GetSquad(), 180);
+    //AddWeapons(unit, GetT72(), 50);
+    //AddWeapons(unit, GetBmp1(), 100);
     STATE.troops_deployment.ru_units.push_back(unit);
     STATE.troops_deployment.ru_assigned.push_back(OblastCode::Donetsk);
 
 		unit = Unit();
     unit.name = "5th Motorized Brigade";
     unit.size = UnitSize::Brigade;
-    AddWeapons(unit, GetSquad(), 180);
-    AddWeapons(unit, GetT72(), 80);
-    AddWeapons(unit, GetBmp1(), 100);
+    //AddWeapons(unit, GetSquad(), 180);
+    //AddWeapons(unit, GetT72(), 80);
+    //AddWeapons(unit, GetBmp1(), 100);
     STATE.troops_deployment.ru_units.push_back(unit);
     STATE.troops_deployment.ru_assigned.push_back(OblastCode::Donetsk);
 }

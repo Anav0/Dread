@@ -19,6 +19,7 @@
 #include "GameState.cpp"
 #include "RenderHelpers.cpp"
 #include "Fight.cpp"
+#include "Devices.cpp"
 #include "glad/glad.h"
 
 #include <execution>
@@ -72,6 +73,11 @@ BufferLayout emitter_layout {
 
 void GameUpdateAndRender(WindowManager* window)
 {
+
+    //TODO:
+    TestFight();
+
+    assert(false);
     info.action = window->buttonAction;
     info.type = window->buttonType;
     info.pos.x = window->mouse_x;
@@ -187,6 +193,7 @@ void GameInitAfterReload(WindowManager* window)
 {
     gladLoadGL();
 
+
 		picking_buffer.Allocate(window->screen_size);
 
     glViewport(0, 0, window->screen_size.x, window->screen_size.y);
@@ -201,6 +208,7 @@ void GameInitAfterReload(WindowManager* window)
     RM.LoadRequiredResources();
     TR.BakeFont("oswald.ttf", "oswald", FONT_SIZES, BakeMode::WriteIfNoneExist);
     TR.UseFont("oswald.ttf");
+
 }
 
 void ColorChange(WindowManager* window, std::string& particle_id, Particle& p, f32 dt) {
@@ -267,6 +275,9 @@ void SetupEmitter(WindowManager* window) {
 
 GameState* GameInit(WindowManager* window)
 {
+	Armory armory = LoadArmory("D:/Projects/Dread/Game/data/data.info");
+    PrintArmory(armory);
+
     gladLoadGL();
 
 		picking_buffer.Allocate(window->screen_size);
@@ -297,8 +308,8 @@ GameState* GameInit(WindowManager* window)
         CountryCode::PL
     };
 
-    p1.delivery.push_back({ 10, GetBmp1() });
-    p1.delivery.push_back({ 20, GetT72() });
+    //p1.delivery.push_back({ 10, GetBmp1() });
+    //p1.delivery.push_back({ 20, GetT72() });
 
     PromiseSupport(p1);
 
@@ -308,10 +319,12 @@ GameState* GameInit(WindowManager* window)
         CountryCode::USA
     };
 
-    p2.delivery.push_back({ 5, GetBmp1() });
-    p2.delivery.push_back({ 5, GetT72() });
+    //p2.delivery.push_back({ 5, GetBmp1() });
+    //p2.delivery.push_back({ 5, GetT72() });
 
     PromiseSupport(p2);
+
+
 
     return &STATE;
 }
