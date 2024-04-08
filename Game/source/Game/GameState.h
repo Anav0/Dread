@@ -5,6 +5,7 @@
 
 #include "Entities.h"
 #include "Fight.h"
+#include "Devices.h"
 
 #include "Engine/Camera.h"
 #include "Engine/Constants.h"
@@ -118,15 +119,14 @@ extern GameState STATE;
 WeaponSystem GetBmp1()
 {
     WeaponSystem vehicle;
-		vehicle.domain = WeaponDomain::Ground;
 		vehicle.type = WeaponSystemType::BMP1;
     vehicle.name = "BMP-1";
     vehicle.image_pos_on_atlas = 0;
     vehicle.cost_in_dollars = 50'000;
 
-    vehicle.attack = 2;
-    vehicle.defence = 1;
-    vehicle.state = 0.7;
+		vehicle.devices.push_back(C_2A42);
+		vehicle.devices.push_back(PKTMG);
+		vehicle.devices.push_back(Konkurs);
 
     return vehicle;
 }
@@ -135,14 +135,70 @@ WeaponSystem GetT72()
 {
     WeaponSystem vehicle;
 		vehicle.type = WeaponSystemType::Twardy;
-		vehicle.domain = WeaponDomain::Ground;
     vehicle.name = "T72 Twardy";
     vehicle.image_pos_on_atlas = 0;
     vehicle.cost_in_dollars = 100'000;
 
-    vehicle.attack = 4;
-    vehicle.defence = 2;
-    vehicle.state = 0.85;
+		vehicle.devices.push_back(D81T);
+		vehicle.devices.push_back(PKTMG);
+
+    return vehicle;
+}
+
+WeaponSystem GetSquad()
+{
+    WeaponSystem vehicle;
+		vehicle.type = WeaponSystemType::Infantry;
+    vehicle.name = "Russian Conscripts";
+    vehicle.image_pos_on_atlas = 0;
+    vehicle.cost_in_dollars = 1000;
+
+		vehicle.devices.push_back(AKM);
+		vehicle.devices.push_back(AKM);
+		vehicle.devices.push_back(AKM);
+		vehicle.devices.push_back(AKM);
+		vehicle.devices.push_back(AKM);
+		vehicle.devices.push_back(AKM);
+		vehicle.devices.push_back(AKM);
+
+		vehicle.devices.push_back(PKM);
+
+		vehicle.devices.push_back(RPG7);
+
+    return vehicle;
+}
+WeaponSystem GetEliteSquad()
+{
+    WeaponSystem vehicle;
+		vehicle.type = WeaponSystemType::Infantry;
+    vehicle.name = "Azov volonteers";
+    vehicle.image_pos_on_atlas = 0;
+    vehicle.cost_in_dollars = 1000;
+
+		vehicle.devices.push_back(AKM);
+		vehicle.devices.push_back(AKM);
+		vehicle.devices.push_back(AKM);
+		vehicle.devices.push_back(AKM);
+		vehicle.devices.push_back(AKM);
+		vehicle.devices.push_back(AKM);
+
+		vehicle.devices.push_back(PKM);
+
+		vehicle.devices.push_back(RPG7);
+		vehicle.devices.push_back(NLAW);
+
+    return vehicle;
+}
+
+WeaponSystem Get2S1()
+{
+    WeaponSystem vehicle;
+		vehicle.type = WeaponSystemType::Gozdik;
+    vehicle.name = "2S1 Gozdik";
+    vehicle.image_pos_on_atlas = 0;
+    vehicle.cost_in_dollars = 32'000;
+
+		vehicle.devices.push_back(C_2A18);
 
     return vehicle;
 }

@@ -11,6 +11,7 @@
 #include "Game.h"
 #include "GameState.h"
 #include "RenderHelpers.h"
+#include "Devices.h"
 #include "Fight.h"
 
 #include "Entities.cpp"

@@ -130,7 +130,7 @@ void DrawWeaponsInReserve(WindowManager* window)
 
     UI.Stack(Direction::Vertical, 20);
     for (Delivery& d : STATE.weapons_in_reserve) {
-        UI.DrawLabel(std::format("{}x {} {}/{}", d.n, d.system.name, d.system.attack, d.system.defence));
+        //UI.DrawLabel(std::format("{}x {} {}/{}", d.n, d.system.name, d.system.attack, d.system.defence));
     }
     UI.EndLayout();
 }
@@ -194,19 +194,39 @@ void AddUnits()
     Unit unit;
     unit.name = "3rd Assault Brigade";
     unit.size = UnitSize::Brigade;
-    AddWeapons(unit, GetT72(), 10);
-    AddWeapons(unit, GetT72(), 10);
+    AddWeapons(unit, GetEliteSquad(), 170);
+    AddWeapons(unit, GetT72(), 50);
     AddWeapons(unit, GetBmp1(), 100);
     STATE.troops_deployment.ukr_units.push_back(unit);
-    STATE.troops_deployment.ukr_assigned.push_back(OblastCode::Kharkiv);
+    STATE.troops_deployment.ukr_assigned.push_back(OblastCode::Donetsk);
 
+		unit = Unit();
     unit.name = "82nd Air Assault Brigade";
     unit.size = UnitSize::Brigade;
-    AddWeapons(unit, GetT72(), 5);
-    AddWeapons(unit, GetT72(), 5);
-    AddWeapons(unit, GetBmp1(), 75);
+    AddWeapons(unit, GetEliteSquad(), 170);
+    AddWeapons(unit, GetT72(), 50);
+    AddWeapons(unit, GetBmp1(), 100);
     STATE.troops_deployment.ukr_units.push_back(unit);
     STATE.troops_deployment.ukr_assigned.push_back(OblastCode::Donetsk);
+
+
+		unit = Unit();
+    unit.name = "4td Motorized Brigade";
+    unit.size = UnitSize::Brigade;
+    AddWeapons(unit, GetSquad(), 180);
+    AddWeapons(unit, GetT72(), 50);
+    AddWeapons(unit, GetBmp1(), 100);
+    STATE.troops_deployment.ru_units.push_back(unit);
+    STATE.troops_deployment.ru_assigned.push_back(OblastCode::Donetsk);
+
+		unit = Unit();
+    unit.name = "5th Motorized Brigade";
+    unit.size = UnitSize::Brigade;
+    AddWeapons(unit, GetSquad(), 180);
+    AddWeapons(unit, GetT72(), 80);
+    AddWeapons(unit, GetBmp1(), 100);
+    STATE.troops_deployment.ru_units.push_back(unit);
+    STATE.troops_deployment.ru_assigned.push_back(OblastCode::Donetsk);
 }
 
 void AddMap()

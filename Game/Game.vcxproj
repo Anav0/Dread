@@ -100,6 +100,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="source\Game\Atlas.h" />
+    <ClInclude Include="source\Game\Devices.h" />
     <ClInclude Include="source\Game\Entities.h" />
     <ClInclude Include="source\Game\EntityManager.h" />
     <ClInclude Include="source\Game\Fight.h" />
