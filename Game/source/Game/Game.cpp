@@ -11,11 +11,13 @@
 #include "Game.h"
 #include "GameState.h"
 #include "RenderHelpers.h"
+#include "Fight.h"
 
 #include "Entities.cpp"
 #include "EntityManager.cpp"
 #include "GameState.cpp"
 #include "RenderHelpers.cpp"
+#include "Fight.cpp"
 #include "glad/glad.h"
 
 #include <execution>
