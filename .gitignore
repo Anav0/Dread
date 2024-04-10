@@ -48,3 +48,4 @@ Engine/obj
 Game/obj
 Window/obj
 Game/Fonts/baked
+Game/data/.~lock.simulation.csv#

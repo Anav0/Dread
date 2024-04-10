@@ -275,8 +275,12 @@ void SetupEmitter(WindowManager* window) {
 
 GameState* GameInit(WindowManager* window)
 {
-	Armory armory = LoadArmory("D:/Projects/Dread/Game/data/data.info");
+    const char* armory_path = "D:/Projects/Dread/Game/data/data.info";
+    const char* storage_path = "D:/Projects/Dread/Game/data/simulation.csv";
+	Armory armory = LoadArmory(armory_path, storage_path);
+
     PrintArmory(armory);
+    STATE.armory = armory;
 
     gladLoadGL();
 

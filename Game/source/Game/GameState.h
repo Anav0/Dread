@@ -89,6 +89,8 @@ struct GameState {
 	std::vector<SupportPackage> promised_support;
 	std::vector<Delivery>       weapons_in_reserve;
 
+	Armory armory;
+
 	Deployment troops_deployment;
 
 	u8 current_turn = 1;
