@@ -5,7 +5,6 @@
 
 #include <glad/glad.h>
 
-
 void Renderer::Init(Camera& camera, v2 screen_size)
 {
     UpdateProjection(camera, screen_size);
@@ -57,6 +56,8 @@ void Renderer::DrawModels(Shader* shader, Camera& camera, v2 screen_size)
     }
 }
 
+// NOTE: This is not flexible enough. I want to be able to change shader 
+// by just calling set_shader(shader);
 void Renderer::Draw(Camera& camera, v2 screen_size)
 {
     auto gradient_shader = RM.GetShader("gradient");
