@@ -7,12 +7,13 @@
 BattleGroup FormBattleGroup(u32 unit_index, Unit& unit) {
 	BattleGroup group;
 
-	group.name = "Battlegroup from: " + unit.name;
+	group.name = "BG from " + unit.name;
 	group.unit_index = unit_index;
 
 	u32 index = 0;
-	for(WeaponSystem& weapon : unit.weapons) {
-			group.weapons.push_back(weapon);
+	for(u32 weapon_index : unit.weapons) {
+            WeaponSystem* weapon_ref = &STATE.armory.weapons[weapon_index];
+			group.weapons.push_back(weapon_ref);
 			u32 n = unit.weapons_counter[index] * 0.3;
 			unit.weapons_counter[index] -= n;
 			group.weapons_counter.push_back(n);
@@ -97,8 +98,8 @@ void Fire(u32 distance_in_m, std::vector<BattleGroup>& fire, std::vector<BattleG
   std::uniform_int_distribution<u32> d6(0, 6);
 
 	for(BattleGroup& group : fire) {
-		for(WeaponSystem& weapon : group.weapons) {
-			for(u32 device_index : weapon.devices) {
+		for(WeaponSystem* weapon: group.weapons) {
+			for(u32 device_index : weapon->devices) {
 				//if(device.accuracy[0].range_in_meters < distance_in_m) continue;
 
 				//Pick target
@@ -108,7 +109,7 @@ void Fire(u32 distance_in_m, std::vector<BattleGroup>& fire, std::vector<BattleG
 				std::uniform_int_distribution<u32> dist(0, target_group.weapons.size()-1);
 
 				index = dist(mt);
-				WeaponSystem& target_system = target_group.weapons[index];
+				WeaponSystem* target_system = target_group.weapons[index];
 
 				/*
         printf("%s from %s fires at: %s ", device.name.c_str(), group.name.c_str(), target_system.name.c_str());

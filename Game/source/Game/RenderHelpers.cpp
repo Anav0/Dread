@@ -175,19 +175,13 @@ void AddSupportingCountries()
     STATE.countries.push_back(Country(CountryCode::UK, "United Kingdom", 0.95, 0));
 }
 
-void AddWeapons(Unit& unit, WeaponSystem weapon, u32 n)
+void AddWeapons(Unit& unit, std::string weapon_name, u32 n)
 {
-    u32 i = 0;
-    for (WeaponSystem& w : unit.weapons) {
-        if (w.name == weapon.name && w.type == weapon.type) {
-            unit.weapons_counter.at(i) += n;
-            return;
-        }
-        i++;
-    }
+    auto weapon_index = STATE.armory.GetWeaponIndexByName(weapon_name);
+    assert(weapon_index != -1);
 
-		unit.morale.push_back(1.0f);
-    unit.weapons.push_back(weapon);
+    unit.morale.push_back(1.0f);
+    unit.weapons.push_back(weapon_index);
     unit.weapons_counter.push_back(n);
 }
 
@@ -196,37 +190,33 @@ void AddUnits()
     Unit unit;
     unit.name = "3rd Assault Brigade";
     unit.size = UnitSize::Brigade;
-    //AddWeapons(unit, GetEliteSquad(), 170);
-    //AddWeapons(unit, GetT72(), 50);
-    //AddWeapons(unit, GetBmp1(), 100);
+    AddWeapons(unit, "BMP2", 50);
+    AddWeapons(unit, "T72B3", 100);
     STATE.troops_deployment.ukr_units.push_back(unit);
     STATE.troops_deployment.ukr_assigned.push_back(OblastCode::Donetsk);
 
-		unit = Unit();
+	unit = Unit();
     unit.name = "82nd Air Assault Brigade";
     unit.size = UnitSize::Brigade;
-    //AddWeapons(unit, GetEliteSquad(), 170);
-    //AddWeapons(unit, GetT72(), 50);
-    //AddWeapons(unit, GetBmp1(), 100);
+    AddWeapons(unit, "BMP2", 50);
+    AddWeapons(unit, "T72B3", 100);
     STATE.troops_deployment.ukr_units.push_back(unit);
     STATE.troops_deployment.ukr_assigned.push_back(OblastCode::Donetsk);
 
 
-		unit = Unit();
+	unit = Unit();
     unit.name = "4td Motorized Brigade";
     unit.size = UnitSize::Brigade;
-    //AddWeapons(unit, GetSquad(), 180);
-    //AddWeapons(unit, GetT72(), 50);
-    //AddWeapons(unit, GetBmp1(), 100);
+    AddWeapons(unit, "BMP2", 50);
+    AddWeapons(unit, "T72B3", 100);
     STATE.troops_deployment.ru_units.push_back(unit);
     STATE.troops_deployment.ru_assigned.push_back(OblastCode::Donetsk);
 
-		unit = Unit();
+	unit = Unit();
     unit.name = "5th Motorized Brigade";
     unit.size = UnitSize::Brigade;
-    //AddWeapons(unit, GetSquad(), 180);
-    //AddWeapons(unit, GetT72(), 80);
-    //AddWeapons(unit, GetBmp1(), 100);
+    AddWeapons(unit, "BMP2", 50);
+    AddWeapons(unit, "T72B3", 100);
     STATE.troops_deployment.ru_units.push_back(unit);
     STATE.troops_deployment.ru_assigned.push_back(OblastCode::Donetsk);
 }

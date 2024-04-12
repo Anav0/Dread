@@ -12,6 +12,8 @@ struct Armory {
 
     std::vector<u32> ru_ammo_quantity;
     std::vector<u32> ru_weapons_quantity;
+
+    i32 GetWeaponIndexByName(const std::string& name);
 };
 
 void PrintArmory(Armory& armory);

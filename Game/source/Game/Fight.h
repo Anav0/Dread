@@ -91,18 +91,18 @@ struct Unit {
 	UnitSize size;
 	Commander commander;
 
-	std::vector<WeaponSystem> weapons;
-	std::vector<f32>          morale;
-	std::vector<u16>          weapons_counter;
+	std::vector<u32> weapons;
+	std::vector<f32> morale;
+	std::vector<u16> weapons_counter;
 };
 
 struct BattleGroup {
 	std::string name;
 	u32 unit_index;
 
-	std::vector<f32>          morale;
-	std::vector<WeaponSystem> weapons;
-	std::vector<u16>          weapons_counter;
+	std::vector<WeaponSystem*> weapons;
+	std::vector<f32>           morale;
+	std::vector<u16>           weapons_counter;
 };
 
 enum class Side {
