@@ -49,3 +49,6 @@ Game/obj
 Window/obj
 Game/Fonts/baked
 Game/data/.~lock.simulation.csv#
+Analysis/obj
+obj
+Analysis/test.csv

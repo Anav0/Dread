@@ -94,14 +94,14 @@ static void fill(std::vector<u32>& v, u32 value)
     }
 }
 
-Armory LoadArmory(const char* path, const char* storage_path)
+Armory LoadArmory(const char* weapons_path, const char* storage_path)
 {
     Armory armory;
     std::vector<WeaponSystem> weapons;
     std::vector<Device> devices;
     std::vector<Ammo> ammunition;
 
-    std::ifstream file(path);
+    std::ifstream file(weapons_path);
 
     if (!file.is_open()) {
         printf("Failed to read data file\n");
@@ -236,10 +236,10 @@ std::optional<u32> GetCommanderIndexByName(const std::string& name)
     return std::nullopt;
 }
 
-std::optional<u32> GetWeaponIndexByName(const std::string& name)
+std::optional<u32> GetWeaponIndexByName(std::vector<WeaponSystem>& weapons,const std::string& name)
 {
     u32 index = 0;
-    for (WeaponSystem& w : STATE.armory.weapons) {
+    for (WeaponSystem& w : weapons) {
         if (w.name == name) {
             return { index };
         }
@@ -261,10 +261,10 @@ static void AddUnitToState(Unit& unit, const std::string& oblast_name)
     }
 }
 
-std::tuple<std::vector<Unit>, std::vector<Unit>> LoadUnits(const char* path)
+Deployment LoadUnits(std::vector<WeaponSystem>& weapons, BiMap<OblastCode, const std::string>& oblast_names, const char* path)
 {
-    std::vector<Unit> ua_units;
-    std::vector<Unit> ru_units;
+    Deployment deployment;
+
     std::ifstream storage_file(path);
     if (!storage_file.is_open()) {
         printf("Failed to read units file\n");
@@ -290,7 +290,13 @@ std::tuple<std::vector<Unit>, std::vector<Unit>> LoadUnits(const char* path)
 #if DEBUG
                 PrintUnit(unit);
 #endif
-                AddUnitToState(unit, last_oblast);
+                if (unit.side == Side::RU) {
+                    deployment.ru_units.push_back(unit);
+                    deployment.ru_assigned.push_back(oblast_names.GetKey(last_oblast));
+                } else {
+                    deployment.ukr_units.push_back(unit);
+                    deployment.ukr_assigned.push_back(oblast_names.GetKey(last_oblast));
+                }
                 unit = Unit();
             }
 
@@ -307,7 +313,7 @@ std::tuple<std::vector<Unit>, std::vector<Unit>> LoadUnits(const char* path)
             */
 
         } else {
-            auto weapon_index = GetWeaponIndexByName(parts[0]);
+            auto weapon_index = GetWeaponIndexByName(weapons, parts[0]);
             assert(weapon_index.has_value());
             unit.weapons.push_back(*weapon_index);
             unit.weapons_toe.push_back(std::stoi(parts[1]));
@@ -319,7 +325,14 @@ std::tuple<std::vector<Unit>, std::vector<Unit>> LoadUnits(const char* path)
 #if DEBUG
     PrintUnit(unit);
 #endif
-    AddUnitToState(unit, last_oblast);
 
-    return std::tuple(ua_units, ru_units);
+    if (unit.side == Side::RU) {
+        deployment.ru_units.push_back(unit);
+        deployment.ru_assigned.push_back(oblast_names.GetKey(last_oblast));
+    } else {
+        deployment.ukr_units.push_back(unit);
+        deployment.ukr_assigned.push_back(oblast_names.GetKey(last_oblast));
+    }
+
+    return deployment;
 }

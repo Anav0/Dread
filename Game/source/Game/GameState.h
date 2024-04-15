@@ -53,13 +53,6 @@ enum class GamePhase {
 	CPU,
 };
 
-struct Deployment {
-	std::vector<Unit>       ukr_units;
-	std::vector<OblastCode> ukr_assigned;
-	std::vector<Unit>       ru_units;
-	std::vector<OblastCode> ru_assigned;
-};
-
 struct Delivery {
 	u16 n;
 	WeaponSystem system;

@@ -5,10 +5,12 @@
 #include "Engine/Renderer.h"
 #include "Engine/Distribution.h"
 #include "Engine/Animator.h"
-
 #include "Engine/WindowManager.h"
 #include "EntityManager.h"
+
 #include "Game.h"
+#include "Entities.h"
+#include "EntityManager.h"
 #include "GameState.h"
 #include "RenderHelpers.h"
 #include "Devices.h"
@@ -18,8 +20,9 @@
 #include "EntityManager.cpp"
 #include "GameState.cpp"
 #include "RenderHelpers.cpp"
-#include "Fight.cpp"
 #include "Devices.cpp"
+#include "Fight.cpp"
+
 #include "glad/glad.h"
 
 #include <execution>
@@ -73,10 +76,6 @@ BufferLayout emitter_layout {
 
 void GameUpdateAndRender(WindowManager* window)
 {
-
-    //TODO:
-    TestFight();
-
     assert(false);
     info.action = window->buttonAction;
     info.type = window->buttonType;
@@ -314,7 +313,7 @@ GameState* GameInit(WindowManager* window)
     PrintArmory(armory);
     STATE.armory = armory;
 
-    auto [ua_units, ru_units] = LoadUnits(units_path);
+    STATE.troops_deployment = LoadUnits(STATE.armory.weapons, OBLAST_NAMES, units_path);
 
     gladLoadGL();
 

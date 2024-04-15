@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include "Fight.h"
 
 struct Armory {
@@ -17,9 +18,9 @@ struct Armory {
 };
 
 std::optional<u32> GetCommanderIndexByName(const std::string& name);
-std::optional<u32> GetWeaponIndexByName(const std::string& name);
+std::optional<u32> GetWeaponIndexByName(std::vector<WeaponSystem>& weapons, const std::string& name);
 static void AddUnitToState(Unit& unit, const std::string& oblast_name);
 
 void PrintArmory(Armory& armory);
 Armory LoadArmory(const char* path, const char* storage_path);
-std::tuple<std::vector<Unit>, std::vector<Unit>> LoadUnits(const char* path);
+Deployment LoadUnits(std::vector<WeaponSystem>& weapons, BiMap<OblastCode, const std::string>& oblast_names, const char* path);

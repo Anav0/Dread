@@ -1,27 +1,71 @@
 #include "Fight.h"
 #include "GameState.h"
+
 #include <algorithm>
 #include <numeric>
 #include <random>
 
-void PrintUnit(Unit& unit)
-{
-    std::cout << "\nName: " << unit.name << " ";
-    std::cout << "Nickname: " << unit.nickname << " ";
-    std::cout << "Size: " << static_cast<int>(unit.size) << " ";
-    std::cout << "Side: " << static_cast<int>(unit.side) << " ";
+static BattleGroup FormBattleGroup(Armory& armory, u32 parent_unit_index, Unit& unit);
 
-    u32 index = 0;
-    for (u32 weapon_index : unit.weapons) {
-        std::cout << "\n\t";
-        std::cout << STATE.armory.weapons[weapon_index].name << ", ";
-        std::cout << unit.weapons_counter[index] << " out of ";
-        std::cout << unit.weapons_toe[index];
-        index++;
+std::vector<BattleGroup> Fight::FormRUGroup(Armory& armory, UnitStance stance, Deployment& deployment)
+{
+    std::vector<BattleGroup> battle_groups;
+    for (u8 i = 0; i < MAX_UNITS; i++) {
+        UnitStance ru_unit_stance = this->ru_stance[i];
+        if (ru_unit_stance == stance) {
+            i32 ru_unit_index = this->ru_units[i];
+            if (ru_unit_index != -1) {
+                Unit& unit = deployment.ru_units.at(ru_unit_index);
+                battle_groups.push_back(FormBattleGroup(armory, ru_unit_index, unit));
+            }
+        }
+    }
+    return battle_groups;
+}
+
+std::vector<BattleGroup> Fight::FormUAGroup(Armory& armory, UnitStance stance, Deployment& deployment)
+{
+    std::vector<BattleGroup> battle_groups;
+    for (u8 i = 0; i < MAX_UNITS; i++) {
+        UnitStance ua_unit_stance = this->ua_stance[i];
+        if (ua_unit_stance == stance) {
+            i32 ua_unit_index = this->ua_units[i];
+            if (ua_unit_index != -1) {
+                Unit& unit = deployment.ukr_units.at(ua_unit_index);
+                battle_groups.push_back(FormBattleGroup(armory, ua_unit_index, unit));
+            }
+        }
+    }
+    return battle_groups;
+}
+
+void Fight::SimulateAttack(Armory& armory, Deployment& deployment)
+{
+    // TODO: initiative system for determining defenders and attackers
+    Side attacking_side = Side::UA;
+    Side defending_side = Side::RU;
+
+    std::vector<BattleGroup> attacker_battle_grup = FormRUGroup(armory, UnitStance::Committed, deployment);
+    std::vector<BattleGroup> defender_battle_grup = FormUAGroup(armory, UnitStance::Defending, deployment);
+
+    while (MoralBroke(defender_battle_grup) || MoralBroke(attacker_battle_grup) || AttackerSufferedHeavyLosses(attacker_battle_grup)) {
+        // Attacking groups go forward!
+        if (this->attacker_distance_in_meters > 0) {
+            this->attacker_distance_in_meters -= 100;
+            if (this->attacker_distance_in_meters < 0)
+                this->attacker_distance_in_meters = 0;
+        }
+
+        Fire(armory, this->attacker_distance_in_meters, defender_battle_grup, attacker_battle_grup);
+        Fire(armory, this->attacker_distance_in_meters, attacker_battle_grup, defender_battle_grup);
+
+        this->phase++;
+        printf("Phase: %i\n", this->phase);
+        printf("Distance: %im\n", this->attacker_distance_in_meters);
     }
 }
 
-BattleGroup FormBattleGroup(u32 parent_unit_index, Unit& unit)
+static BattleGroup FormBattleGroup(Armory& armory, u32 parent_unit_index, Unit& unit)
 {
     BattleGroup group;
 
@@ -30,7 +74,7 @@ BattleGroup FormBattleGroup(u32 parent_unit_index, Unit& unit)
 
     u32 index = 0;
     for (u32 weapon_index : unit.weapons) {
-        WeaponSystem* weapon_ref = &STATE.armory.weapons[weapon_index];
+        WeaponSystem* weapon_ref = &armory.weapons[weapon_index];
         group.weapons.push_back(weapon_ref);
         u32 n = unit.weapons_counter[index] * 0.3;
         unit.weapons_counter[index] -= n;
@@ -40,38 +84,6 @@ BattleGroup FormBattleGroup(u32 parent_unit_index, Unit& unit)
     }
 
     return group;
-}
-
-std::vector<BattleGroup> Fight::FormRUGroup(UnitStance stance)
-{
-    std::vector<BattleGroup> battle_groups;
-    for (u8 i = 0; i < MAX_UNITS; i++) {
-        UnitStance ru_unit_stance = this->ru_stance[i];
-        if (ru_unit_stance == stance) {
-            i32 ru_unit_index = this->ru_units[i];
-            if (ru_unit_index != -1) {
-                Unit& unit = STATE.troops_deployment.ru_units.at(ru_unit_index);
-                battle_groups.push_back(FormBattleGroup(ru_unit_index, unit));
-            }
-        }
-    }
-    return battle_groups;
-}
-
-std::vector<BattleGroup> Fight::FormUAGroup(UnitStance stance)
-{
-    std::vector<BattleGroup> battle_groups;
-    for (u8 i = 0; i < MAX_UNITS; i++) {
-        UnitStance ua_unit_stance = this->ua_stance[i];
-        if (ua_unit_stance == stance) {
-            i32 ua_unit_index = this->ua_units[i];
-            if (ua_unit_index != -1) {
-                Unit& unit = STATE.troops_deployment.ukr_units.at(ua_unit_index);
-                battle_groups.push_back(FormBattleGroup(ua_unit_index, unit));
-            }
-        }
-    }
-    return battle_groups;
 }
 
 bool MoralBroke(std::vector<BattleGroup>& groups)
@@ -91,31 +103,46 @@ bool AttackerSufferedHeavyLosses(std::vector<BattleGroup>& group)
     return false;
 };
 
-bool TryToHitTarget(u32 distance, Device& device)
+bool TryToHitTarget(Ammo& ammo, u32 distance)
 {
-    return false;
-    /*
-        u32 index = 0;
-        Accuracy acc = device.accuracy[0];
-        while(distance < acc.range_in_meters) {
-                index++;
-            if (index > device.accuracy.size()-1) break;
-                acc = device.accuracy[index];
-        }
+    u32 index = 0;
+    Accuracy acc = ammo.accuracy[0];
+    while (distance < acc.range_in_meters) {
+        index++;
+        if (index > ammo.accuracy.size() - 1)
+            break;
+        acc = ammo.accuracy[index];
+    }
 
-        std::random_device rd;
-        std::uniform_real_distribution<f32> distribution(0.0, 1.0);
-        std::mt19937 engine(rd());
+    std::random_device rd;
+    std::uniform_real_distribution<f32> distribution(0.0, 1.0);
+    std::mt19937 engine(rd());
 
-        auto value = distribution(engine);
+    auto value = distribution(engine);
 
-        return value < acc.change_to_hit;
-        */
+    return value < acc.change_to_hit;
 }
 
-void Fire(u32 distance_in_m, std::vector<BattleGroup>& fire, std::vector<BattleGroup>& target)
+std::tuple<u32, WeaponSystem*, BattleGroup&> PickTarget(std::uniform_int_distribution<u32> dist, std::mt19937 mt, std::vector<BattleGroup>& enemy_groups)
 {
+    u32 index = dist(mt);
+    BattleGroup& target_group = enemy_groups.at(index);
 
+    dist = std::uniform_int_distribution<u32>(0, target_group.weapons.size() - 1);
+
+    index = dist(mt);
+
+    return { index, target_group.weapons.at(index), target_group };
+}
+
+static Ammo& PickRightAmmunitionForTarget(Armory& armory, Device& firing_device, WeaponSystem* target)
+{
+    assert(target != nullptr);
+    return armory.ammo.at(*firing_device.ammunition.begin());
+}
+
+void Fire(Armory& armory, u32 distance_in_m, std::vector<BattleGroup>& fire, std::vector<BattleGroup>& target)
+{
     std::random_device rd;
     std::mt19937 mt(rd());
     std::uniform_int_distribution<u32> dist(0, target.size() - 1);
@@ -124,102 +151,54 @@ void Fire(u32 distance_in_m, std::vector<BattleGroup>& fire, std::vector<BattleG
     for (BattleGroup& group : fire) {
         for (WeaponSystem* weapon : group.weapons) {
             for (u32 device_index : weapon->devices) {
-                // if(device.accuracy[0].range_in_meters < distance_in_m) continue;
+                auto& device = armory.devices.at(device_index);
 
-                // Pick target
-                u32 index = dist(mt);
-                BattleGroup& target_group = target.at(index);
+                auto [firing_target_index, firing_target, target_group] = PickTarget(dist, mt, target);
+                auto& ammunition = PickRightAmmunitionForTarget(armory, device, firing_target);
 
-                std::uniform_int_distribution<u32> dist(0, target_group.weapons.size() - 1);
-
-                index = dist(mt);
-                WeaponSystem* target_system = target_group.weapons[index];
-
-                /*
-printf("%s from %s fires at: %s ", device.name.c_str(), group.name.c_str(), target_system.name.c_str());
-
-                //Hit
-                if(TryToHitTarget(distance_in_m, device) && target_system.state > 0.0) {
-                   printf("[HIT] ");
-                //Record damage
-                if(target_system.armor == Armor::Soft) {
-printf("SOFT: %f -= %i! ", target_system.state, device.soft);
-                        target_system.state -= device.soft;
-                        target_group.morale.at(index) -= 0.1;
-
-                } else {
-printf("HARD: %f -= %i! ", target_system.state, device.hard);
-                        target_system.state -= device.hard;
-                        target_group.morale.at(index) -= 0.1;
+                if (ammunition.accuracy[0].range_in_meters < distance_in_m) {
+                    printf("No ammo able to reach target at %im\n", distance_in_m);
+                    continue;
                 }
-printf("State: %f, Morale: %f\n", target_system.state, target_group.morale.at(index));
+
+                printf("%s from %s fires at: %s ", device.name.c_str(), group.name.c_str(), firing_target->name.c_str());
+
+                // Hit
+                if (TryToHitTarget(ammunition, distance_in_m) && firing_target->state > 0.0) {
+                    printf("[HIT] ");
+                    // Record damage
+                    if (firing_target->armor == Armor::Soft) {
+                        printf("SOFT: %f -= %i! ", firing_target->state, ammunition.soft);
+                        firing_target->state -= ammunition.soft;
+                        target_group.morale.at(firing_target_index) -= 0.1;
+
+                    } else {
+                        printf("HARD: %f -= %i! ", firing_target->state, ammunition.hard);
+                        firing_target->state -= ammunition.hard;
+                        target_group.morale.at(firing_target_index) -= 0.1;
+                    }
+                    printf("State: %f, Morale: %f\n", firing_target->state, target_group.morale.at(firing_target_index));
                 } else {
-                        printf("[MISS]\n");
+                    printf("[MISS]\n");
                 }
-                */
             }
         }
     }
 }
 
-void Fight::SimulateAttack()
+void PrintUnit(Armory& armory, Unit& unit)
 {
-    // TODO: initiative system for determining defenders and attackers
-    Side attacking_side = Side::UA;
-    Side defending_side = Side::RU;
+    std::cout << "\nName: " << unit.name << " ";
+    std::cout << "Nickname: " << unit.nickname << " ";
+    std::cout << "Size: " << static_cast<int>(unit.size) << " ";
+    std::cout << "Side: " << static_cast<int>(unit.side) << " ";
 
-    std::vector<BattleGroup> attacker_battle_grup = FormRUGroup(UnitStance::Committed);
-    std::vector<BattleGroup> defender_battle_grup = FormUAGroup(UnitStance::Defending);
-
-    while (MoralBroke(defender_battle_grup) || MoralBroke(attacker_battle_grup) || AttackerSufferedHeavyLosses(attacker_battle_grup)) {
-        // Attacking groups go forward!
-        if (this->attacker_distance_in_meters > 0) {
-            this->attacker_distance_in_meters -= 100;
-            if (this->attacker_distance_in_meters < 0)
-                this->attacker_distance_in_meters = 0;
-        }
-
-        Fire(this->attacker_distance_in_meters, defender_battle_grup, attacker_battle_grup);
-        Fire(this->attacker_distance_in_meters, attacker_battle_grup, defender_battle_grup);
-
-        this->phase++;
-        printf("Phase: %i\n", this->phase);
-        printf("Distance: %im\n", this->attacker_distance_in_meters);
+    u32 index = 0;
+    for (u32 weapon_index : unit.weapons) {
+        std::cout << "\n\t";
+        std::cout << armory.weapons[weapon_index].name << ", ";
+        std::cout << unit.weapons_counter[index] << " out of ";
+        std::cout << unit.weapons_toe[index];
+        index++;
     }
 }
-
-void TestFight()
-{
-    Fight fight;
-    fight.attacker_distance_in_meters = 6000;
-    fight.phase = 0;
-    fight.ua_units[0] = 0;
-    fight.ua_stance[0] = UnitStance::Defending;
-    // fight.ua_units[1] = 1;
-
-    fight.ru_units[0] = 0;
-    fight.ru_stance[0] = UnitStance::Committed;
-    fight.ru_units[1] = 1;
-
-    fight.SimulateAttack();
-}
-
-/*
-
-Phases:
-
-        0. During one turn attacker can perform n number of attacks, based on his determination
- 0a. Each attack look like this:
-        1. Attacker forms battlegroups
-        2. Defender can fire at the gathering point if he has assets (aircraft, drones and artillery)
-        3. Battlegroups then move towards defenders positions
-        4. Assets on both sides fire if the range permits
-                5a. If the attackers morale breakes he tries to retreat
-                5b. If the defenders morale breakes they give away their positions
-                        5ba. Defender can counterattack to try to recapture lost positions
-        6.
-
-
-
-
- * */

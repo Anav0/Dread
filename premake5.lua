@@ -2,7 +2,7 @@ workspace "Dread"
    architecture "x64"
    startproject "Window"
    cppdialect "C++20"
-   configurations { "Debug", "Release" }
+   configurations { "Debug", "Release", "Testing" }
 	 flags { "MultiProcessorCompile" }
 
 project "Engine"
@@ -31,6 +31,8 @@ project "Engine"
 
 project "Game"
    kind "SharedLib"
+   filter "Testing"
+		kind "StaticLib"
    language "C++"
    targetdir "bin/%{cfg.buildcfg}"
    location "Game/"
@@ -62,6 +64,24 @@ project "Window"
    files { "Window/source/**.h", "Window/source/main.cpp" }
 	 libdirs { "Window/libs" }
 	 includedirs { "Window/includes", "Engine/source", "Engine/includes", "Game/source", "Game/includes" }
+   filter "configurations:Debug"
+      defines { "DEBUG" }
+      symbols "On"
+			debugdir "bin/Debug"
+   filter "configurations:Release"
+      defines { "NDEBUG" }
+      optimize "On"
+			debugdir "bin/Release"
+
+project "Analysis"
+   kind "ConsoleApp"
+   language "C++"
+   targetdir "bin/%{cfg.buildcfg}"
+   location "Analysis/"
+	links { "Game" }
+   files { "Analysis/source/**.h", "Analysis/source/main.cpp" }
+	 libdirs { "Analysis/libs" }
+	 includedirs { "Analysis/includes", "Engine/source", "Engine/includes", "Game/source", "Game/includes" }
    filter "configurations:Debug"
       defines { "DEBUG" }
       symbols "On"
