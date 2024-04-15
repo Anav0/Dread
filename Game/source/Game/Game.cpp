@@ -189,10 +189,39 @@ void GlInit() {
  
 }
 
+void FillStatics() {
+    OBLAST_NAMES.Insert(OblastCode::Zythomyr, "Zythomyr");
+    OBLAST_NAMES.Insert(OblastCode::Zaporizhia, "Zaporizhia");
+    OBLAST_NAMES.Insert(OblastCode::Zakarpatia, "Zakarpatia");
+    OBLAST_NAMES.Insert(OblastCode::Volyn, "Volyn");
+    OBLAST_NAMES.Insert(OblastCode::Vinnytsia, "Vinnytsia");
+    OBLAST_NAMES.Insert(OblastCode::Ternopil, "Ternopil");
+    OBLAST_NAMES.Insert(OblastCode::Sumy, "Sumy");
+    OBLAST_NAMES.Insert(OblastCode::Rivne, "Rivne");
+    OBLAST_NAMES.Insert(OblastCode::Poltava, "Poltava");
+    OBLAST_NAMES.Insert(OblastCode::Odessa, "Odessa");
+    OBLAST_NAMES.Insert(OblastCode::Mykolaiv, "Mykolaiv");
+    OBLAST_NAMES.Insert(OblastCode::Lviv, "Lviv");
+    OBLAST_NAMES.Insert(OblastCode::Luhansk, "Luhansk");
+    OBLAST_NAMES.Insert(OblastCode::Kirovohrad, "Kirovohrad");
+    OBLAST_NAMES.Insert(OblastCode::Kiev, "Kiev");
+    OBLAST_NAMES.Insert(OblastCode::Chmielnicki, "Chmielnicki");
+    OBLAST_NAMES.Insert(OblastCode::Kherson, "Kherson");
+    OBLAST_NAMES.Insert(OblastCode::Kharkiv, "Kharkiv");
+    OBLAST_NAMES.Insert(OblastCode::IvanoFrankivsk, "IvanoFrankivsk");
+    OBLAST_NAMES.Insert(OblastCode::Donetsk, "Donetsk");
+    OBLAST_NAMES.Insert(OblastCode::Dnipropetrovsk, "Dnipropetrovsk");
+    OBLAST_NAMES.Insert(OblastCode::Crimea, "Crimea");
+    OBLAST_NAMES.Insert(OblastCode::Chernihiv, "Chernihiv");
+    OBLAST_NAMES.Insert(OblastCode::Chernivtsi, "Chernivtsi");
+    OBLAST_NAMES.Insert(OblastCode::Cherkasy, "Cherkasy");
+}
+
 void GameInitAfterReload(WindowManager* window)
 {
     gladLoadGL();
 
+    FillStatics();
 
 		picking_buffer.Allocate(window->screen_size);
 
@@ -275,6 +304,8 @@ void SetupEmitter(WindowManager* window) {
 
 GameState* GameInit(WindowManager* window)
 {
+    FillStatics();
+
     const char* armory_path = "D:/Projects/Dread/Game/data/data.info";
     const char* storage_path = "D:/Projects/Dread/Game/data/simulation.csv";
 	Armory armory = LoadArmory(armory_path, storage_path);

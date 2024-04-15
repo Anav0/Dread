@@ -6,10 +6,11 @@
 #include "Engine/Base.h"
 #include "Engine/Constants.h"
 #include "Engine/Mesh.h"
+#include "Engine/bimap.h"
 
 #include <map>
 
-//25 or 27
+// 25 or 27
 enum class OblastCode {
     Zythomyr,
     Zaporizhia,
@@ -68,40 +69,14 @@ const std::map<OblastCode, f32> INITIAL_CONTROL = {
     { OblastCode::Cherkasy, 1.0f },
 };
 
-const std::map<OblastCode, const char*> OBLAST_NAMES = {
-    { OblastCode::Zythomyr, "Zythomyr" },
-    { OblastCode::Zaporizhia, "Zaporizhia" },
-    { OblastCode::Zakarpatia, "Zakarpatia" },
-    { OblastCode::Volyn, "Volyn" },
-    { OblastCode::Vinnytsia, "Vinnytsia" },
-    { OblastCode::Ternopil, "Ternopil" },
-    { OblastCode::Sumy, "Sumy" },
-    { OblastCode::Rivne, "Rivne" },
-    { OblastCode::Poltava, "Poltava" },
-    { OblastCode::Odessa, "Odessa" },
-    { OblastCode::Mykolaiv, "Mykolaiv" },
-    { OblastCode::Lviv, "Lviv" },
-    { OblastCode::Luhansk, "Luhansk" },
-    { OblastCode::Kirovohrad, "Kirovohrad" },
-    { OblastCode::Kiev, "Kiev" },
-    { OblastCode::Chmielnicki, "Chmielnicki" },
-    { OblastCode::Kherson, "Kherson" },
-    { OblastCode::Kharkiv, "Kharkiv" },
-    { OblastCode::IvanoFrankivsk, "IvanoFrankivsk" },
-    { OblastCode::Donetsk, "Donetsk" },
-    { OblastCode::Dnipropetrovsk, "Dnipropetrovsk" },
-    { OblastCode::Crimea, "Crimea" },
-    { OblastCode::Chernihiv, "Chernihiv" },
-    { OblastCode::Chernivtsi, "Chernivtsi" },
-    { OblastCode::Cherkasy, "Cherkasy" },
-};
+static BiMap<OblastCode, const std::string> OBLAST_NAMES;
 
-enum class FactorToShow  {
-	Air,
-	Combat,
-	Damage,
-	Infrastructure,
-	GroundPower,
+enum class FactorToShow {
+    Air,
+    Combat,
+    Damage,
+    Infrastructure,
+    GroundPower,
 };
 
 class Oblast {

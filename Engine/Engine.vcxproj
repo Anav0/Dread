@@ -124,6 +124,7 @@
     <ClInclude Include="source\Engine\TimeManager.h" />
     <ClInclude Include="source\Engine\WindowManager.h" />
     <ClInclude Include="source\Engine\alloc.h" />
+    <ClInclude Include="source\Engine\bimap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Engine\lib.cpp" />

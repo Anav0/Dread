@@ -22,6 +22,7 @@
 #include "alloc.h"
 #include "Particles.h"
 #include "Distribution.h"
+#include "bimap.h"
 
 #include "Animator.cpp"
 #include "BoundingBox.cpp"
