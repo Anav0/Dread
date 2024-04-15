@@ -306,7 +306,7 @@ GameState* GameInit(WindowManager* window)
 {
     FillStatics();
 
-    const char* armory_path = "D:/Projects/Dread/Game/data/data.info";
+    const char* armory_path = "D:/Projects/Dread/Game/data/weapons.csv";
     const char* storage_path = "D:/Projects/Dread/Game/data/simulation.csv";
     const char* units_path = "D:/Projects/Dread/Game/data/units.csv";
 	Armory armory = LoadArmory(armory_path, storage_path);
@@ -338,7 +338,6 @@ GameState* GameInit(WindowManager* window)
 
     AddMap();
     AddSupportingCountries();
-		AddUnits();
 
     SupportPackage p1 {
         "Polish support",

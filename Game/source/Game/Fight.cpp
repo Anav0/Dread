@@ -172,7 +172,6 @@ void Fight::SimulateAttack()
     std::vector<BattleGroup> defender_battle_grup = FormUAGroup(UnitStance::Defending);
 
     while (MoralBroke(defender_battle_grup) || MoralBroke(attacker_battle_grup) || AttackerSufferedHeavyLosses(attacker_battle_grup)) {
-
         // Attacking groups go forward!
         if (this->attacker_distance_in_meters > 0) {
             this->attacker_distance_in_meters -= 100;

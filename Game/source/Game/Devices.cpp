@@ -117,11 +117,16 @@ Armory LoadArmory(const char* path, const char* storage_path)
     std::map<std::string, u32> weapon_name_by_index;
     std::map<std::string, u32> ammo_name_by_index;
 
+    getline(file, line);
+
     while (getline(file, line)) {
         if (line == "" || line.starts_with('#'))
             continue;
 
-        auto parts = split(line, ' ');
+        auto parts = split(line, ';');
+
+        if (parts[0] == "")
+            continue;
 
         if (line.starts_with(WEAPON_CHAR)) {
             WeaponSystem w;
@@ -307,6 +312,7 @@ std::tuple<std::vector<Unit>, std::vector<Unit>> LoadUnits(const char* path)
             unit.weapons.push_back(*weapon_index);
             unit.weapons_toe.push_back(std::stoi(parts[1]));
             unit.weapons_counter.push_back(std::stoi(parts[2]));
+            unit.morale.push_back(std::stof(parts[3]));
         }
     }
 

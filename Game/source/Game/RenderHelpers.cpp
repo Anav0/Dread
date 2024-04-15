@@ -200,42 +200,6 @@ void AddWeapons(Unit& unit, std::string weapon_name, u32 n)
     unit.morale.push_back(1.0f);
 }
 
-void AddUnits()
-{
-    Unit unit;
-    unit.name = "3rd Assault Brigade";
-    unit.size = UnitSize::Brigade;
-    AddWeapons(unit, "BMP2", 25);
-    AddWeapons(unit, "BMP2", 25);
-    AddWeapons(unit, "T72B3", 100);
-    STATE.troops_deployment.ukr_units.push_back(unit);
-    STATE.troops_deployment.ukr_assigned.push_back(OblastCode::Donetsk);
-
-    unit = Unit();
-    unit.name = "82nd Air Assault Brigade";
-    unit.size = UnitSize::Brigade;
-    AddWeapons(unit, "BMP2", 50);
-    AddWeapons(unit, "T72B3", 100);
-    STATE.troops_deployment.ukr_units.push_back(unit);
-    STATE.troops_deployment.ukr_assigned.push_back(OblastCode::Donetsk);
-
-    unit = Unit();
-    unit.name = "4td Motorized Brigade";
-    unit.size = UnitSize::Brigade;
-    AddWeapons(unit, "BMP2", 50);
-    AddWeapons(unit, "T72B3", 100);
-    STATE.troops_deployment.ru_units.push_back(unit);
-    STATE.troops_deployment.ru_assigned.push_back(OblastCode::Donetsk);
-
-    unit = Unit();
-    unit.name = "5th Motorized Brigade";
-    unit.size = UnitSize::Brigade;
-    AddWeapons(unit, "BMP2", 50);
-    AddWeapons(unit, "T72B3", 100);
-    STATE.troops_deployment.ru_units.push_back(unit);
-    STATE.troops_deployment.ru_assigned.push_back(OblastCode::Donetsk);
-}
-
 void AddMap()
 {
     int i = 0;
