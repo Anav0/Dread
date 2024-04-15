@@ -13,7 +13,7 @@ struct Armory {
     std::vector<u32> ru_ammo_quantity;
     std::vector<u32> ru_weapons_quantity;
 
-    i32 GetWeaponIndexByName(const std::string& name);
+    std::optional<u32> GetWeaponIndexByName(const std::string& name);
 };
 
 std::optional<u32> GetCommanderIndexByName(const std::string& name);

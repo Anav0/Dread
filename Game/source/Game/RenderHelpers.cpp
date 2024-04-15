@@ -178,7 +178,7 @@ void AddSupportingCountries()
 void AddWeapons(Unit& unit, std::string weapon_name, u32 n)
 {
     auto weapon_index = STATE.armory.GetWeaponIndexByName(weapon_name);
-    assert(weapon_index != -1);
+    assert(weapon_index.has_value());
 
     u32 index = 0;
     bool found_same_weapon = false;
@@ -193,7 +193,7 @@ void AddWeapons(Unit& unit, std::string weapon_name, u32 n)
     if (found_same_weapon) {
         unit.weapons_counter[index] += n;
     } else {
-        unit.weapons.push_back(weapon_index);
+        unit.weapons.push_back(*weapon_index);
         unit.weapons_counter.push_back(n);
     }
 

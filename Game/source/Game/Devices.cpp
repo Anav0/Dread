@@ -51,14 +51,14 @@ std::vector<Accuracy> StrToAccuracy(std::string& text)
     return ratings;
 }
 
-i32 Armory::GetWeaponIndexByName(const std::string& name)
+std::optional<u32> Armory::GetWeaponIndexByName(const std::string& name)
 {
-    i32 i = 0;
+    u32 i = 0;
     for (auto& w : weapons) {
         if (w.name == name)
-            return i;
+            return { i };
     }
-    return -1;
+    return std::nullopt;
 }
 
 void PrintArmory(Armory& armory)
