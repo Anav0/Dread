@@ -130,7 +130,7 @@ void DrawWeaponsInReserve(WindowManager* window)
 
     UI.Stack(Direction::Vertical, 20);
     for (Delivery& d : STATE.weapons_in_reserve) {
-        //UI.DrawLabel(std::format("{}x {} {}/{}", d.n, d.system.name, d.system.attack, d.system.defence));
+        // UI.DrawLabel(std::format("{}x {} {}/{}", d.n, d.system.name, d.system.attack, d.system.defence));
     }
     UI.EndLayout();
 }
@@ -180,9 +180,24 @@ void AddWeapons(Unit& unit, std::string weapon_name, u32 n)
     auto weapon_index = STATE.armory.GetWeaponIndexByName(weapon_name);
     assert(weapon_index != -1);
 
+    u32 index = 0;
+    bool found_same_weapon = false;
+    for (auto existing_weapon_index : unit.weapons) {
+        if (existing_weapon_index  == weapon_index) {
+            found_same_weapon = true;
+            break;
+        }
+        index++;
+    }
+
+    if (found_same_weapon) {
+        unit.weapons_counter[index] += n;
+    } else {
+        unit.weapons.push_back(weapon_index);
+        unit.weapons_counter.push_back(n);
+    }
+
     unit.morale.push_back(1.0f);
-    unit.weapons.push_back(weapon_index);
-    unit.weapons_counter.push_back(n);
 }
 
 void AddUnits()
@@ -190,12 +205,13 @@ void AddUnits()
     Unit unit;
     unit.name = "3rd Assault Brigade";
     unit.size = UnitSize::Brigade;
-    AddWeapons(unit, "BMP2", 50);
+    AddWeapons(unit, "BMP2", 25);
+    AddWeapons(unit, "BMP2", 25);
     AddWeapons(unit, "T72B3", 100);
     STATE.troops_deployment.ukr_units.push_back(unit);
     STATE.troops_deployment.ukr_assigned.push_back(OblastCode::Donetsk);
 
-	unit = Unit();
+    unit = Unit();
     unit.name = "82nd Air Assault Brigade";
     unit.size = UnitSize::Brigade;
     AddWeapons(unit, "BMP2", 50);
@@ -203,8 +219,7 @@ void AddUnits()
     STATE.troops_deployment.ukr_units.push_back(unit);
     STATE.troops_deployment.ukr_assigned.push_back(OblastCode::Donetsk);
 
-
-	unit = Unit();
+    unit = Unit();
     unit.name = "4td Motorized Brigade";
     unit.size = UnitSize::Brigade;
     AddWeapons(unit, "BMP2", 50);
@@ -212,7 +227,7 @@ void AddUnits()
     STATE.troops_deployment.ru_units.push_back(unit);
     STATE.troops_deployment.ru_assigned.push_back(OblastCode::Donetsk);
 
-	unit = Unit();
+    unit = Unit();
     unit.name = "5th Motorized Brigade";
     unit.size = UnitSize::Brigade;
     AddWeapons(unit, "BMP2", 50);
@@ -234,7 +249,8 @@ void AddMap()
         // Create entity
         auto code = static_cast<OblastCode>(i);
         auto control = INITIAL_CONTROL.at(code);
-        ID id = E.CreateOblast(Oblast(static_cast<OblastCode>(i), position, OBLAST_NAMES.at(code), control));
+        std::string name = OBLAST_NAMES.GetValue(code);
+        ID id = E.CreateOblast(Oblast(static_cast<OblastCode>(i), position, name.c_str(), control));
 
         // Create buffer for mesh or use existing one
         InstancedMeshBuffer* buffer;
@@ -277,7 +293,7 @@ void DrawUI(WindowManager* window)
 
 void DrawUnitToken(Oblast* oblast, Unit& unit)
 {
-    static v2 pos  = { 50, 50 };
+    static v2 pos = { 50, 50 };
     static v2 size = { 115, 50 };
 
     static const Gradient gradient {
@@ -295,7 +311,7 @@ void DrawUnitToken(Oblast* oblast, Unit& unit)
     icon.padding = 0;
     icon.index = AIR_92;
 
-    v2 icon_pos = {pos.x + 5, 0};
+    v2 icon_pos = { pos.x + 5, 0 };
     CenterChildInParentY(&pos, &size, &icon_pos, &icon.size);
 
     R.gradient_buffer.AddGradient(pos, size, gradient);

@@ -51,7 +51,8 @@ std::vector<Accuracy> StrToAccuracy(std::string& text)
     return ratings;
 }
 
-i32 Armory::GetWeaponIndexByName(const std::string& name) {
+i32 Armory::GetWeaponIndexByName(const std::string& name)
+{
     i32 i = 0;
     for (auto& w : weapons) {
         if (w.name == name)
@@ -86,7 +87,8 @@ static void remove(std::string& str, char c)
     str.erase(std::remove(str.begin(), str.end(), c), str.end());
 }
 
-static void fill(std::vector<u32>& v, u32 value) {
+static void fill(std::vector<u32>& v, u32 value)
+{
     for (u32 i = 0; i < v.capacity(); i++) {
         v.push_back(value);
     }
@@ -181,9 +183,9 @@ Armory LoadArmory(const char* path, const char* storage_path)
     fill(armory.ru_ammo_quantity, 0);
 
     getline(storage_file, line);
-    //NOTE: slow af
+    // NOTE: slow af
     while (getline(storage_file, line)) {
-        auto parts = split(line, ';');
+        auto parts = split(line, ',');
 
         std::string& asset_name = parts[0];
         std::string ua_quantity_str = parts[1];
@@ -206,4 +208,112 @@ Armory LoadArmory(const char* path, const char* storage_path)
     }
 
     return armory;
+}
+
+Side StrToSide(const std::string& str)
+{
+    assert(str == "UA" || str == "RU");
+
+    if (str == "UA")
+        return Side::UA;
+    if (str == "RU")
+        return Side::RU;
+}
+
+std::optional<u32> GetCommanderIndexByName(const std::string& name)
+{
+    u32 index = 0;
+    for (Commander& cmdr : STATE.commanders) {
+        if (cmdr.name == name)
+            return { index };
+        index++;
+    }
+    return std::nullopt;
+}
+
+std::optional<u32> GetWeaponIndexByName(const std::string& name)
+{
+    u32 index = 0;
+    for (WeaponSystem& w : STATE.armory.weapons) {
+        if (w.name == name) {
+            return { index };
+        }
+        index++;
+    }
+    return std::nullopt;
+}
+
+static void AddUnitToState(Unit& unit, const std::string& oblast_name)
+{
+    if (unit.side == Side::UA) {
+        assert(OBLAST_NAMES.ContainsValue(oblast_name));
+        STATE.troops_deployment.ukr_units.push_back(unit);
+        STATE.troops_deployment.ukr_assigned.push_back(OBLAST_NAMES.GetKey(oblast_name));
+    } else {
+        assert(OBLAST_NAMES.ContainsValue(oblast_name));
+        STATE.troops_deployment.ru_units.push_back(unit);
+        STATE.troops_deployment.ru_assigned.push_back(OBLAST_NAMES.GetKey(oblast_name));
+    }
+}
+
+std::tuple<std::vector<Unit>, std::vector<Unit>> LoadUnits(const char* path)
+{
+    std::vector<Unit> ua_units;
+    std::vector<Unit> ru_units;
+    std::ifstream storage_file(path);
+    if (!storage_file.is_open()) {
+        printf("Failed to read units file\n");
+        assert(false);
+    }
+
+    std::string line;
+    getline(storage_file, line);
+
+    Unit unit;
+    bool seen_unit = false;
+    std::vector<std::string> parts;
+    std::string last_oblast;
+
+    while (getline(storage_file, line)) {
+        if (line == "" || line.starts_with('#'))
+            continue;
+
+        parts = split(line, ';');
+
+        if (parts[0].starts_with('<')) {
+            if (seen_unit) {
+#if DEBUG
+                PrintUnit(unit);
+#endif
+                AddUnitToState(unit, last_oblast);
+                unit = Unit();
+            }
+
+            unit.name = parts[0].substr(1);
+            unit.nickname = parts[1];
+            unit.side = StrToSide(parts[2]);
+            last_oblast = parts[4];
+            unit.size = STR_TO_SIZE.at(parts[5]);
+            seen_unit = true;
+            /*
+            auto cmdr = GetCommanderIndexByName(parts[3]);
+            assert(cmdr.has_value());
+            unit.commander_index = *cmdr;
+            */
+
+        } else {
+            auto weapon_index = GetWeaponIndexByName(parts[0]);
+            assert(weapon_index.has_value());
+            unit.weapons.push_back(*weapon_index);
+            unit.weapons_toe.push_back(std::stoi(parts[1]));
+            unit.weapons_counter.push_back(std::stoi(parts[2]));
+        }
+    }
+
+#if DEBUG
+    PrintUnit(unit);
+#endif
+    AddUnitToState(unit, last_oblast);
+
+    return std::tuple(ua_units, ru_units);
 }

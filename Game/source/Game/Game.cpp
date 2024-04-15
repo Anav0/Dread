@@ -308,10 +308,13 @@ GameState* GameInit(WindowManager* window)
 
     const char* armory_path = "D:/Projects/Dread/Game/data/data.info";
     const char* storage_path = "D:/Projects/Dread/Game/data/simulation.csv";
+    const char* units_path = "D:/Projects/Dread/Game/data/units.csv";
 	Armory armory = LoadArmory(armory_path, storage_path);
 
     PrintArmory(armory);
     STATE.armory = armory;
+
+    auto [ua_units, ru_units] = LoadUnits(units_path);
 
     gladLoadGL();
 

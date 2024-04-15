@@ -15,7 +15,16 @@ enum class UnitSize {
 	Company,
 	Platoon,
 	Squad,
-	Teram,
+};
+
+const std::map<std::string, UnitSize> STR_TO_SIZE = {
+	{"Division", UnitSize::Division},
+	{"Brigade", UnitSize::Brigade},
+	{"Regiment", UnitSize::Regiment},
+	{"Battalion", UnitSize::Battalion},
+	{"Company", UnitSize::Company},
+	{"Platoon", UnitSize::Platoon},
+	{"Squad", UnitSize::Squad},
 };
 
 enum class WeaponDomain {
@@ -82,33 +91,39 @@ struct WeaponSystem {
 	std::vector<u32> devices;
 };
 
+enum class Side {
+	UA,
+	RU
+};
+
 struct Commander {
 	char* name;
 };
 
 struct Unit {
 	std::string name;
+	std::string nickname;
 	UnitSize size;
-	Commander commander;
+        Side side;
+	u32 commander_index;
 
 	std::vector<u32> weapons;
 	std::vector<f32> morale;
 	std::vector<u16> weapons_counter;
+	std::vector<u16> weapons_toe;
 };
+
+void PrintUnit(Unit& unit);
 
 struct BattleGroup {
 	std::string name;
-	u32 unit_index;
+	u32 parent_unit_index;
 
 	std::vector<WeaponSystem*> weapons;
 	std::vector<f32>           morale;
 	std::vector<u16>           weapons_counter;
 };
 
-enum class Side {
-	UA,
-	RU
-};
 
 enum class UnitStance {
 	Reserve,

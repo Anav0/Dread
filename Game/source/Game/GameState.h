@@ -91,6 +91,8 @@ struct GameState {
 
 	Armory armory;
 
+    std::vector<Commander> commanders;
+
 	Deployment troops_deployment;
 
 	u8 current_turn = 1;

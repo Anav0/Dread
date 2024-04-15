@@ -81,10 +81,10 @@ enum class FactorToShow {
 
 class Oblast {
 public:
-    const char*  name = "";
-		v3 position;
+    const char* name = "";
+    v3 position;
     MeshInBuffer mesh;
-    OblastCode   code = OblastCode::Kiev;
+    OblastCode code = OblastCode::Kiev;
     f32 ukrainian_control = 0.0f;
 
     Oblast() { }
@@ -92,12 +92,12 @@ public:
     void UpdateColorBasedOnControl();
     void UpdateColorBasedOnFactor(FactorToShow factor);
 
-		u32 GetUkrainianFactor(FactorToShow factor);
-		u32 GetRussianFactor(FactorToShow factor);
+    u32 GetUkrainianFactor(FactorToShow factor);
+    u32 GetRussianFactor(FactorToShow factor);
 
     Oblast(MeshInBuffer mesh, OblastCode code, v3 position, const char* name, f32 ukrainian_control = 0.0f)
     {
-				this->position = position;
+        this->position = position;
         this->mesh = mesh;
         this->code = code;
         this->name = name;
@@ -106,19 +106,19 @@ public:
         UpdateColorBasedOnControl();
     }
 
-		Oblast(OblastCode code, v3 position, const char* name, f32 ukrainian_control = 0.0f)
+    Oblast(OblastCode code, v3 position, const char* name, f32 ukrainian_control = 0.0f)
     {
-				this->position = position;
+        this->position = position;
         this->code = code;
         this->name = name;
         this->ukrainian_control = ukrainian_control;
     }
 
-		void SetMesh(MeshInBuffer mesh) {
-			this->mesh = mesh;
-			UpdateColorBasedOnControl();
-		}
-		
+    void SetMesh(MeshInBuffer mesh)
+    {
+        this->mesh = mesh;
+        UpdateColorBasedOnControl();
+    }
 };
 
 enum class CountryCode {
@@ -138,7 +138,7 @@ struct Country {
     CountryCode code;
     const char* name;
     f32 support;
-		u8 index_in_atlas;
+    u8 index_in_atlas;
 
     Country() { }
     Country(CountryCode code, const char* name, f32 support, u8 index_in_atlas)
@@ -146,7 +146,7 @@ struct Country {
         this->code = code;
         this->name = name;
         this->support = support;
-				this->index_in_atlas = index_in_atlas;
+        this->index_in_atlas = index_in_atlas;
     }
 };
 
