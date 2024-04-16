@@ -1,7 +1,7 @@
 #include <Game/Devices.h>
 #include <Game/Fight.h>
 
-#include "CsvSaver.h";
+#include "Misc/CsvSaver.h"
 
 const char* units_path = "D:/Projects/Dread/Game/data/units.csv";
 const char* armory_path = "D:/Projects/Dread/Game/data/weapons.csv";
@@ -100,6 +100,7 @@ int main()
     Deployment deployment = LoadUnits(armory.weapons, OBLASTS, units_path);
 
     Fight fight;
+    fight.saver = &saver;
     fight.attacker_distance_in_meters = 6000;
     fight.phase = 0;
     fight.ua_units[0] = 0;

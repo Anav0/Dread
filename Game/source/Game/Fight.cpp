@@ -48,6 +48,15 @@ void Fight::SimulateAttack(Armory& armory, Deployment& deployment)
     std::vector<BattleGroup> attacker_battle_grup = FormRUGroup(armory, UnitStance::Committed, deployment);
     std::vector<BattleGroup> defender_battle_grup = FormUAGroup(armory, UnitStance::Defending, deployment);
 
+    if (saver != nullptr) {
+        saver->Open(std::format("{}.csv", this->attacker_distance_in_meters).c_str());
+        saver->AddHeader("");
+    }
+
+    SimulationSession sim_session = SimulationSession(armory, deployment);
+    sim_session.iter = 0;
+    sim_session.rounds.reserve(20);
+
     while (MoralBroke(defender_battle_grup) || MoralBroke(attacker_battle_grup) || AttackerSufferedHeavyLosses(attacker_battle_grup)) {
         // Attacking groups go forward!
         if (this->attacker_distance_in_meters > 0) {
@@ -62,6 +71,19 @@ void Fight::SimulateAttack(Armory& armory, Deployment& deployment)
         this->phase++;
         printf("Phase: %i\n", this->phase);
         printf("Distance: %im\n", this->attacker_distance_in_meters);
+
+        // # Iter Status Weapon Device ACC TargetWeapon StartingState Dmg StateAfterHit Distance
+        // 0    HIT   BMP2   2A42   0.5 BMP1 100 24 76 2400
+
+        if (saver != nullptr) {
+            //Round round = Round();
+            //saver->AddRow(round);
+        }
+    }
+
+    if (saver != nullptr) {
+        saver->Flush();
+        saver->Close();
     }
 }
 

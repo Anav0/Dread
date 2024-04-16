@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <string>
+#include <vector>
 
 template <typename T>
 concept CsvRow = requires(const T& t) {

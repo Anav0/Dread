@@ -8,6 +8,7 @@
 
 #include "Engine/Constants.h"
 #include "Entities.h"
+#include <Misc/CsvSaver.h>
 
 class Armory;
 
@@ -145,7 +146,6 @@ enum class UnitStance {
 constexpr u8 MAX_UNITS = 24;
 constexpr u8 SUPPORT_ASSETS = 8;
 
-
 // # Iter Status Weapon Device ACC TargetWeapon StartingState Dmg StateAfterHit Distance
 // 0    HIT   BMP2   2A42   0.5 BMP1 100 24 76 2400
 struct Round {
@@ -159,6 +159,11 @@ struct Round {
     f32 dmg;
     f32 state_after_damage;
     u32 distance;
+
+    Round(Device& device, WeaponSystem& firing, WeaponSystem& target)
+        : weapon(firing)
+        , target_weapon(target)
+        , device(device) {};
 
     std::string ToCsvRow() const
     {
@@ -180,14 +185,18 @@ struct Round {
 
 struct SimulationSession {
     u64 iter;
-
     Armory& armory;
     Deployment& deployment;
-
     std::vector<Round> rounds;
+
+    SimulationSession(Armory& armory, Deployment& deployment)
+        : armory(armory)
+        , deployment(deployment) {};
 };
 
 struct Fight {
+    CsvSaver* saver;
+
     u8 phase = 0;
 
     u16 attacker_distance_in_meters;

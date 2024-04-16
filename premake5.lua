@@ -5,6 +5,21 @@ workspace "Dread"
    configurations { "Debug", "Release", "Testing" }
 	 flags { "MultiProcessorCompile" }
 
+project "Misc"
+   kind "StaticLib"
+   language "C++"
+   targetdir "bin/%{cfg.buildcfg}"
+   location "Misc/"
+   files { "Misc/source/**.h", "Misc/source/Misc/lib.cpp" }
+	 libdirs { "Misc/libs" }
+	 includedirs { "Misc/includes" }
+   filter "configurations:Debug"
+      defines { "DEBUG" }
+      symbols "On"
+   filter "configurations:Release"
+      defines { "NDEBUG" }
+      optimize "On"
+
 project "Engine"
    kind "StaticLib"
    language "C++"
@@ -37,12 +52,13 @@ project "Game"
    targetdir "bin/%{cfg.buildcfg}"
    location "Game/"
 	 links {
+		"Misc",
 		"Engine",
 		"opengl32",
 	 }
    files { "Game/source/**.h", "Game/source/Game/Game.cpp" }
 	 libdirs { "Game/libs" }
-	 includedirs { "Engine/source", "Engine/includes", "Game/includes" }
+	 includedirs { "Engine/source", "Engine/includes", "Misc/source", "Game/includes" }
 
    filter "configurations:Debug"
       defines { "DEBUG" }
@@ -58,12 +74,13 @@ project "Window"
    targetdir "bin/%{cfg.buildcfg}"
    location "Window/"
 	 links {
+		 "Misc",
 		"Engine",
 		"Game.dll",
 	 }
    files { "Window/source/**.h", "Window/source/main.cpp" }
 	 libdirs { "Window/libs" }
-	 includedirs { "Window/includes", "Engine/source", "Engine/includes", "Game/source", "Game/includes" }
+	 includedirs { "Window/includes", "Engine/source", "Engine/includes", "Game/source", "Game/includes", "Misc/source" }
    filter "configurations:Debug"
       defines { "DEBUG" }
       symbols "On"
@@ -78,10 +95,10 @@ project "Analysis"
    language "C++"
    targetdir "bin/%{cfg.buildcfg}"
    location "Analysis/"
-	links { "Game" }
+	links { "Misc", "Game" }
    files { "Analysis/source/**.h", "Analysis/source/main.cpp" }
 	 libdirs { "Analysis/libs" }
-	 includedirs { "Analysis/includes", "Engine/source", "Engine/includes", "Game/source", "Game/includes" }
+	 includedirs { "Analysis/includes", "Engine/source", "Engine/includes", "Game/source", "Game/includes", "Misc/source" }
    filter "configurations:Debug"
       defines { "DEBUG" }
       symbols "On"
