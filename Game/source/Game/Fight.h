@@ -9,6 +9,8 @@
 #include "Engine/Constants.h"
 #include "Entities.h"
 
+class Armory;
+
 enum class UnitSize {
     Division,
     Brigade,
@@ -143,7 +145,47 @@ enum class UnitStance {
 constexpr u8 MAX_UNITS = 24;
 constexpr u8 SUPPORT_ASSETS = 8;
 
-class Armory;
+
+// # Iter Status Weapon Device ACC TargetWeapon StartingState Dmg StateAfterHit Distance
+// 0    HIT   BMP2   2A42   0.5 BMP1 100 24 76 2400
+struct Round {
+    u64 iter;
+    std::string status;
+    WeaponSystem& weapon;
+    Device& device;
+    f32 acc;
+    WeaponSystem& target_weapon;
+    f32 starting_state;
+    f32 dmg;
+    f32 state_after_damage;
+    u32 distance;
+
+    std::string ToCsvRow() const
+    {
+        std::stringstream ss;
+        ss << iter << ","
+           << status << ","
+           << weapon.name << ","
+           << device.name << ","
+           << acc << ","
+           << target_weapon.name << ","
+           << starting_state << ","
+           << dmg << ","
+           << state_after_damage << ","
+           << distance;
+
+        return ss.str();
+    }
+};
+
+struct SimulationSession {
+    u64 iter;
+
+    Armory& armory;
+    Deployment& deployment;
+
+    std::vector<Round> rounds;
+};
 
 struct Fight {
     u8 phase = 0;

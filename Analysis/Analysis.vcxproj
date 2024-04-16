@@ -131,6 +131,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="source\CsvSaver.h" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="source\main.cpp" />
   </ItemGroup>
   <ItemGroup>

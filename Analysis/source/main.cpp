@@ -1,6 +1,8 @@
 #include <Game/Devices.h>
 #include <Game/Fight.h>
 
+#include "CsvSaver.h";
+
 const char* units_path = "D:/Projects/Dread/Game/data/units.csv";
 const char* armory_path = "D:/Projects/Dread/Game/data/weapons.csv";
 const char* storage_path = "D:/Projects/Dread/Game/data/simulation.csv";
@@ -24,7 +26,7 @@ Phases:
 
 static BiMap<OblastCode, const std::string> OBLASTS;
 
-void Fill()
+static void Fill()
 {
     OBLASTS.Insert(OblastCode::Zythomyr, "Zythomyr");
     OBLASTS.Insert(OblastCode::Zaporizhia, "Zaporizhia");
@@ -53,11 +55,48 @@ void Fill()
     OBLASTS.Insert(OblastCode::Cherkasy, "Cherkasy");
 }
 
+/*
+    Header file
+
+    Instance ID, UA Weapons (Soft, Hard, N), RU Weapons (Soft, Hard, N)
+
+    ---
+
+    File A
+
+    We simulate k fights starting at l distance
+
+    Each line in data file looks like this:
+
+    # Iter Status Weapon Device ACC TargetWeapon StartingState Dmg StateAfterHit Distance
+    0    HIT   BMP2   2A42   0.5 BMP1 100 24 76 2400
+    ...
+    k-1 HIT   BMP2   2A42   0.5 BMP1 100 24 76 2400
+    k   MISS Javelin Missle 0.5 T72  100 360 0 1400
+
+    ---
+
+    File B
+
+    Winner UA_menlost UA_tank_lost UA_ifv_lost UA_cars_lost UA_drones_lost ... RU_tank_lost etc etc
+    UA 1023 20 10
+*/
+
+struct Person {
+    std::string name, gender;
+    u32 age;
+
+    std::string ToCsvRow() const {
+        return name + ";" + gender + ";" + std::to_string(age);
+    }
+};
 int main()
 {
     Fill();
 
-    Armory armory = LoadArmory(armory_path, storage_path);
+    CsvSaver saver = CsvSaver("./test.csv");
+
+    Armory armory         = LoadArmory(armory_path, storage_path);
     Deployment deployment = LoadUnits(armory.weapons, OBLASTS, units_path);
 
     Fight fight;
