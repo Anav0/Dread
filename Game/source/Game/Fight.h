@@ -85,9 +85,11 @@ struct Device {
 struct WeaponSystem {
     WeaponSystemType type;
     Armor armor;
+    WeaponDomain domain;
 
     std::string name;
     f32 state = 1000.0;
+    f32 inital_state = 1000.0;
 
     u16 image_pos_on_atlas;
     u32 cost_in_dollars;
@@ -146,37 +148,43 @@ enum class UnitStance {
 constexpr u8 MAX_UNITS = 24;
 constexpr u8 SUPPORT_ASSETS = 8;
 
-// # Iter Status Weapon Device ACC TargetWeapon StartingState Dmg StateAfterHit Distance
-// 0    HIT   BMP2   2A42   0.5 BMP1 100 24 76 2400
+// # Iter FiringSide Status Weapon Device ACC TargetWeapon StartingState Dmg StateAfterHit Distance
+// 0    UA HIT  BMP2   2A42   0.5 BMP1 100 24 76 2400
 struct FireResult {
     u64 iter;
+    std::string firing_side;
     std::string status;
-    WeaponSystem& weapon;
-    Device& device;
+    Device& firing_device;
+    WeaponSystem* firing_weapons_system;
+    WeaponSystem* targeted_weapons_system;
     f32 acc;
-    WeaponSystem& target_weapon;
     f32 starting_state;
     f32 dmg;
     f32 state_after_damage;
+    f32 morale;
+    f32 morale_after_damage;
     u32 distance;
 
-    FireResult(Device& device, WeaponSystem& firing, WeaponSystem& target)
-        : weapon(firing)
-        , target_weapon(target)
-        , device(device) {};
+    FireResult(Device& firing_device, WeaponSystem* firing_weapons_system, WeaponSystem* targeted_weapons_system)
+        : firing_weapons_system(firing_weapons_system)
+        , firing_device(firing_device)
+        , targeted_weapons_system(targeted_weapons_system) {};
 
     std::string ToCsvRow() const
     {
         std::stringstream ss;
-        ss << iter << ","
-           << status << ","
-           << weapon.name << ","
-           << device.name << ","
-           << acc << ","
-           << target_weapon.name << ","
-           << starting_state << ","
-           << dmg << ","
-           << state_after_damage << ","
+        ss << iter << ";"
+           << firing_side << ";"
+           << status << ";"
+           << firing_weapons_system->name << ";"
+           << firing_device.name << ";"
+           << acc << ";"
+           << targeted_weapons_system->name << ";"
+           << starting_state << ";"
+           << dmg << ";"
+           << state_after_damage << ";"
+           << morale << ";"
+           << morale_after_damage << ";"
            << distance;
 
         return ss.str();
@@ -225,6 +233,6 @@ struct Fight {
 };
 
 bool MoralBroke(std::vector<BattleGroup>& groups);
-bool AttackerSufferedHeavyLosses(std::vector<BattleGroup>& groups);
-bool TryToHitTarget(Ammo& ammo, u32 distance);
+bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 threshold);
+std::tuple<bool, f32> TryToHitTarget(Ammo& ammo, u32 distance);
 std::vector<FireResult> Fire(Armory& armory, u32 distance_in_m, std::vector<BattleGroup>& fire, std::vector<BattleGroup>& target);

@@ -5,7 +5,7 @@
 
 const char* units_path = "D:/Projects/Dread/Game/data/units.csv";
 const char* armory_path = "D:/Projects/Dread/Game/data/weapons.csv";
-const char* storage_path = "D:/Projects/Dread/Game/data/simulation.csv";
+const char* storage_path = "D:/Projects/Dread/Game/data/storage.csv";
 
 /*
 

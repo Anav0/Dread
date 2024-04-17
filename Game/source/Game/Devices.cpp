@@ -23,6 +23,18 @@ std::vector<std::string> split(const std::string& s, char delimiter)
     return tokens;
 }
 
+Armor StrToArmor(std::string& str)
+{
+    assert(str == "Soft" || str == "Hard");
+
+    if (str == "Soft")
+        return Armor::Soft;
+
+    if (str == "Hard")
+        return Armor::Hard;
+
+}
+
 WeaponDomain DomainStrToEnum(std::string& text)
 {
     if (text == "Ground")
@@ -131,7 +143,11 @@ Armory LoadArmory(const char* weapons_path, const char* storage_path)
         if (line.starts_with(WEAPON_CHAR)) {
             WeaponSystem w;
             w.name = parts[0].substr(1);
-            w.state = std::stoi(parts[1]);
+            w.state        = std::stoi(parts[1]);
+            w.inital_state = std::stoi(parts[1]);
+            w.armor = StrToArmor(parts[3]);
+            w.domain = DomainStrToEnum(parts[4]);
+
             weapons.push_back(w);
             weapon_system = &weapons[weapons.size() - 1];
             weapon_name_by_index.insert(std::pair(parts[0], weapons.size() - 1));
@@ -236,7 +252,7 @@ std::optional<u32> GetCommanderIndexByName(const std::string& name)
     return std::nullopt;
 }
 
-std::optional<u32> GetWeaponIndexByName(std::vector<WeaponSystem>& weapons,const std::string& name)
+std::optional<u32> GetWeaponIndexByName(std::vector<WeaponSystem>& weapons, const std::string& name)
 {
     u32 index = 0;
     for (WeaponSystem& w : weapons) {

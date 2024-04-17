@@ -52,3 +52,6 @@ Game/data/.~lock.simulation.csv#
 Analysis/obj
 obj
 Analysis/test.csv
+.ipynb_checkpoints
+Analysis/6000.csv
+Analysis/data.csv
