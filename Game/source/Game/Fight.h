@@ -148,7 +148,7 @@ constexpr u8 SUPPORT_ASSETS = 8;
 
 // # Iter Status Weapon Device ACC TargetWeapon StartingState Dmg StateAfterHit Distance
 // 0    HIT   BMP2   2A42   0.5 BMP1 100 24 76 2400
-struct Round {
+struct FireResult {
     u64 iter;
     std::string status;
     WeaponSystem& weapon;
@@ -160,7 +160,7 @@ struct Round {
     f32 state_after_damage;
     u32 distance;
 
-    Round(Device& device, WeaponSystem& firing, WeaponSystem& target)
+    FireResult(Device& device, WeaponSystem& firing, WeaponSystem& target)
         : weapon(firing)
         , target_weapon(target)
         , device(device) {};
@@ -187,7 +187,7 @@ struct SimulationSession {
     u64 iter;
     Armory& armory;
     Deployment& deployment;
-    std::vector<Round> rounds;
+    std::vector<FireResult> rounds;
 
     SimulationSession(Armory& armory, Deployment& deployment)
         : armory(armory)
@@ -227,4 +227,4 @@ struct Fight {
 bool MoralBroke(std::vector<BattleGroup>& groups);
 bool AttackerSufferedHeavyLosses(std::vector<BattleGroup>& groups);
 bool TryToHitTarget(Ammo& ammo, u32 distance);
-void Fire(Armory& armory, u32 distance_in_m, std::vector<BattleGroup>& fire, std::vector<BattleGroup>& target);
+std::vector<FireResult> Fire(Armory& armory, u32 distance_in_m, std::vector<BattleGroup>& fire, std::vector<BattleGroup>& target);

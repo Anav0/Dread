@@ -50,13 +50,14 @@ void Fight::SimulateAttack(Armory& armory, Deployment& deployment)
 
     if (saver != nullptr) {
         saver->Open(std::format("{}.csv", this->attacker_distance_in_meters).c_str());
-        saver->AddHeader("");
+        saver->AddHeader("Iter;Status;Weapon;Device;ACC;TargetWeapon;StartingState;Dmg;StateAfterHit;Distance");
     }
 
     SimulationSession sim_session = SimulationSession(armory, deployment);
     sim_session.iter = 0;
     sim_session.rounds.reserve(20);
 
+    u32 iter = 0;
     while (MoralBroke(defender_battle_grup) || MoralBroke(attacker_battle_grup) || AttackerSufferedHeavyLosses(attacker_battle_grup)) {
         // Attacking groups go forward!
         if (this->attacker_distance_in_meters > 0) {
@@ -65,8 +66,21 @@ void Fight::SimulateAttack(Armory& armory, Deployment& deployment)
                 this->attacker_distance_in_meters = 0;
         }
 
-        Fire(armory, this->attacker_distance_in_meters, defender_battle_grup, attacker_battle_grup);
-        Fire(armory, this->attacker_distance_in_meters, attacker_battle_grup, defender_battle_grup);
+        auto rounds = Fire(armory, this->attacker_distance_in_meters, defender_battle_grup, attacker_battle_grup);
+
+        if (saver != nullptr) {
+            for (FireResult& r : rounds) {
+                saver->AddRow(round);
+            }
+        }
+
+        auto rounds = Fire(armory, this->attacker_distance_in_meters, attacker_battle_grup, defender_battle_grup);
+
+        if (saver != nullptr) {
+            for (FireResult& r : rounds) {
+                saver->AddRow(round);
+            }
+        }
 
         this->phase++;
         printf("Phase: %i\n", this->phase);
@@ -75,10 +89,7 @@ void Fight::SimulateAttack(Armory& armory, Deployment& deployment)
         // # Iter Status Weapon Device ACC TargetWeapon StartingState Dmg StateAfterHit Distance
         // 0    HIT   BMP2   2A42   0.5 BMP1 100 24 76 2400
 
-        if (saver != nullptr) {
-            //Round round = Round();
-            //saver->AddRow(round);
-        }
+        iter++;
     }
 
     if (saver != nullptr) {
@@ -163,8 +174,9 @@ static Ammo& PickRightAmmunitionForTarget(Armory& armory, Device& firing_device,
     return armory.ammo.at(*firing_device.ammunition.begin());
 }
 
-void Fire(Armory& armory, u32 distance_in_m, std::vector<BattleGroup>& fire, std::vector<BattleGroup>& target)
+std::vector<FireResult> Fire(Armory& armory, u32 distance_in_m, std::vector<BattleGroup>& fire, std::vector<BattleGroup>& target)
 {
+    std::vector<FireResult> results;
     std::random_device rd;
     std::mt19937 mt(rd());
     std::uniform_int_distribution<u32> dist(0, target.size() - 1);
@@ -184,6 +196,8 @@ void Fire(Armory& armory, u32 distance_in_m, std::vector<BattleGroup>& fire, std
                 }
 
                 printf("%s from %s fires at: %s ", device.name.c_str(), group.name.c_str(), firing_target->name.c_str());
+
+                FireResult fire_result = FireResult(device, weapon, *firing_target);
 
                 // Hit
                 if (TryToHitTarget(ammunition, distance_in_m) && firing_target->state > 0.0) {

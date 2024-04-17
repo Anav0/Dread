@@ -31,8 +31,8 @@ public:
         this->header = header;
     }
 
-    template <CsvRow R>
-    void AddRow(R& obj)
+    template <CsvRow T>
+    void AddRow(T& obj)
     {
         rows.push_back(obj.ToCsvRow());
     }
