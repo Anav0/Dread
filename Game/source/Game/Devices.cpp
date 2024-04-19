@@ -32,7 +32,6 @@ Armor StrToArmor(std::string& str)
 
     if (str == "Hard")
         return Armor::Hard;
-
 }
 
 WeaponDomain DomainStrToEnum(std::string& text)
@@ -106,6 +105,41 @@ static void fill(std::vector<u32>& v, u32 value)
     }
 }
 
+// TODO: Switch to BiMap
+WeaponSystemGeneralType StrToWeaponType(std::string& str)
+{
+    static const std::map<std::string, WeaponSystemGeneralType> map = {
+        { "Drone", WeaponSystemGeneralType::Drone },
+        { "Infantry", WeaponSystemGeneralType::Infantry },
+        { "APC", WeaponSystemGeneralType::APC },
+        { "Artillery", WeaponSystemGeneralType::Artillery },
+        { "Vehicle", WeaponSystemGeneralType::Vehicle },
+        { "IFV", WeaponSystemGeneralType::IFV },
+        { "Tank", WeaponSystemGeneralType::Tank },
+        { "MLRS", WeaponSystemGeneralType::MLRS },
+        { "MANPADS", WeaponSystemGeneralType::MANPADS },
+        { "ATGM", WeaponSystemGeneralType::ATGM },
+    };
+    return map.at(str);
+}
+
+std::string WeaponTypeToStr(WeaponSystemGeneralType type)
+{
+    static const std::map<WeaponSystemGeneralType, std::string> map = {
+        { WeaponSystemGeneralType::Drone, "Drone" },
+        { WeaponSystemGeneralType::Infantry, "Infantry" },
+        { WeaponSystemGeneralType::APC, "APC" },
+        { WeaponSystemGeneralType::Artillery, "Artillery" },
+        { WeaponSystemGeneralType::Vehicle, "Vehicle" },
+        { WeaponSystemGeneralType::IFV, "IFV" },
+        { WeaponSystemGeneralType::Tank, "Tank" },
+        { WeaponSystemGeneralType::MLRS, "MLRS" },
+        { WeaponSystemGeneralType::MANPADS, "MANPADS" },
+        { WeaponSystemGeneralType::ATGM, "ATGM" },
+    };
+    return map.at(type);
+}
+
 Armory LoadArmory(const char* weapons_path, const char* storage_path)
 {
     Armory armory;
@@ -143,10 +177,10 @@ Armory LoadArmory(const char* weapons_path, const char* storage_path)
         if (line.starts_with(WEAPON_CHAR)) {
             WeaponSystem w;
             w.name = parts[0].substr(1);
-            w.state        = std::stoi(parts[1]);
-            w.inital_state = std::stoi(parts[1]);
+            w.default_state = std::stoi(parts[1]);
             w.armor = StrToArmor(parts[3]);
             w.domain = DomainStrToEnum(parts[4]);
+            w.type = StrToWeaponType(parts[6]);
 
             weapons.push_back(w);
             weapon_system = &weapons[weapons.size() - 1];

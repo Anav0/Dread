@@ -109,7 +109,7 @@ void ComputerPhase();
 void DrawEndScreen();
 void PromiseSupport(SupportPackage);
 Country& GetCountryByCode(CountryCode code);
-Delivery* GetDeliveryByType(WeaponSystemType type);
+Delivery* GetDeliveryByType(WeaponSystemGeneralType type);
 
 extern GameState STATE;
 

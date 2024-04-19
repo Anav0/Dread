@@ -57,7 +57,7 @@ std::vector<Delivery> GetOnlyDeliveredSystems(SupportPackage& package) {
 	return package.delivery;
 }
 
-Delivery* GetDeliveryByType(WeaponSystemType type) {
+Delivery* GetDeliveryByType(WeaponSystemGeneralType type) {
 	for (Delivery& d : STATE.weapons_in_reserve) {
 		if (d.system.type == type) return &d;
 	}

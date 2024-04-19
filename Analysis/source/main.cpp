@@ -110,7 +110,7 @@ int main()
     fight.ru_stance[0] = UnitStance::Committed;
     fight.ru_units[1] = 1;
 
-    fight.SimulateAttack(armory, deployment);
+    fight.SimulateAttack(&armory, deployment);
 
     return 0;
 }
