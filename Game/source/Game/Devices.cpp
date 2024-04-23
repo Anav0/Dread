@@ -240,7 +240,7 @@ Armory LoadArmory(const char* weapons_path, const char* storage_path)
     getline(storage_file, line);
     // NOTE: slow af
     while (getline(storage_file, line)) {
-        auto parts = split(line, ',');
+        auto parts = split(line, ';');
 
         std::string& asset_name = parts[0];
         std::string ua_quantity_str = parts[1];

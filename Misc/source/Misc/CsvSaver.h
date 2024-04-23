@@ -20,6 +20,8 @@ private:
     std::vector<std::string> rows;
 
 public:
+    CsvSaver() { }
+
     CsvSaver(const char* path)
         : path(path)
     {

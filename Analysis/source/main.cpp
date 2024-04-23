@@ -86,31 +86,46 @@ struct Person {
     std::string name, gender;
     u32 age;
 
-    std::string ToCsvRow() const {
+    std::string ToCsvRow() const
+    {
         return name + ";" + gender + ";" + std::to_string(age);
     }
 };
+
+constexpr u32 MAX_RUNS = 10;
+
 int main()
 {
     Fill();
 
     CsvSaver saver = CsvSaver("./test.csv");
 
-    Armory armory         = LoadArmory(armory_path, storage_path);
+    Armory armory = LoadArmory(armory_path, storage_path);
     Deployment deployment = LoadUnits(armory.weapons, OBLASTS, units_path);
 
+    SimulationSession session = SimulationSession(&armory, deployment);
+
     Fight fight;
-    fight.saver = &saver;
-    fight.attacker_distance_in_meters = 6000;
-    fight.phase = 0;
-    fight.ua_units[0] = 0;
-    fight.ua_stance[0] = UnitStance::Defending;
 
-    fight.ru_units[0] = 0;
-    fight.ru_stance[0] = UnitStance::Committed;
-    fight.ru_units[1] = 1;
+    for (u32 run = 0; run < MAX_RUNS; run++) {
+        fight.attacker_distance_in_meters = 6000;
 
-    fight.SimulateAttack(&armory, deployment);
+        fight.ua_units[0] = 0;
+        fight.ua_stance[0] = UnitStance::Defending;
+
+        fight.ru_units[0] = 0;
+        fight.ru_stance[0] = UnitStance::Committed;
+
+        session.run = run;
+
+        Armory armory_cpy = armory;
+        Deployment deployment_cpy = deployment;
+
+        fight.SimulateAttack(&armory_cpy, deployment_cpy, session);
+    }
+
+    session.Flush();
+    session.Close();
 
     return 0;
 }

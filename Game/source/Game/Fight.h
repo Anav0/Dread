@@ -138,7 +138,8 @@ void PrintUnit(Armory& armory, Unit& unit);
 
 struct RoundInfo {
     Armory* armory;
-    u32 Iter;
+    u32 round;
+    u32 run;
     u32 distance;
 
     RoundInfo() { }
@@ -152,7 +153,8 @@ struct RoundInfo {
     {
         std::stringstream ss;
 
-        ss << Iter << ";";
+        ss << run << ";";
+        ss << round << ";";
         ss << distance << "";
 
         return ss.str();
@@ -185,9 +187,6 @@ struct BattleGroup {
         round_info = RoundInfo(armory);
     }
 
-    // Iter;Attacking;Side;GroupIndex;Domain;State;Morale; Weapon;Device;WeaponDomain;Soft;Hard;AA;N
-    //^_____________________________________|^__________________________________________________________
-    //        Common info for each weapon         Per weapon info
     std::string ToCsvRow() const
     {
         std::stringstream ss;
@@ -238,7 +237,8 @@ constexpr u8 SUPPORT_ASSETS = 8;
 WeaponSystemGeneralType StrToWeaponType(std::string& str);
 
 struct FireResult {
-    u64 iter;
+    u64 run;
+    u64 round;
     std::string firing_side;
     std::string status;
     Device& firing_device;
@@ -260,7 +260,8 @@ struct FireResult {
     std::string ToCsvRow() const
     {
         std::stringstream ss;
-        ss << iter << ";"
+        ss << run << ";"
+           << round << ";"
            << firing_side << ";"
            << status << ";"
            << firing_weapons_system->name << ";"
@@ -280,21 +281,53 @@ struct FireResult {
 };
 
 struct SimulationSession {
-    u64 iter;
+    u32 run;
+    u32 round;
+    u32 distance_in_meters;
+
     Armory* armory;
     Deployment& deployment;
-    std::vector<FireResult> rounds;
+
+    CsvSaver round_saver, battle_groups_saver;
 
     SimulationSession(Armory* armory, Deployment& deployment)
         : armory(armory)
-        , deployment(deployment) {};
+        , deployment(deployment)
+        , round(0)
+        , run(0)
+        , distance_in_meters(0)
+    {
+        battle_groups_saver = CsvSaver("battle_groups.csv");
+        battle_groups_saver.AddHeader("Run;Round;Distance;Attacking;Side;GroupIndex;WeaponDomain;Weapon;WeaponType;WeaponIndex;State;Armor");
+
+        round_saver = CsvSaver("data.csv");
+        round_saver.AddHeader("Run;Round;Side;Status;Weapon;Type;Device;ACC;TargetWeapon;StartingState;Dmg;StateAfterHit;Morale;MoraleAfterHit;Distance");
+    };
+
+    void AddRound(std::vector<FireResult> rounds, const char* side)
+    {
+        for (FireResult& r : rounds) {
+            r.firing_side = side;
+            r.round = round;
+            r.run = run;
+            round_saver.AddRow(r);
+        }
+    }
+
+    void Flush()
+    {
+        round_saver.Flush();
+        battle_groups_saver.Flush();
+    }
+
+    void Close()
+    {
+        round_saver.Close();
+        battle_groups_saver.Close();
+    }
 };
 
 struct Fight {
-    CsvSaver* saver;
-
-    u8 phase = 0;
-
     u16 attacker_distance_in_meters;
 
     // NOTE: -1 means slot is free
@@ -307,7 +340,7 @@ struct Fight {
     UnitStance ua_stance[MAX_UNITS];
     UnitStance ru_stance[MAX_UNITS];
 
-    void SimulateAttack(Armory*, Deployment&);
+    void SimulateAttack(Armory*, Deployment&, SimulationSession&);
     std::vector<BattleGroup> FormUAGroup(Armory*, UnitStance, Deployment&);
     std::vector<BattleGroup> FormRUGroup(Armory*, UnitStance, Deployment&);
 
