@@ -217,6 +217,10 @@ Armory LoadArmory(const char* weapons_path, const char* storage_path)
     armory.devices = devices;
     armory.ammo = ammunition;
 
+    assert(armory.weapons.size() > 0);
+    assert(armory.devices.size() > 0);
+    assert(armory.ammo.size() > 0);
+
     file.close();
 
     // Load quantities
@@ -337,9 +341,6 @@ Deployment LoadUnits(std::vector<WeaponSystem>& weapons, BiMap<OblastCode, const
 
         if (parts[0].starts_with('<')) {
             if (seen_unit) {
-#if DEBUG
-                PrintUnit(unit);
-#endif
                 if (unit.side == Side::RU) {
                     deployment.ru_units.push_back(unit);
                     deployment.ru_assigned.push_back(oblast_names.GetKey(last_oblast));

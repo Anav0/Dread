@@ -118,8 +118,13 @@ int main()
 
         session.run = run;
 
-        Armory armory_cpy = armory;
-        Deployment deployment_cpy = deployment;
+        Armory armory_cpy = Armory(armory);
+        Deployment deployment_cpy = Deployment(deployment);
+
+        session.armory = &armory_cpy;
+        session.deployment = deployment_cpy;
+
+        assert(armory_cpy.weapons.size() == armory.weapons.size());
 
         fight.SimulateAttack(&armory_cpy, deployment_cpy, session);
     }

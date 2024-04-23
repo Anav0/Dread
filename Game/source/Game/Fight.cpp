@@ -59,8 +59,6 @@ void Fight::SimulateAttack(Armory* armory, Deployment& deployment, SimulationSes
     std::vector<BattleGroup> attacker_battle_grup = FormRUGroup(armory, UnitStance::Committed, deployment);
     std::vector<BattleGroup> defender_battle_grup = FormUAGroup(armory, UnitStance::Defending, deployment);
 
-    u32 round = 0;
-
     u32 group_index = 0;
     for (auto& group : attacker_battle_grup) {
         group.Attacking = 1;
@@ -79,6 +77,7 @@ void Fight::SimulateAttack(Armory* armory, Deployment& deployment, SimulationSes
         group_index++;
     }
 
+    u32 round = 0;
     while (!MoralBroke(defender_battle_grup) && !MoralBroke(attacker_battle_grup) && !AverageDamageExceedsThreshold(attacker_battle_grup, 0.5) && !AverageDamageExceedsThreshold(defender_battle_grup, 0.5)) {
 
         simulation_session.round = round;
@@ -116,10 +115,15 @@ static BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& 
 
     u32 index = 0;
     for (u32 weapon_index : unit.weapons) {
-        if (unit.weapons_counter[index] < 0)
+        if (unit.weapons_counter[index] < 0) {
+            assert(false);
             continue;
+        }
 
         WeaponSystem* weapon_ref = &armory->weapons[weapon_index];
+        if (weapon_ref->name == "Squad") {
+            auto adasd = 123123 + 12312;
+        }
         group.weapons.push_back(weapon_ref);
         u32 n = unit.weapons_counter[index] * 0.8;
         unit.weapons_counter[index] -= n;

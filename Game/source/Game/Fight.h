@@ -125,6 +125,18 @@ struct Armory {
     std::vector<u32> ru_weapons_quantity;
 
     std::optional<u32> GetWeaponIndexByName(const std::string& name);
+
+    Armory() { }
+    Armory(Armory& armory)
+    {
+        this->ammo = armory.ammo;
+        this->weapons = armory.weapons;
+        this->devices = armory.devices;
+        this->ua_ammo_quantity = armory.ua_ammo_quantity;
+        this->ua_weapons_quantity = armory.ua_weapons_quantity;
+        this->ru_ammo_quantity = armory.ru_ammo_quantity;
+        this->ru_weapons_quantity = armory.ru_weapons_quantity;
+    }
 };
 
 struct Deployment {
@@ -132,6 +144,15 @@ struct Deployment {
     std::vector<OblastCode> ukr_assigned;
     std::vector<Unit> ru_units;
     std::vector<OblastCode> ru_assigned;
+
+    Deployment() { }
+    Deployment(Deployment& deployment)
+    {
+        this->ukr_units = deployment.ukr_units;
+        this->ukr_assigned = deployment.ukr_assigned;
+        this->ru_units = deployment.ru_units;
+        this->ru_assigned = deployment.ru_assigned;
+    }
 };
 
 void PrintUnit(Armory& armory, Unit& unit);
@@ -304,7 +325,7 @@ struct SimulationSession {
         round_saver.AddHeader("Run;Round;Side;Status;Weapon;Type;Device;ACC;TargetWeapon;StartingState;Dmg;StateAfterHit;Morale;MoraleAfterHit;Distance");
     };
 
-    void AddRound(std::vector<FireResult> rounds, const char* side)
+    void AddRound(std::vector<FireResult>& rounds, const char* side)
     {
         for (FireResult& r : rounds) {
             r.firing_side = side;
