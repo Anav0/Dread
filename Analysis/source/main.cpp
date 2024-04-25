@@ -92,22 +92,43 @@ struct Person {
     }
 };
 
-constexpr u32 MAX_RUNS = 100;
+constexpr u32 MAX_RUNS = 10000;
 
-int main()
+// TODO: copy pasta from Devices.cpp
+std::vector<std::string> split2(const std::string& s, char delimiter)
 {
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(s);
+
+    while (std::getline(tokenStream, token, delimiter)) {
+        tokens.push_back(token);
+    }
+
+    return tokens;
+}
+
+int main(int argc, char* argv[])
+{
+    assert(argc == 2);
+
     Fill();
 
-    CsvSaver saver = CsvSaver("./test.csv");
+    auto save_only_this_arr = split2(argv[1], ';');
+    auto save_only_this = std::set<std::string>(save_only_this_arr.begin(), save_only_this_arr.end());
 
     Armory armory = LoadArmory(armory_path, storage_path);
     Deployment deployment = LoadUnits(armory.weapons, OBLASTS, units_path);
 
-    SimulationSession session = SimulationSession(&armory, deployment);
+    SimulationSession session = SimulationSession(&armory, deployment, save_only_this);
 
     Fight fight;
 
     for (u32 run = 0; run < MAX_RUNS; run++) {
+        if (run % 10 == 0) {
+            printf("%i/%i\r", run, MAX_RUNS);
+        }
+
         fight.attacker_distance_in_meters = 6000;
 
         fight.ua_units[0] = 0;

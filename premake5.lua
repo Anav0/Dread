@@ -2,8 +2,8 @@ workspace "Dread"
    architecture "x64"
    startproject "Window"
    cppdialect "C++20"
-   configurations { "Debug", "Release", "Testing" }
-	 flags { "MultiProcessorCompile" }
+   configurations { "Debug", "Release", "Analysis" }
+      flags { "MultiProcessorCompile" }
 
 project "Misc"
    kind "StaticLib"
@@ -25,40 +25,40 @@ project "Engine"
    language "C++"
    targetdir "bin/%{cfg.buildcfg}"
    location "Engine/"
-	 links {
-		"glfw3",
-		"opengl32",
-		"user32",
-		"gdi32",
-		"shell32",
-		"freetype",
-		"assimp-vc143-mt",
-	 }
+   links {
+      "glfw3",
+      "opengl32",
+      "user32",
+      "gdi32",
+      "shell32",
+      "freetype",
+      "assimp-vc143-mt",
+   }
    files { "Engine/source/**.h", "Engine/source/Engine/lib.cpp" }
-	 libdirs { "Engine/libs" }
-	 includedirs { "Engine/includes" }
+      libdirs { "Engine/libs" }
+      includedirs { "Engine/includes" }
    filter "configurations:Debug"
       defines { "DEBUG" }
       symbols "On"
-   filter "configurations:Release"
-      defines { "NDEBUG" }
-      optimize "On"
+      filter "configurations:Release"
+         defines { "NDEBUG" }
+         optimize "On"
 
 project "Game"
    kind "SharedLib"
-   filter "Testing"
+   filter "Analysis"
 		kind "StaticLib"
    language "C++"
    targetdir "bin/%{cfg.buildcfg}"
    location "Game/"
-	 links {
-		"Misc",
-		"Engine",
-		"opengl32",
-	 }
+      links {
+         "Misc",
+         "Engine",
+         "opengl32",
+   }
    files { "Game/source/**.h", "Game/source/Game/Game.cpp" }
-	 libdirs { "Game/libs" }
-	 includedirs { "Engine/source", "Engine/includes", "Misc/source", "Game/includes" }
+   libdirs { "Game/libs" }
+   includedirs { "Engine/source", "Engine/includes", "Misc/source", "Game/includes" }
 
    filter "configurations:Debug"
       defines { "DEBUG" }
@@ -73,37 +73,40 @@ project "Window"
    language "C++"
    targetdir "bin/%{cfg.buildcfg}"
    location "Window/"
-	 links {
-		 "Misc",
-		"Engine",
-		"Game.dll",
-	 }
+   links {
+      "Misc",
+      "Engine",
+      "Game.dll",
+   }
    files { "Window/source/**.h", "Window/source/main.cpp" }
-	 libdirs { "Window/libs" }
-	 includedirs { "Window/includes", "Engine/source", "Engine/includes", "Game/source", "Game/includes", "Misc/source" }
+   libdirs { "Window/libs" }
+   includedirs { "Window/includes", "Engine/source", "Engine/includes", "Game/source", "Game/includes", "Misc/source" }
    filter "configurations:Debug"
       defines { "DEBUG" }
       symbols "On"
-			debugdir "bin/Debug"
+         debugdir "bin/Debug"
    filter "configurations:Release"
       defines { "NDEBUG" }
       optimize "On"
-			debugdir "bin/Release"
+      debugdir "bin/Release"
 
 project "Analysis"
    kind "ConsoleApp"
    language "C++"
    targetdir "bin/%{cfg.buildcfg}"
    location "Analysis/"
-	links { "Misc", "Game" }
+   links { "Misc", "Game" }
    files { "Analysis/source/**.h", "Analysis/source/main.cpp" }
-	 libdirs { "Analysis/libs" }
-	 includedirs { "Analysis/includes", "Engine/source", "Engine/includes", "Game/source", "Game/includes", "Misc/source" }
+   libdirs { "Analysis/libs" }
+   includedirs { "Analysis/includes", "Engine/source", "Engine/includes", "Game/source", "Game/includes", "Misc/source" }
+   filter "configurations:Analysis"
+      debugargs { "result;groups" }
    filter "configurations:Debug"
       defines { "DEBUG" }
+      debugargs { "result;groups" }
       symbols "On"
-			debugdir "bin/Debug"
+      debugdir "bin/Debug"
    filter "configurations:Release"
       defines { "NDEBUG" }
       optimize "On"
-			debugdir "bin/Release"
+      debugdir "bin/Release"

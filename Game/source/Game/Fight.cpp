@@ -105,13 +105,21 @@ void Fight::SimulateAttack(Armory* armory, Deployment& deployment, SimulationSes
         simulation_session.distance_in_meters = this->attacker_distance_in_meters;
 
         auto rounds = Fire(armory, this->attacker_distance_in_meters, defender_battle_grup, attacker_battle_grup);
-        simulation_session.AddRound(rounds, "UA");
+
+        if (simulation_session.ShouldSaveFiring()) {
+            simulation_session.AddRound(rounds, "UA");
+        }
 
         rounds = Fire(armory, this->attacker_distance_in_meters, attacker_battle_grup, defender_battle_grup);
-        simulation_session.AddRound(rounds, "RU");
 
-        SaveGroups(simulation_session, attacker_battle_grup);
-        SaveGroups(simulation_session, defender_battle_grup);
+        if (simulation_session.ShouldSaveFiring()) {
+            simulation_session.AddRound(rounds, "RU");
+        }
+
+        if (simulation_session.ShouldSaveGroups()) {
+            SaveGroups(simulation_session, attacker_battle_grup);
+            SaveGroups(simulation_session, defender_battle_grup);
+        }
 
         round++;
 
@@ -120,7 +128,17 @@ void Fight::SimulateAttack(Armory* armory, Deployment& deployment, SimulationSes
 
     bool defender_won = attacker_moral_broke || attacker_was_mauled;
 
-    simulation_session.AddWinner(defender_won ? defending_side : attacking_side);
+    if (defender_won) {
+        // assert(!defender_moral_broke && !defender_was_mauled);
+    }
+
+    if (!defender_won) {
+        // assert(!attacker_moral_broke && !attacker_was_mauled);
+    }
+
+    if (simulation_session.ShouldSaveResult()) {
+        simulation_session.AddWinner(defender_won ? defending_side : attacking_side);
+    }
 }
 
 static BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& unit)

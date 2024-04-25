@@ -11,7 +11,6 @@
 
 #include "Entities.h"
 
-
 enum class UnitSize {
     Division,
     Brigade,
@@ -314,21 +313,48 @@ struct SimulationSession {
 
     CsvSaver round_saver, battle_groups_saver, fight_result_saver;
 
-    SimulationSession(Armory* armory, Deployment& deployment)
+    std::set<std::string>& save_only_this;
+
+    static constexpr std::string GROUPS = "groups";
+    static constexpr std::string RESULT = "result";
+    static constexpr std::string FIRING = "firing";
+
+    bool ShouldSaveFiring()
+    {
+        return save_only_this.contains(FIRING);
+    }
+
+    bool ShouldSaveGroups()
+    {
+        return save_only_this.contains(GROUPS);
+    }
+
+    bool ShouldSaveResult()
+    {
+        return save_only_this.contains(RESULT);
+    }
+
+    SimulationSession(Armory* armory, Deployment& deployment, std::set<std::string>& save_only_this)
         : armory(armory)
         , deployment(deployment)
         , round(0)
         , run(0)
         , distance_in_meters(0)
+        , save_only_this(save_only_this)
     {
-        battle_groups_saver = CsvSaver("battle_groups.csv");
-        battle_groups_saver.AddHeader("Run;Round;Distance;Attacking;Side;GroupIndex;WeaponDomain;Weapon;WeaponType;WeaponIndex;State;Armor");
+        if (save_only_this.contains(GROUPS)) {
+            battle_groups_saver = CsvSaver("battle_groups.csv");
+            battle_groups_saver.AddHeader("Run;Round;Distance;Attacking;Side;GroupIndex;WeaponDomain;Weapon;WeaponType;WeaponIndex;State;Armor");
+        }
+        if (save_only_this.contains(FIRING)) {
 
-        round_saver = CsvSaver("data.csv");
-        round_saver.AddHeader("Run;Round;Side;Status;Weapon;Type;Device;ACC;TargetWeapon;StartingState;Dmg;StateAfterHit;Morale;MoraleAfterHit;Distance");
-
-        fight_result_saver = CsvSaver("result.csv");
-        fight_result_saver.AddHeader("Run;WhoWon");
+            round_saver = CsvSaver("data.csv");
+            round_saver.AddHeader("Run;Round;Side;Status;Weapon;Type;Device;ACC;TargetWeapon;StartingState;Dmg;StateAfterHit;Morale;MoraleAfterHit;Distance");
+        }
+        if (save_only_this.contains(RESULT)) {
+            fight_result_saver = CsvSaver("result.csv");
+            fight_result_saver.AddHeader("Run;WhoWon");
+        }
     };
 
     void AddWinner(Side winner)
@@ -349,16 +375,22 @@ struct SimulationSession {
 
     void Flush()
     {
-        round_saver.Flush();
-        battle_groups_saver.Flush();
-        fight_result_saver.Flush();
+        if (ShouldSaveFiring())
+            round_saver.Flush();
+        if (ShouldSaveGroups())
+            battle_groups_saver.Flush();
+        if (ShouldSaveResult())
+            fight_result_saver.Flush();
     }
 
     void Close()
     {
-        round_saver.Close();
-        battle_groups_saver.Close();
-        fight_result_saver.Close();
+        if (ShouldSaveFiring())
+            round_saver.Close();
+        if (ShouldSaveGroups())
+            battle_groups_saver.Close();
+        if (ShouldSaveResult())
+            fight_result_saver.Close();
     }
 };
 

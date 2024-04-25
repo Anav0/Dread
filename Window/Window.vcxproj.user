@@ -8,6 +8,6 @@
     <LocalDebuggerWorkingDirectory>..\bin\Release</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Testing|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analysis|x64'">
   </PropertyGroup>
 </Project>
