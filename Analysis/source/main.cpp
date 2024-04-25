@@ -92,7 +92,7 @@ struct Person {
     }
 };
 
-constexpr u32 MAX_RUNS = 10;
+constexpr u32 MAX_RUNS = 100;
 
 int main()
 {

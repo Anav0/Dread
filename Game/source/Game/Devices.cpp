@@ -269,6 +269,17 @@ Armory LoadArmory(const char* weapons_path, const char* storage_path)
     return armory;
 }
 
+std::string SideToStr(Side side)
+{
+    if (side == Side::UA)
+        return "UA";
+
+    if (side == Side::RU)
+        return "RU";
+
+    assert(false);
+}
+
 Side StrToSide(const std::string& str)
 {
     assert(str == "UA" || str == "RU");

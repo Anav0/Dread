@@ -11,6 +11,7 @@
 
 #include "Entities.h"
 
+
 enum class UnitSize {
     Division,
     Brigade,
@@ -301,6 +302,8 @@ struct FireResult {
     }
 };
 
+std::string SideToStr(Side side);
+
 struct SimulationSession {
     u32 run;
     u32 round;
@@ -309,7 +312,7 @@ struct SimulationSession {
     Armory* armory;
     Deployment& deployment;
 
-    CsvSaver round_saver, battle_groups_saver;
+    CsvSaver round_saver, battle_groups_saver, fight_result_saver;
 
     SimulationSession(Armory* armory, Deployment& deployment)
         : armory(armory)
@@ -323,7 +326,16 @@ struct SimulationSession {
 
         round_saver = CsvSaver("data.csv");
         round_saver.AddHeader("Run;Round;Side;Status;Weapon;Type;Device;ACC;TargetWeapon;StartingState;Dmg;StateAfterHit;Morale;MoraleAfterHit;Distance");
+
+        fight_result_saver = CsvSaver("result.csv");
+        fight_result_saver.AddHeader("Run;WhoWon");
     };
+
+    void AddWinner(Side winner)
+    {
+        std::string str = std::to_string(this->run) + ";" + SideToStr(winner);
+        fight_result_saver.AddRowRaw(str);
+    }
 
     void AddRound(std::vector<FireResult>& rounds, const char* side)
     {
@@ -339,12 +351,14 @@ struct SimulationSession {
     {
         round_saver.Flush();
         battle_groups_saver.Flush();
+        fight_result_saver.Flush();
     }
 
     void Close()
     {
         round_saver.Close();
         battle_groups_saver.Close();
+        fight_result_saver.Close();
     }
 };
 

@@ -33,6 +33,11 @@ public:
         this->header = header;
     }
 
+    void AddRowRaw(const std::string& row)
+    {
+        rows.push_back(row);
+    }
+
     template <CsvRow T>
     void AddRow(T& obj)
     {

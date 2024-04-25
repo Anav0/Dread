@@ -23,3 +23,4 @@ std::vector<Accuracy> StrToAccuracy(std::string& text);
 static void remove(std::string& str, char c);
 static void fill(std::vector<u32>& v, u32 value);
 Side StrToSide(const std::string& str);
+std::string SideToStr(Side side);
