@@ -158,7 +158,7 @@ struct Deployment {
 void PrintUnit(Armory& armory, Unit& unit);
 
 struct RoundInfo {
-    Armory* armory;
+    //Armory* armory;
     u32 round;
     u32 run;
     u32 distance;
@@ -166,7 +166,6 @@ struct RoundInfo {
     RoundInfo() { }
 
     RoundInfo(Armory* armory)
-        : armory(armory)
     {
     }
 
@@ -219,7 +218,7 @@ struct BattleGroup {
         for (auto& w : weapons) {
             for (u32 i = 0; i <= weapons_counter.at(index); i++) {
                 for (auto& device_index : w->devices) {
-                    Device& device = round_info.armory->devices.at(device_index);
+                    //Device& device = round_info.armory->devices.at(device_index);
                     ss << round_info_str << ";";
                     ss << Attacking << ";";
                     ss << Side << ";";
@@ -315,23 +314,26 @@ struct SimulationSession {
 
     std::set<std::string>& save_only_this;
 
-    static constexpr std::string GROUPS = "groups";
-    static constexpr std::string RESULT = "result";
-    static constexpr std::string FIRING = "firing";
+    const std::string GROUPS = "groups";
+    const std::string RESULT = "result";
+    const std::string FIRING = "firing";
 
-    bool ShouldSaveFiring()
+    bool ShouldSaveFiring() const
     {
-        return save_only_this.contains(FIRING);
+        bool have = save_only_this.contains(FIRING);
+        return have;
     }
 
-    bool ShouldSaveGroups()
+    bool ShouldSaveGroups() const
     {
-        return save_only_this.contains(GROUPS);
+        bool have = save_only_this.contains(GROUPS);
+        return have;
     }
 
-    bool ShouldSaveResult()
+    bool ShouldSaveResult() const
     {
-        return save_only_this.contains(RESULT);
+        bool have = save_only_this.contains(RESULT);
+        return have;
     }
 
     SimulationSession(Armory* armory, Deployment& deployment, std::set<std::string>& save_only_this)
@@ -342,16 +344,16 @@ struct SimulationSession {
         , distance_in_meters(0)
         , save_only_this(save_only_this)
     {
-        if (save_only_this.contains(GROUPS)) {
+        if (ShouldSaveGroups()) {
             battle_groups_saver = CsvSaver("battle_groups.csv");
             battle_groups_saver.AddHeader("Run;Round;Distance;Attacking;Side;GroupIndex;WeaponDomain;Weapon;WeaponType;WeaponIndex;State;Armor");
         }
-        if (save_only_this.contains(FIRING)) {
+        if (ShouldSaveFiring()) {
 
             round_saver = CsvSaver("data.csv");
             round_saver.AddHeader("Run;Round;Side;Status;Weapon;Type;Device;ACC;TargetWeapon;StartingState;Dmg;StateAfterHit;Morale;MoraleAfterHit;Distance");
         }
-        if (save_only_this.contains(RESULT)) {
+        if (ShouldSaveResult()) {
             fight_result_saver = CsvSaver("result.csv");
             fight_result_saver.AddHeader("Run;WhoWon");
         }
@@ -359,12 +361,43 @@ struct SimulationSession {
 
     void AddWinner(Side winner)
     {
+        if (!ShouldSaveResult())
+            return;
+
         std::string str = std::to_string(this->run) + ";" + SideToStr(winner);
         fight_result_saver.AddRowRaw(str);
     }
 
+    void AddGroup(std::vector<BattleGroup>& groups)
+    {
+        if (!ShouldSaveGroups())
+            return;
+
+        for (auto& group : groups) {
+            group.round_info.run = run;
+            group.round_info.round = round;
+            group.round_info.distance = distance_in_meters;
+            battle_groups_saver.AddRow(group);
+        }
+    }
+
+    void AddRound(std::vector<FireResult>& rounds, const std::string& side)
+    {
+        if (!ShouldSaveFiring())
+            return;
+
+        for (FireResult& r : rounds) {
+            r.firing_side = side;
+            r.round = round;
+            r.run = run;
+            round_saver.AddRow(r);
+        }
+    }
     void AddRound(std::vector<FireResult>& rounds, const char* side)
     {
+        if (!ShouldSaveFiring())
+            return;
+
         for (FireResult& r : rounds) {
             r.firing_side = side;
             r.round = round;
@@ -394,6 +427,11 @@ struct SimulationSession {
     }
 };
 
+struct SimulationParams {
+    Side attacking_side;
+    Side defending_side;
+};
+
 struct Fight {
     u16 attacker_distance_in_meters;
 
@@ -407,9 +445,9 @@ struct Fight {
     UnitStance ua_stance[MAX_UNITS];
     UnitStance ru_stance[MAX_UNITS];
 
-    void SimulateAttack(Armory*, Deployment&, SimulationSession&);
-    std::vector<BattleGroup> FormUAGroup(Armory*, UnitStance, Deployment&);
-    std::vector<BattleGroup> FormRUGroup(Armory*, UnitStance, Deployment&);
+    void SimulateAttack(SimulationParams&, Armory*, Deployment&, SimulationSession&);
+
+    std::vector<BattleGroup> FormBattleGroups(Side side, Armory* armory, UnitStance stance, Deployment& deployment);
 
     Fight()
     {
@@ -422,7 +460,7 @@ struct Fight {
 
 BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& unit);
 
-bool MoralBroke(std::vector<BattleGroup>& groups);
+bool MoralBroke(std::vector<BattleGroup>& groups, f32 threshold);
 bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 threshold);
 std::tuple<bool, f32> TryToHitTarget(Ammo& ammo, u32 distance);
-std::vector<FireResult> Fire(Armory* armory, u32 distance_in_m, std::vector<BattleGroup>& fire, std::vector<BattleGroup>& target);
+std::vector<FireResult> Fire(Armory* armory, u32 distance_in_m, const std::vector<BattleGroup>& attacking_battlegroups, std::vector<BattleGroup>& targeted_battlegroups);

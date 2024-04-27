@@ -92,7 +92,7 @@ struct Person {
     }
 };
 
-constexpr u32 MAX_RUNS = 10000;
+constexpr u32 MAX_RUNS = 1000;
 
 // TODO: copy pasta from Devices.cpp
 std::vector<std::string> split2(const std::string& s, char delimiter)
@@ -121,6 +121,9 @@ int main(int argc, char* argv[])
     Deployment deployment = LoadUnits(armory.weapons, OBLASTS, units_path);
 
     SimulationSession session = SimulationSession(&armory, deployment, save_only_this);
+    SimulationParams params;
+    params.attacking_side = Side::RU;
+    params.defending_side = Side::UA;
 
     Fight fight;
 
@@ -147,7 +150,7 @@ int main(int argc, char* argv[])
 
         assert(armory_cpy.weapons.size() == armory.weapons.size());
 
-        fight.SimulateAttack(&armory_cpy, deployment_cpy, session);
+        fight.SimulateAttack(params, &armory_cpy, deployment_cpy, session);
     }
 
     session.Flush();
