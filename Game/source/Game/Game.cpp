@@ -16,6 +16,7 @@
 #include "GameState.h"
 #include "RenderHelpers.h"
 #include "Weather.h"
+#include "Modifiers.h"
 
 #include "Devices.cpp"
 #include "Entities.cpp"
@@ -24,6 +25,7 @@
 #include "GameState.cpp"
 #include "RenderHelpers.cpp"
 #include "Weather.cpp"
+#include "Modifiers.cpp"
 
 #include "glad/glad.h"
 

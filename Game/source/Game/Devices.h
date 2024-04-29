@@ -2,6 +2,7 @@
 
 #include <optional>
 #include <vector>
+
 #include "Fight.h"
 
 std::optional<u32> GetCommanderIndexByName(const std::string& name);

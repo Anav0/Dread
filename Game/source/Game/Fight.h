@@ -11,6 +11,8 @@
 
 #include "Entities.h"
 
+class Modifier;
+
 enum class UnitSize {
     Division,
     Brigade,
@@ -431,23 +433,12 @@ struct SimulationSession {
     }
 };
 
-struct Modifier {
-    f32 defense_modifier = 1.0;
-    f32 attack_modifier = 1.0;
-
-    Modifier(f32 attack_modifier, f32 defense_modifier)
-        : defense_modifier(defense_modifier)
-        , attack_modifier(attack_modifier)
-    {
-    }
-};
-
 struct SimulationParams {
     Side attacking_side;
     Side defending_side;
 
-    Modifier ua_modifiers;
-    Modifier ru_modifiers;
+    const Modifier& ua_modifiers;
+    const Modifier& ru_modifiers;
 
     SimulationParams(const Side& attackingSide, const Modifier& ua_modifier, const Modifier& ru_modifier)
         : attacking_side(attackingSide)

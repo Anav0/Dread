@@ -7,6 +7,7 @@
 #include "Entities.h"
 #include "Fight.h"
 #include "Weather.h"
+#include "Modifiers.h"
 
 #include "Engine/Camera.h"
 #include "Engine/Constants.h"

@@ -4,6 +4,7 @@
 #include "Fight.h"
 
 #include <map>
+#include <string>
 #include <tuple>
 
 enum class GroundCondition {
@@ -32,6 +33,12 @@ struct Condition {
 Weather GetNextWeather(Weather current_weather);
 GroundCondition GetNextGroundCondition(Weather current_weather);
 void UpdateCondition(Condition& condition);
+
+Weather StrToWeather(const std::string&);
+std::string WeatherToStr(Weather);
+
+GroundCondition StrToGoundCondition(const std::string&);
+std::string GroundConditionToStr(GroundCondition);
 
 class WeatherManager {
 private:

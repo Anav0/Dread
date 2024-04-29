@@ -1,5 +1,6 @@
 #include <Game/Devices.h>
 #include <Game/Fight.h>
+#include <Game/Modifiers.h>
 
 #include "Misc/CsvSaver.h"
 

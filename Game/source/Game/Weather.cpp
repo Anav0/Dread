@@ -54,6 +54,62 @@ void UpdateCondition(Condition& condition)
     condition.prev_ground_cond = tmp2;
 }
 
+Weather StrToWeather(const std::string& str)
+{
+    if (str == "Clear")
+        return Weather::Clear;
+    if (str == "Cold")
+        return Weather::Cold;
+    if (str == "Rain")
+        return Weather::Rain;
+    if (str == "HeavyRain")
+        return Weather::HeavyRain;
+    if (str == "Snowfall")
+        return Weather::Snowfall;
+}
+
+std::string WeatherToStr(Weather weather)
+{
+    switch (weather) {
+    case Weather::Clear:
+        return "Clear";
+    case Weather::Cold:
+        return "Cold";
+    case Weather::Rain:
+        return "Rain";
+    case Weather::HeavyRain:
+        return "HeavyRain";
+    case Weather::Snowfall:
+        return "Snowfall";
+    }
+}
+
+GroundCondition StrToGoundCondition(const std::string& str)
+{
+    if (str == "Dry")
+        return GroundCondition::Dry;
+    if (str == "Mud")
+        return GroundCondition::Mud;
+    if (str == "HeavyMud")
+        return GroundCondition::HeavyMud;
+    if (str == "Frozen")
+        return GroundCondition::Frozen;
+}
+
+std::string GroundConditionToStr(GroundCondition condition)
+{
+    switch (condition) {
+    case GroundCondition::Dry:
+        return "Dry";
+    case GroundCondition::Mud:
+        return "Mud";
+    case GroundCondition::HeavyMud:
+        return "HeavyMud";
+    case GroundCondition::Frozen:
+        return "Frozen";
+    }
+}
+
 Weather WeatherManager::GetWeatherForOblast(OblastCode code)
 {
     return this->conditions.at(code).current_weather;
@@ -82,7 +138,7 @@ void WeatherManager::Init(std::map<OblastCode, std::tuple<Weather, GroundConditi
 
         con.prev_weather = std::get<0>(pair);
         con.current_weather = std::get<0>(pair);
-        
+
         this->conditions.insert(std::pair(it->first, con));
     }
 }
