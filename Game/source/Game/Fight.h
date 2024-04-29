@@ -10,6 +10,7 @@
 #include <Misc/CsvSaver.h>
 
 #include "Entities.h"
+#include "Modifiers.h"
 
 enum class UnitSize {
     Division,
@@ -97,17 +98,6 @@ enum class Side {
 
 struct Commander {
     char* name;
-};
-
-struct Modifier {
-    f32 defense_modifier = 1.25;
-    f32 attack_modifier = 1.05;
-
-    Modifier(f32 attack_modifier, f32 defense_modifier)
-        : defense_modifier(defense_modifier)
-        , attack_modifier(attack_modifier)
-    {
-    }
 };
 
 struct Unit {
