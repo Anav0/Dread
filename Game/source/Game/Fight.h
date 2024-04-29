@@ -10,7 +10,6 @@
 #include <Misc/CsvSaver.h>
 
 #include "Entities.h"
-#include "Modifiers.h"
 
 enum class UnitSize {
     Division,
@@ -429,6 +428,17 @@ struct SimulationSession {
             battle_groups_saver.Close();
         if (ShouldSaveResult())
             fight_result_saver.Close();
+    }
+};
+
+struct Modifier {
+    f32 defense_modifier = 1.0;
+    f32 attack_modifier = 1.0;
+
+    Modifier(f32 attack_modifier, f32 defense_modifier)
+        : defense_modifier(defense_modifier)
+        , attack_modifier(attack_modifier)
+    {
     }
 };
 

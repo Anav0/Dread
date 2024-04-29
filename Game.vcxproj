@@ -144,8 +144,8 @@
     <ClInclude Include="Game\source\Game\Fight.h" />
     <ClInclude Include="Game\source\Game\Game.h" />
     <ClInclude Include="Game\source\Game\GameState.h" />
-    <ClInclude Include="Game\source\Game\Modifiers.h" />
     <ClInclude Include="Game\source\Game\RenderHelpers.h" />
+    <ClInclude Include="Game\source\Game\Weather.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\source\Game\Game.cpp">

@@ -1,33 +1,33 @@
+#include "Engine/Animator.h"
 #include "Engine/Base.h"
 #include "Engine/Buffers.h"
-#include "Engine/Particles.h"
-#include "Engine/Gui.h"
-#include "Engine/Renderer.h"
 #include "Engine/Distribution.h"
-#include "Engine/Animator.h"
+#include "Engine/Gui.h"
+#include "Engine/Particles.h"
+#include "Engine/Renderer.h"
 #include "Engine/WindowManager.h"
 #include "EntityManager.h"
 
-#include "Game.h"
+#include "Devices.h"
 #include "Entities.h"
 #include "EntityManager.h"
+#include "Fight.h"
+#include "Game.h"
 #include "GameState.h"
 #include "RenderHelpers.h"
-#include "Devices.h"
-#include "Fight.h"
 
+#include "Devices.cpp"
 #include "Entities.cpp"
 #include "EntityManager.cpp"
+#include "Fight.cpp"
 #include "GameState.cpp"
 #include "RenderHelpers.cpp"
-#include "Devices.cpp"
-#include "Fight.cpp"
 
 #include "glad/glad.h"
 
-#include <execution>
 #include <algorithm>
 #include <chrono>
+#include <execution>
 
 using namespace std::chrono;
 
@@ -55,23 +55,23 @@ PickingBuffer picking_buffer;
 RandomDist placement_x = RandomDist(0, 0, 0);
 RandomDist placement_y = RandomDist(0, 0, 0);
 RandomDist direction = RandomDist(0, 0, 0);
-RandomDist velocity  = RandomDist(0, 0, 0);
-RandomDist ttl       = RandomDist(0, 0, 0);
-RandomDist rgb       = RandomDist(0, 0, 0);
+RandomDist velocity = RandomDist(0, 0, 0);
+RandomDist ttl = RandomDist(0, 0, 0);
+RandomDist rgb = RandomDist(0, 0, 0);
 
 std::vector<Particle> particles;
 BufferLayout emitter_layout {
-	{ BufferElementType::VFloat4, "model_0"},
-	{ BufferElementType::VFloat4, "model_1"},
-	{ BufferElementType::VFloat4, "model_2"},
-	{ BufferElementType::VFloat4, "model_3"},
-	{ BufferElementType::VFloat4, "color"},
-	{ BufferElementType::VFloat2, "pos"},
-	{ BufferElementType::VFloat2, "size"},
-	{ BufferElementType::VFloat2, "initial_size"},
-	{ BufferElementType::VFloat2, "direction"},
-	{ BufferElementType::Float, "velocity"},
-	{ BufferElementType::Float, "ttl_s"},
+    { BufferElementType::VFloat4, "model_0" },
+    { BufferElementType::VFloat4, "model_1" },
+    { BufferElementType::VFloat4, "model_2" },
+    { BufferElementType::VFloat4, "model_3" },
+    { BufferElementType::VFloat4, "color" },
+    { BufferElementType::VFloat2, "pos" },
+    { BufferElementType::VFloat2, "size" },
+    { BufferElementType::VFloat2, "initial_size" },
+    { BufferElementType::VFloat2, "direction" },
+    { BufferElementType::Float, "velocity" },
+    { BufferElementType::Float, "ttl_s" },
 };
 
 void GameUpdateAndRender(WindowManager* window)
@@ -95,21 +95,21 @@ void GameUpdateAndRender(WindowManager* window)
         frame_counter = 0;
     }
 
-		const Gradient turn_btn_gradient{
+    const Gradient turn_btn_gradient {
         GradientType::Radial,
         v2(0.5, 0.5),
-				window->screen_size - v2(45),
-				v2(-0.7, 1.5),
-				13.0,
+        window->screen_size - v2(45),
+        v2(-0.7, 1.5),
+        13.0,
         { YELLOW },
     };
 
     const Gradient header_gradient {
         GradientType::ThreeColor,
         v2(0.5, 0.65), // Middle
-        { 0.0, 0.0 },  // Radial pos
-				v2(0.0, 1.0),  //Smoothing
-        1.0,           //Factor
+        { 0.0, 0.0 }, // Radial pos
+        v2(0.0, 1.0), // Smoothing
+        1.0, // Factor
         { RED, BLACK, GOLD },
     };
 
@@ -117,52 +117,51 @@ void GameUpdateAndRender(WindowManager* window)
     R.gradient_buffer.AddGradient(v2(0), window->screen_size, turn_btn_gradient);
 
     DrawUI(window);
-		DrawDeployedUnits();
+    DrawDeployedUnits();
 
-		if(info.action == MouseAction::PRESSED && info.type == MouseButton::LEFT) {
-			i32 entity_id = picking_buffer.ReadPixel(info.pos);
-			if(entity_id != -1) {
-				auto entity = E.GetEntityById(entity_id);
-				if (entity->type == EntityType::Oblast) {
-					  STATE.selected_oblast = entity->oblast.code;
-						entity->oblast.mesh.ChangeColor(YELLOW);
-				}
-			}
-		}
+    if (info.action == MouseAction::PRESSED && info.type == MouseButton::LEFT) {
+        i32 entity_id = picking_buffer.ReadPixel(info.pos);
+        if (entity_id != -1) {
+            auto entity = E.GetEntityById(entity_id);
+            if (entity->type == EntityType::Oblast) {
+                STATE.selected_oblast = entity->oblast.code;
+                entity->oblast.mesh.ChangeColor(YELLOW);
+            }
+        }
+    }
 
+    auto p_shader = RM.GetShader("picking");
+    auto single_color_shader = RM.GetShader("simple");
+    auto shader = RM.GetShader("object");
 
-		auto p_shader            = RM.GetShader("picking");
-		auto single_color_shader = RM.GetShader("simple");
-		auto shader              = RM.GetShader("object");
-
-		picking_buffer.Bind();
+    picking_buffer.Bind();
     glClearColor(-1.0f, -1.0f, -1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		R.FlushModels();
+    R.FlushModels();
     R.DrawModels(p_shader, window->camera, window->screen_size);
-		picking_buffer.Unbind();
+    picking_buffer.Unbind();
 
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilMask(0xFF);
-		R.ScaleAllModels(1.0);
-		R.FlushModels();
+    R.ScaleAllModels(1.0);
+    R.FlushModels();
     R.DrawModels(shader, window->camera, window->screen_size);
 
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
     glStencilMask(0x00);
-		glDisable(GL_DEPTH_TEST);
-		R.ScaleAllModels(1.02);
-		R.FlushModels();
+    glDisable(GL_DEPTH_TEST);
+    R.ScaleAllModels(1.02);
+    R.FlushModels();
     R.DrawModels(single_color_shader, window->camera, window->screen_size);
 
     R.Flush();
 
     R.Draw(window->camera, window->screen_size);
 
-		//auto& camera = window->camera;
-    //printf("Camera: %f %f %f | %f %f\r", camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
+    // auto& camera = window->camera;
+    // printf("Camera: %f %f %f | %f %f\r", camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
 
     R.Reset();
     UI.Reset();
@@ -170,7 +169,8 @@ void GameUpdateAndRender(WindowManager* window)
     STATE.turn_changed = false;
 }
 
-void GlInit() {
+void GlInit()
+{
 #if CULLING
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -185,10 +185,10 @@ void GlInit() {
     glEnable(GL_STENCIL_TEST);
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
- 
 }
 
-void FillStatics() {
+void FillStatics()
+{
     OBLAST_NAMES.Insert(OblastCode::Zythomyr, "Zythomyr");
     OBLAST_NAMES.Insert(OblastCode::Zaporizhia, "Zaporizhia");
     OBLAST_NAMES.Insert(OblastCode::Zakarpatia, "Zakarpatia");
@@ -222,83 +222,84 @@ void GameInitAfterReload(WindowManager* window)
 
     FillStatics();
 
-		picking_buffer.Allocate(window->screen_size);
+    picking_buffer.Allocate(window->screen_size);
 
     glViewport(0, 0, window->screen_size.x, window->screen_size.y);
 
-		GlInit(); 
+    GlInit();
     stbi_set_flip_vertically_on_load(true);
 
-		R.buffers.clear();
+    R.buffers.clear();
 
     R.Init(window->camera, window->screen_size);
 
     RM.LoadRequiredResources();
     TR.BakeFont("oswald.ttf", "oswald", FONT_SIZES, BakeMode::WriteIfNoneExist);
     TR.UseFont("oswald.ttf");
-
 }
 
-void ColorChange(WindowManager* window, std::string& particle_id, Particle& p, f32 dt) {
-	static f32 change_dir_every_ms_b = 100;
-	static f32 change_dir_every_ms = change_dir_every_ms_b;
-	change_dir_every_ms -= dt;
+void ColorChange(WindowManager* window, std::string& particle_id, Particle& p, f32 dt)
+{
+    static f32 change_dir_every_ms_b = 100;
+    static f32 change_dir_every_ms = change_dir_every_ms_b;
+    change_dir_every_ms -= dt;
 
-	if(change_dir_every_ms < 0) {
-		p.direction = v2(direction.GenerateSingle() / 100, direction.GenerateSingle() / 100);
-		change_dir_every_ms = change_dir_every_ms_b;
-	}
+    if (change_dir_every_ms < 0) {
+        p.direction = v2(direction.GenerateSingle() / 100, direction.GenerateSingle() / 100);
+        change_dir_every_ms = change_dir_every_ms_b;
+    }
 
-	p.color.w = p.ttl_s * 1.1;
-	p.size *= p.ttl_s / p.size;
+    p.color.w = p.ttl_s * 1.1;
+    p.size *= p.ttl_s / p.size;
 }
 
-void SetupEmitter(WindowManager* window) {
-	  //TODO: tmp
-		R.emitters.clear();
-		ParticlesEmitter emitter = ParticlesEmitter(&placement_x, &placement_y, &direction, &velocity, &ttl, &rgb);
-		v2 pos  = { window->screen_size.x-100, window->screen_size.y-85 };
-		//v2 pos  = {200, 200};
-		v2 size = v2(85);
-		u64 n = 35;
-	
-		placement_x.SetParams(n, pos.x, pos.x + size.x);
-		placement_y.SetParams(n, pos.y, pos.y + size.y);
-		velocity.SetParams(n, 10, 20);
-		direction.SetParams(n, -100, 100);
-		ttl.SetParams(n, 1000, 3000);
-		rgb.SetParams(3, 0, 1000);
+void SetupEmitter(WindowManager* window)
+{
+    // TODO: tmp
+    R.emitters.clear();
+    ParticlesEmitter emitter = ParticlesEmitter(&placement_x, &placement_y, &direction, &velocity, &ttl, &rgb);
+    v2 pos = { window->screen_size.x - 100, window->screen_size.y - 85 };
+    // v2 pos  = {200, 200};
+    v2 size = v2(85);
+    u64 n = 35;
 
-		std::vector<Keyframes<v4>> frames;
-		frames.reserve(n);
+    placement_x.SetParams(n, pos.x, pos.x + size.x);
+    placement_y.SetParams(n, pos.y, pos.y + size.y);
+    velocity.SetParams(n, 10, 20);
+    direction.SetParams(n, -100, 100);
+    ttl.SetParams(n, 1000, 3000);
+    rgb.SetParams(3, 0, 1000);
 
-		for(u64 i = 0; i < n; i++) {
-			auto a = rgb.Generate();
-			auto b = rgb.Generate();
-			auto c = rgb.Generate();
+    std::vector<Keyframes<v4>> frames;
+    frames.reserve(n);
 
-		Keyframes<v4> keyframes;
-		KeyFrame<v4> frame;
+    for (u64 i = 0; i < n; i++) {
+        auto a = rgb.Generate();
+        auto b = rgb.Generate();
+        auto c = rgb.Generate();
 
-		//frame.duration = duration_cast<milliseconds>(duration<u32>(static_cast<u32>(velocity.GenerateSingle() / 100)));
-		frame.duration = 600ms;
-		frame.target_value = GOLD;
-		keyframes.push_back(frame);
+        Keyframes<v4> keyframes;
+        KeyFrame<v4> frame;
 
-		//frame.duration = duration_cast<milliseconds>(duration<u32>(static_cast<u32>(velocity.GenerateSingle() / 100)));
-		frame.duration = 600ms;
-		frame.target_value = YELLOW;
-		keyframes.push_back(frame);
+        // frame.duration = duration_cast<milliseconds>(duration<u32>(static_cast<u32>(velocity.GenerateSingle() / 100)));
+        frame.duration = 600ms;
+        frame.target_value = GOLD;
+        keyframes.push_back(frame);
 
-		frames.push_back(keyframes);
-		}
+        // frame.duration = duration_cast<milliseconds>(duration<u32>(static_cast<u32>(velocity.GenerateSingle() / 100)));
+        frame.duration = 600ms;
+        frame.target_value = YELLOW;
+        keyframes.push_back(frame);
 
-		emitter.Init(window, n, pos, size, v2(200));
-		emitter.SetKeyframes(frames);
-		emitter.Allocate(emitter_layout);
-		emitter.update = ColorChange;
+        frames.push_back(keyframes);
+    }
 
-		R.emitters.push_back(emitter);
+    emitter.Init(window, n, pos, size, v2(200));
+    emitter.SetKeyframes(frames);
+    emitter.Allocate(emitter_layout);
+    emitter.update = ColorChange;
+
+    R.emitters.push_back(emitter);
 }
 
 GameState* GameInit(WindowManager* window)
@@ -308,7 +309,7 @@ GameState* GameInit(WindowManager* window)
     const char* armory_path = "D:/Projects/Dread/Game/data/weapons.csv";
     const char* storage_path = "D:/Projects/Dread/Game/data/simulation.csv";
     const char* units_path = "D:/Projects/Dread/Game/data/units.csv";
-	Armory armory = LoadArmory(armory_path, storage_path);
+    Armory armory = LoadArmory(armory_path, storage_path);
 
     PrintArmory(armory);
     STATE.armory = armory;
@@ -317,7 +318,7 @@ GameState* GameInit(WindowManager* window)
 
     gladLoadGL();
 
-		picking_buffer.Allocate(window->screen_size);
+    picking_buffer.Allocate(window->screen_size);
 
     glViewport(0, 0, window->screen_size.x, window->screen_size.y);
 
@@ -325,10 +326,10 @@ GameState* GameInit(WindowManager* window)
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 #endif
-		GlInit(); 
+    GlInit();
     stbi_set_flip_vertically_on_load(true);
 
-		SetupEmitter(window);
+    SetupEmitter(window);
     RM.LoadRequiredResources();
     TR.BakeFont("oswald.ttf", "oswald", FONT_SIZES, BakeMode::WriteIfNoneExist);
     TR.UseFont("oswald.ttf");
@@ -344,8 +345,8 @@ GameState* GameInit(WindowManager* window)
         CountryCode::PL
     };
 
-    //p1.delivery.push_back({ 10, GetBmp1() });
-    //p1.delivery.push_back({ 20, GetT72() });
+    // p1.delivery.push_back({ 10, GetBmp1() });
+    // p1.delivery.push_back({ 20, GetT72() });
 
     PromiseSupport(p1);
 
@@ -355,12 +356,10 @@ GameState* GameInit(WindowManager* window)
         CountryCode::USA
     };
 
-    //p2.delivery.push_back({ 5, GetBmp1() });
-    //p2.delivery.push_back({ 5, GetT72() });
+    // p2.delivery.push_back({ 5, GetBmp1() });
+    // p2.delivery.push_back({ 5, GetT72() });
 
     PromiseSupport(p2);
-
-
 
     return &STATE;
 }
@@ -372,10 +371,10 @@ GameState* GameInitEx(GameState state, WindowManager* window)
 
     glViewport(0, 0, window->screen_size.x, window->screen_size.y);
 
-		GlInit(); 
+    GlInit();
     stbi_set_flip_vertically_on_load(true);
 
-		SetupEmitter(window);
+    SetupEmitter(window);
 
     RM.LoadRequiredResources();
     TR.BakeFont("oswald.ttf", "oswald", FONT_SIZES, BakeMode::WriteIfNoneExist);
