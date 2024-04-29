@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Fight.h"
 #include "Entities.h"
+#include "Fight.h"
 
 #include <map>
+#include <tuple>
 
 enum class GroundCondition {
     Dry,
@@ -37,6 +38,7 @@ private:
     std::map<OblastCode, Condition> conditions;
 
 public:
+    void Init(std::map<OblastCode, std::tuple<Weather, GroundCondition>> conditions);
     Weather GetWeatherForOblast(OblastCode);
     Weather GetPrevWeatherForOblast(OblastCode);
 

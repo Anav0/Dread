@@ -15,6 +15,7 @@
 #include "Game.h"
 #include "GameState.h"
 #include "RenderHelpers.h"
+#include "Weather.h"
 
 #include "Devices.cpp"
 #include "Entities.cpp"
@@ -22,12 +23,15 @@
 #include "Fight.cpp"
 #include "GameState.cpp"
 #include "RenderHelpers.cpp"
+#include "Weather.cpp"
 
 #include "glad/glad.h"
 
 #include <algorithm>
 #include <chrono>
 #include <execution>
+#include <tuple>
+#include <map>
 
 using namespace std::chrono;
 
@@ -302,6 +306,15 @@ void SetupEmitter(WindowManager* window)
     R.emitters.push_back(emitter);
 }
 
+std::map<OblastCode, std::tuple<Weather, GroundCondition>> GetInitialConditions()
+{
+    std::map<OblastCode, std::tuple<Weather, GroundCondition>> conditions;
+    for (auto it = INITIAL_CONTROL.begin(); it != INITIAL_CONTROL.end(); ++it) {
+        conditions.insert({ it->first, { Weather::Clear, GroundCondition::Dry } });
+    }
+    return conditions;
+}
+
 GameState* GameInit(WindowManager* window)
 {
     FillStatics();
@@ -313,8 +326,9 @@ GameState* GameInit(WindowManager* window)
 
     PrintArmory(armory);
     STATE.armory = armory;
-
     STATE.troops_deployment = LoadUnits(STATE.armory.weapons, OBLAST_NAMES, units_path);
+    STATE.weather_manager = WeatherManager();
+    STATE.weather_manager.Init(GetInitialConditions());
 
     gladLoadGL();
 

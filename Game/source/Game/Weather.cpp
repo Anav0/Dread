@@ -1,4 +1,5 @@
 #include "Weather.h"
+
 #include <cassert>
 
 Weather GetNextWeather(Weather current_weather)
@@ -46,7 +47,7 @@ void UpdateCondition(Condition& condition)
     auto tmp1 = condition.current_weather;
     auto tmp2 = condition.current_ground_cond;
 
-    condition.current_weather     = GetNextWeather(condition.current_weather);
+    condition.current_weather = GetNextWeather(condition.current_weather);
     condition.current_ground_cond = GetNextGroundCondition(condition.current_weather);
 
     condition.prev_weather = tmp1;
@@ -67,5 +68,21 @@ void WeatherManager::UpdateWeather()
 {
     for (auto it = this->conditions.begin(); it != conditions.end(); ++it) {
         UpdateCondition(it->second);
+    }
+}
+
+void WeatherManager::Init(std::map<OblastCode, std::tuple<Weather, GroundCondition>> req)
+{
+    for (auto it = req.begin(); it != req.end(); ++it) {
+        auto& pair = it->second;
+
+        Condition con;
+        con.prev_ground_cond = std::get<1>(pair);
+        con.current_ground_cond = std::get<1>(pair);
+
+        con.prev_weather = std::get<0>(pair);
+        con.current_weather = std::get<0>(pair);
+        
+        this->conditions.insert(std::pair(it->first, con));
     }
 }
