@@ -121,9 +121,11 @@ int main(int argc, char* argv[])
     Deployment deployment = LoadUnits(armory.weapons, OBLASTS, units_path);
 
     SimulationSession session = SimulationSession(&armory, deployment, save_only_this);
-    SimulationParams params;
-    params.attacking_side = Side::RU;
-    params.defending_side = Side::UA;
+
+    Modifier ru_modifier = Modifier(0.85, 1.0);
+    Modifier ua_modifier = Modifier(1.1, 1.25);
+
+    SimulationParams params = SimulationParams(Side::RU, ua_modifier, ru_modifier);
 
     Fight fight;
 

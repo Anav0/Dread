@@ -58,7 +58,6 @@ enum class WeaponSystemGeneralType {
 
 struct Accuracy {
     u32 range_in_meters;
-    // NOTE: change to hit stationary target
     f32 change_to_hit;
 };
 
@@ -98,6 +97,17 @@ enum class Side {
 
 struct Commander {
     char* name;
+};
+
+struct Modifier {
+    f32 defense_modifier = 1.25;
+    f32 attack_modifier = 1.05;
+
+    Modifier(f32 attack_modifier, f32 defense_modifier)
+        : defense_modifier(defense_modifier)
+        , attack_modifier(attack_modifier)
+    {
+    }
 };
 
 struct Unit {
@@ -158,7 +168,7 @@ struct Deployment {
 void PrintUnit(Armory& armory, Unit& unit);
 
 struct RoundInfo {
-    //Armory* armory;
+    // Armory* armory;
     u32 round;
     u32 run;
     u32 distance;
@@ -218,7 +228,7 @@ struct BattleGroup {
         for (auto& w : weapons) {
             for (u32 i = 0; i <= weapons_counter.at(index); i++) {
                 for (auto& device_index : w->devices) {
-                    //Device& device = round_info.armory->devices.at(device_index);
+                    // Device& device = round_info.armory->devices.at(device_index);
                     ss << round_info_str << ";";
                     ss << Attacking << ";";
                     ss << Side << ";";
@@ -238,6 +248,11 @@ struct BattleGroup {
 
         return ss.str();
     }
+};
+
+enum class SideStatus {
+    Attacking,
+    Defending,
 };
 
 enum class UnitStance {
@@ -430,6 +445,17 @@ struct SimulationSession {
 struct SimulationParams {
     Side attacking_side;
     Side defending_side;
+
+    Modifier ua_modifiers;
+    Modifier ru_modifiers;
+
+    SimulationParams(const Side& attackingSide, const Modifier& ua_modifier, const Modifier& ru_modifier)
+        : attacking_side(attackingSide)
+        , defending_side(attackingSide == Side::RU ? Side::UA : Side::RU)
+        , ua_modifiers(ua_modifier)
+        , ru_modifiers(ru_modifier)
+    {
+    }
 };
 
 struct Fight {
@@ -460,7 +486,8 @@ struct Fight {
 
 BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& unit);
 
+f32 GetModifier(SimulationParams& params, SideStatus status);
 bool MoralBroke(std::vector<BattleGroup>& groups, f32 threshold);
 bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 threshold);
 std::tuple<bool, f32> TryToHitTarget(Ammo& ammo, u32 distance);
-std::vector<FireResult> Fire(Armory* armory, u32 distance_in_m, const std::vector<BattleGroup>& attacking_battlegroups, std::vector<BattleGroup>& targeted_battlegroups);
+std::vector<FireResult> Fire(Armory* armory, const f32 modifier, u16 distance_in_m, const std::vector<BattleGroup>& attacking_battlegroups, std::vector<BattleGroup>& targeted_battlegroups);

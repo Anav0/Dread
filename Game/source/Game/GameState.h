@@ -3,24 +3,24 @@
 #ifndef GameState_H
 #define GameState_H
 
+#include "Devices.h"
 #include "Entities.h"
 #include "Fight.h"
-#include "Devices.h"
 
 #include "Engine/Camera.h"
 #include "Engine/Constants.h"
 #include "Engine/WindowManager.h"
 
 #include <array>
-#include <string>
-#include <set>
 #include <map>
+#include <set>
+#include <string>
 
-constexpr static u8 NUMBER_OF_OBLASTS    = 25;
+constexpr static u8 NUMBER_OF_OBLASTS = 25;
 constexpr static u8 NUMBER_OF_SUPPORTERS = 10;
 
 constexpr bool DEBUG_LINES = false;
-constexpr bool CULLING     = true;
+constexpr bool CULLING = true;
 
 constexpr const char* MONTHS[] = {
     "January",
@@ -38,62 +38,65 @@ constexpr const char* MONTHS[] = {
 };
 
 constexpr const char* PHASES[] = {
-	"So it begins",
-	"Events",
-	"Player action",
-	"Main phase",
-	"Russia",
+    "So it begins",
+    "Events",
+    "Player action",
+    "Main phase",
+    "Russia",
 };
 
 enum class GamePhase {
-	Inital,
-	Events,
-	AllocateAssets,
-	Resolution,
-	CPU,
+    Inital,
+    Events,
+    AllocateAssets,
+    Resolution,
+    CPU,
 };
 
 struct Delivery {
-	u16 n;
-	WeaponSystem system;
+    u16 n;
+    WeaponSystem system;
 };
 
 struct SupportPackage {
-	std::string name;
-	u32 delivered_on_turn;
-	CountryCode origin;
-	bool fully_delivered = false;
-	std::vector<Delivery> delivery;
+    std::string name;
+    u32 delivered_on_turn;
+    CountryCode origin;
+    bool fully_delivered = false;
+    std::vector<Delivery> delivery;
 };
 
 //------------------------------------------------------------------------
 
 struct GameState {
-	std::string game_date_str;
+    std::string game_date_str;
 
-	OblastCode selected_oblast;
-	GamePhase phase = GamePhase::Inital;
+    OblastCode selected_oblast;
+    GamePhase phase = GamePhase::Inital;
 
-	f32 popular_support = 0.8;
-	u64 reserve         = 600'000;
+    f32 popular_support = 0.8;
+    u64 reserve = 600'000;
 
-	std::vector<Country> countries;
+    std::vector<Country> countries;
 
-	std::vector<SupportPackage> promised_support;
-	std::vector<Delivery>       weapons_in_reserve;
+    std::vector<SupportPackage> promised_support;
+    std::vector<Delivery> weapons_in_reserve;
 
-	Armory armory;
+    Modifier ua_modifier = Modifier(1.05, 1.5);
+    Modifier ru_modifier = Modifier(0.8, 1.0);
+
+    Armory armory;
 
     std::vector<Commander> commanders;
 
-	Deployment troops_deployment;
+    Deployment troops_deployment;
 
-	u8 current_turn = 1;
-	u8 max_turn     = 12 * 3; //Three years, 12 months per year 3 years
+    u8 current_turn = 1;
+    u8 max_turn = 12 * 3; // Three years, 12 months per year 3 years
 
-	bool turn_changed = false;
+    bool turn_changed = false;
 
-	void Reset();
+    void Reset();
 };
 
 const char* GetMonth();
