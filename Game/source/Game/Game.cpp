@@ -14,26 +14,26 @@
 #include "Fight.h"
 #include "Game.h"
 #include "GameState.h"
+#include "Modifiers.h"
 #include "RenderHelpers.h"
 #include "Weather.h"
-#include "Modifiers.h"
 
 #include "Devices.cpp"
 #include "Entities.cpp"
 #include "EntityManager.cpp"
 #include "Fight.cpp"
 #include "GameState.cpp"
+#include "Modifiers.cpp"
 #include "RenderHelpers.cpp"
 #include "Weather.cpp"
-#include "Modifiers.cpp"
 
 #include "glad/glad.h"
 
 #include <algorithm>
 #include <chrono>
 #include <execution>
-#include <tuple>
 #include <map>
+#include <tuple>
 
 using namespace std::chrono;
 
@@ -324,6 +324,8 @@ GameState* GameInit(WindowManager* window)
     const char* armory_path = "D:/Projects/Dread/Game/data/weapons.csv";
     const char* storage_path = "D:/Projects/Dread/Game/data/simulation.csv";
     const char* units_path = "D:/Projects/Dread/Game/data/units.csv";
+    const char* conditions_path = "D:/Projects/Dread/Game/data/conditions.csv";
+    
     Armory armory = LoadArmory(armory_path, storage_path);
 
     PrintArmory(armory);
@@ -331,6 +333,8 @@ GameState* GameInit(WindowManager* window)
     STATE.troops_deployment = LoadUnits(STATE.armory.weapons, OBLAST_NAMES, units_path);
     STATE.weather_manager = WeatherManager();
     STATE.weather_manager.Init(GetInitialConditions());
+    STATE.modifiers_manager = ModifiersManager();
+    STATE.modifiers_manager.LoadWeatherModifiers(conditions_path);
 
     gladLoadGL();
 

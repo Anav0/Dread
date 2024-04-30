@@ -27,11 +27,11 @@ void ModifiersManager::LoadWeatherModifiers(const char* path)
 
         if (condition_str == "Ground") {
             GroundCondition ground_condition = StrToGoundCondition(parts[1]);
-            //ground_condition_modifiers[ground_condition].insert({ weapon_type, { attack_mod, defence_mod } });
+            ground_condition_modifiers[ground_condition].insert({ weapon_type, { attack_mod, defence_mod } });
         }
         if (condition_str == "Air") {
             Weather weather = StrToWeather(parts[1]);
-            //weather_modifiers[weather].insert({ weapon_type, { attack_mod, defence_mod } });
+            weather_modifiers[weather].insert({ weapon_type, { attack_mod, defence_mod } });
         }
     }
 }

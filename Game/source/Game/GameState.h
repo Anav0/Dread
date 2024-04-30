@@ -93,6 +93,7 @@ struct GameState {
 
     Deployment troops_deployment;
     WeatherManager weather_manager;
+    ModifiersManager modifiers_manager;
 
     u8 current_turn = 1;
     u8 max_turn = 12 * 3; // Three years, 12 months per year 3 years

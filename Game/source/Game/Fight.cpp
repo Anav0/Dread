@@ -40,15 +40,14 @@ std::vector<BattleGroup> Fight::FormBattleGroups(Side side, Armory* armory, Unit
 
 f32 GetModifier(SimulationParams& params, SideStatus status)
 {
-    Modifier modifier = params.ua_modifiers;
+    Modifier modifier = params.modifiers_manager.ua_modifier;
     if (status == SideStatus::Attacking) {
         if (params.attacking_side == Side::RU) {
-            modifier = params.ru_modifiers;
+            modifier = params.modifiers_manager.ru_modifier;
         }
     }
     return status == SideStatus::Defending ? modifier.defense_modifier : modifier.attack_modifier;
 }
-
 
 void Fight::SimulateAttack(SimulationParams& params, Armory* armory, Deployment& deployment, SimulationSession& simulation_session)
 {

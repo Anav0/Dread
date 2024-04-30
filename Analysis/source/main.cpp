@@ -7,6 +7,7 @@
 const char* units_path = "D:/Projects/Dread/Game/data/units.csv";
 const char* armory_path = "D:/Projects/Dread/Game/data/weapons.csv";
 const char* storage_path = "D:/Projects/Dread/Game/data/storage.csv";
+const char* conditions_path = "D:/Projects/Dread/Game/data/conditions.csv";
 
 /*
 
@@ -109,6 +110,15 @@ std::vector<std::string> split2(const std::string& s, char delimiter)
     return tokens;
 }
 
+std::map<OblastCode, std::tuple<Weather, GroundCondition>> GetInitialConditions2()
+{
+    std::map<OblastCode, std::tuple<Weather, GroundCondition>> conditions;
+    for (auto it = INITIAL_CONTROL.begin(); it != INITIAL_CONTROL.end(); ++it) {
+        conditions.insert({ it->first, { Weather::Clear, GroundCondition::Dry } });
+    }
+    return conditions;
+}
+
 int main(int argc, char* argv[])
 {
     assert(argc == 2);
@@ -126,7 +136,12 @@ int main(int argc, char* argv[])
     Modifier ru_modifier = Modifier(0.85, 1.0);
     Modifier ua_modifier = Modifier(1.1, 1.25);
 
-    SimulationParams params = SimulationParams(Side::RU, ua_modifier, ru_modifier);
+    WeatherManager weather_manager = WeatherManager();
+    weather_manager.Init(GetInitialConditions2());
+    ModifiersManager modifiers_manager = ModifiersManager();
+    modifiers_manager.LoadWeatherModifiers(conditions_path);
+
+    SimulationParams params = SimulationParams(Side::RU, weather_manager, modifiers_manager);
 
     Fight fight;
 

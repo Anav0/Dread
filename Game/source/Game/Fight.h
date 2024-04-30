@@ -12,6 +12,8 @@
 #include "Entities.h"
 
 class Modifier;
+class WeatherManager;
+class ModifiersManager;
 
 enum class UnitSize {
     Division,
@@ -437,14 +439,17 @@ struct SimulationParams {
     Side attacking_side;
     Side defending_side;
 
-    const Modifier& ua_modifiers;
-    const Modifier& ru_modifiers;
+    const WeatherManager& weather_manager;
+    const ModifiersManager& modifiers_manager;
 
-    SimulationParams(const Side& attackingSide, const Modifier& ua_modifier, const Modifier& ru_modifier)
+    SimulationParams(
+        const Side& attackingSide, 
+        const WeatherManager& weather_manager,
+        const ModifiersManager& modifiers_manager)
         : attacking_side(attackingSide)
         , defending_side(attackingSide == Side::RU ? Side::UA : Side::RU)
-        , ua_modifiers(ua_modifier)
-        , ru_modifiers(ru_modifier)
+        , weather_manager(weather_manager)
+        , modifiers_manager(modifiers_manager)
     {
     }
 };

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Devices.h"
-#include "Weather.h"
 #include "Fight.h"
+#include "Weather.h"
 
 #include <map>
 #include <string>
@@ -22,9 +22,12 @@ typedef std::map<WeaponSystemGeneralType, Modifier> WeaponTypeModifierMap;
 
 class ModifiersManager {
 private:
-    //std::map<Weather, WeaponTypeModifierMap> weather_modifiers;
-    //std::map<GroundCondition, WeaponTypeModifierMap> ground_condition_modifiers;
+    std::map<Weather, WeaponTypeModifierMap> weather_modifiers;
+    std::map<GroundCondition, WeaponTypeModifierMap> ground_condition_modifiers;
 
 public:
+    Modifier ru_modifier = Modifier(1.0, 1.0);
+    Modifier ua_modifier = Modifier(1.0, 1.0);
+
     void LoadWeatherModifiers(const char* path);
 };
