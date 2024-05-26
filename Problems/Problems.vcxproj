@@ -15,26 +15,26 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</ProjectGuid>
+    <ProjectGuid>{89D2CBA1-759F-26AD-9EB8-14558AE45B3B}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Engine</RootNamespace>
+    <RootNamespace>Problems</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analysis|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
@@ -53,29 +53,32 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
     <OutDir>..\bin\Debug\</OutDir>
     <IntDir>obj\Debug\</IntDir>
-    <TargetName>Engine</TargetName>
-    <TargetExt>.lib</TargetExt>
+    <TargetName>Problems</TargetName>
+    <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>..\bin\Release\</OutDir>
     <IntDir>obj\Release\</IntDir>
-    <TargetName>Engine</TargetName>
-    <TargetExt>.lib</TargetExt>
+    <TargetName>Problems</TargetName>
+    <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analysis|x64'">
+    <LinkIncremental>true</LinkIncremental>
     <OutDir>..\bin\Analysis\</OutDir>
     <IntDir>obj\Analysis\</IntDir>
-    <TargetName>Engine</TargetName>
-    <TargetExt>.lib</TargetExt>
+    <TargetName>Problems</TargetName>
+    <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>includes;..\Misc\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>includes;..\Misc\source;..\Metaheuristics\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -84,20 +87,17 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-    <Lib>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;user32.lib;gdi32.lib;shell32.lib;freetype.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-    </Lib>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>includes;..\Misc\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>includes;..\Misc\source;..\Metaheuristics\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -108,20 +108,17 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-    </Link>
-    <Lib>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;user32.lib;gdi32.lib;shell32.lib;freetype.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-    </Lib>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analysis|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>includes;..\Misc\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>includes;..\Misc\source;..\Metaheuristics\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -129,43 +126,20 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
-    </Link>
-    <Lib>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;user32.lib;gdi32.lib;shell32.lib;freetype.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-    </Lib>
+    </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="source\Engine\Animator.h" />
-    <ClInclude Include="source\Engine\Base.h" />
-    <ClInclude Include="source\Engine\BoundingBox.h" />
-    <ClInclude Include="source\Engine\Buffers.h" />
-    <ClInclude Include="source\Engine\Camera.h" />
-    <ClInclude Include="source\Engine\Collision.h" />
-    <ClInclude Include="source\Engine\Colors.h" />
-    <ClInclude Include="source\Engine\Distribution.h" />
-    <ClInclude Include="source\Engine\GLM.h" />
-    <ClInclude Include="source\Engine\Gui.h" />
-    <ClInclude Include="source\Engine\HotReload.h" />
-    <ClInclude Include="source\Engine\Line.h" />
-    <ClInclude Include="source\Engine\Mesh.h" />
-    <ClInclude Include="source\Engine\Misc.h" />
-    <ClInclude Include="source\Engine\Model.h" />
-    <ClInclude Include="source\Engine\Mouse.h" />
-    <ClInclude Include="source\Engine\Particles.h" />
-    <ClInclude Include="source\Engine\Picking.h" />
-    <ClInclude Include="source\Engine\Renderer.h" />
-    <ClInclude Include="source\Engine\ResourceManager.h" />
-    <ClInclude Include="source\Engine\Shader.h" />
-    <ClInclude Include="source\Engine\TextRenderer.h" />
-    <ClInclude Include="source\Engine\Texture.h" />
-    <ClInclude Include="source\Engine\TimeManager.h" />
-    <ClInclude Include="source\Engine\WindowManager.h" />
-    <ClInclude Include="source\Engine\bimap.h" />
+    <ClCompile Include="source\Problems\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\Engine\lib.cpp" />
+    <ProjectReference Include="..\Misc\Misc.vcxproj">
+      <Project>{9116897C-7D4D-8A0D-263A-70101250060F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Metaheuristics\Metaheuristics.vcxproj">
+      <Project>{0F04D6BD-FBD1-C9C3-E465-3AEAD0D2A528}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

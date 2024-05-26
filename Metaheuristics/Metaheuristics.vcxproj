@@ -15,10 +15,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</ProjectGuid>
+    <ProjectGuid>{0F04D6BD-FBD1-C9C3-E465-3AEAD0D2A528}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Engine</RootNamespace>
+    <RootNamespace>Metaheuristics</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -55,19 +55,19 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\bin\Debug\</OutDir>
     <IntDir>obj\Debug\</IntDir>
-    <TargetName>Engine</TargetName>
+    <TargetName>Metaheuristics</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\bin\Release\</OutDir>
     <IntDir>obj\Release\</IntDir>
-    <TargetName>Engine</TargetName>
+    <TargetName>Metaheuristics</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analysis|x64'">
     <OutDir>..\bin\Analysis\</OutDir>
     <IntDir>obj\Analysis\</IntDir>
-    <TargetName>Engine</TargetName>
+    <TargetName>Metaheuristics</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -88,7 +88,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;user32.lib;gdi32.lib;shell32.lib;freetype.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -113,7 +112,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;user32.lib;gdi32.lib;shell32.lib;freetype.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -132,40 +130,25 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <Lib>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;user32.lib;gdi32.lib;shell32.lib;freetype.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="source\Engine\Animator.h" />
-    <ClInclude Include="source\Engine\Base.h" />
-    <ClInclude Include="source\Engine\BoundingBox.h" />
-    <ClInclude Include="source\Engine\Buffers.h" />
-    <ClInclude Include="source\Engine\Camera.h" />
-    <ClInclude Include="source\Engine\Collision.h" />
-    <ClInclude Include="source\Engine\Colors.h" />
-    <ClInclude Include="source\Engine\Distribution.h" />
-    <ClInclude Include="source\Engine\GLM.h" />
-    <ClInclude Include="source\Engine\Gui.h" />
-    <ClInclude Include="source\Engine\HotReload.h" />
-    <ClInclude Include="source\Engine\Line.h" />
-    <ClInclude Include="source\Engine\Mesh.h" />
-    <ClInclude Include="source\Engine\Misc.h" />
-    <ClInclude Include="source\Engine\Model.h" />
-    <ClInclude Include="source\Engine\Mouse.h" />
-    <ClInclude Include="source\Engine\Particles.h" />
-    <ClInclude Include="source\Engine\Picking.h" />
-    <ClInclude Include="source\Engine\Renderer.h" />
-    <ClInclude Include="source\Engine\ResourceManager.h" />
-    <ClInclude Include="source\Engine\Shader.h" />
-    <ClInclude Include="source\Engine\TextRenderer.h" />
-    <ClInclude Include="source\Engine\Texture.h" />
-    <ClInclude Include="source\Engine\TimeManager.h" />
-    <ClInclude Include="source\Engine\WindowManager.h" />
-    <ClInclude Include="source\Engine\bimap.h" />
+    <ClInclude Include="source\Metaheuristics\Annealing.h" />
+    <ClInclude Include="source\Metaheuristics\Constraints.h" />
+    <ClInclude Include="source\Metaheuristics\Cooler.h" />
+    <ClInclude Include="source\Metaheuristics\Criteria.h" />
+    <ClInclude Include="source\Metaheuristics\Movers.h" />
+    <ClInclude Include="source\Metaheuristics\Solution.h" />
+    <ClInclude Include="source\Metaheuristics\StopCriteria.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\Engine\lib.cpp" />
+    <ClCompile Include="source\Metaheuristics\lib.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Misc\Misc.vcxproj">
+      <Project>{9116897C-7D4D-8A0D-263A-70101250060F}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
