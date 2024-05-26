@@ -36,7 +36,7 @@ project "Engine"
    }
    files { "Engine/source/**.h", "Engine/source/Engine/lib.cpp" }
       libdirs { "Engine/libs" }
-      includedirs { "Engine/includes" }
+      includedirs { "Engine/includes", "Misc/source" }
    filter "configurations:Debug"
       defines { "DEBUG" }
       symbols "On"

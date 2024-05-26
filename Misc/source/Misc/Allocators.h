@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "base.h"
 #include <string>
 
 #define MemoryCopy(dst, src, size) memmove((dst), (src), (size))
