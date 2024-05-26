@@ -52,10 +52,13 @@ public:
 
     void Flush()
     {
-        file << header << "\n";
+        std::string bulk;
+        bulk.reserve(1024 * 1024); //1MB
+
         for (auto& row : rows) {
-            file << row << "\n";
+            bulk += row + "\n";
         }
+        file << header << "\n" << bulk;
     }
 
     void Close()
