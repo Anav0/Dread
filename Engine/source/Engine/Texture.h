@@ -2,7 +2,8 @@
 #define Texture_H
 
 #include <string>
-#include "Constants.h" 
+#include "GLM.h" 
+#include "Misc/Constants.h" 
 
 #pragma once
 

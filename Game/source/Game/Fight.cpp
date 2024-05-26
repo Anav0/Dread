@@ -38,19 +38,31 @@ std::vector<BattleGroup> Fight::FormBattleGroups(Side side, Armory* armory, Unit
     return battle_groups;
 }
 
-f32 GetModifier(SimulationParams& params, SideStatus status)
+std::vector<f32> GetModifiers(SimulationParams& params, WeaponSystemGeneralType type, SideStatus status)
 {
+    std::vector<f32> mods;
     Modifier modifier = params.modifiers_manager.ua_modifier;
     if (status == SideStatus::Attacking) {
         if (params.attacking_side == Side::RU) {
             modifier = params.modifiers_manager.ru_modifier;
         }
     }
-    return status == SideStatus::Defending ? modifier.defense_modifier : modifier.attack_modifier;
+
+    mods.push_back(status == SideStatus::Defending ? modifier.defense_modifier : modifier.attack_modifier);
+
+    auto current_weather = params.weather_manager.GetWeatherForOblast(params.oblast_code);
+    mods.push_back(params.modifiers_manager.GetWeatherModifier(current_weather, type, status));
+
+    auto current_graound_condition = params.weather_manager.GetGroundCondition(params.oblast_code);
+    mods.push_back(params.modifiers_manager.GetGroundConditionModifier(current_graound_condition, type, status));
+
+    return mods;
 }
 
-void Fight::SimulateAttack(SimulationParams& params, Armory* armory, Deployment& deployment, SimulationSession& simulation_session)
+AttackResult Fight::SimulateAttack(SimulationParams& params, Armory* armory, Deployment& deployment, SimulationSession* simulation_session = nullptr)
 {
+    AttackResult result;
+
     std::vector<BattleGroup> attacker_battle_grup = FormBattleGroups(params.attacking_side, armory, UnitStance::Committed, deployment);
     std::vector<BattleGroup> defender_battle_grup = FormBattleGroups(params.defending_side, armory, UnitStance::Defending, deployment);
 
@@ -83,11 +95,7 @@ void Fight::SimulateAttack(SimulationParams& params, Armory* armory, Deployment&
     f32 damage_threshold = 0.6;
     f32 moral_threshold = 0.6;
 
-    simulation_session.distance_in_meters = this->attacker_distance_in_meters;
-
     while (!defender_moral_broke && !attacker_moral_broke && !attacker_was_mauled && !defender_was_mauled) {
-
-        simulation_session.round = round;
 
         // Attacking groups go forward!
         if (this->attacker_distance_in_meters > 0) {
@@ -96,20 +104,21 @@ void Fight::SimulateAttack(SimulationParams& params, Armory* armory, Deployment&
                 this->attacker_distance_in_meters = 0;
         }
 
-        simulation_session.distance_in_meters = this->attacker_distance_in_meters;
-
-        const f32 attacker_modifier = GetModifier(params, SideStatus::Attacking);
-        const f32 defender_modifier = GetModifier(params, SideStatus::Defending);
-
         // DEFENDER FIRE
-        auto rounds = Fire(armory, defender_modifier, this->attacker_distance_in_meters, defender_battle_grup, attacker_battle_grup);
-        simulation_session.AddRound(rounds, SideToStr(params.defending_side));
-        simulation_session.AddGroup(defender_battle_grup);
+        auto def_rounds = Fire(params.defending_side, armory, params, this->attacker_distance_in_meters, defender_battle_grup, attacker_battle_grup);
 
         // ATTACKER FIRE
-        rounds = Fire(armory, attacker_modifier, this->attacker_distance_in_meters, attacker_battle_grup, defender_battle_grup);
-        simulation_session.AddRound(rounds, SideToStr(params.attacking_side));
-        simulation_session.AddGroup(attacker_battle_grup);
+        auto att_rounds = Fire(params.attacking_side, armory, params, this->attacker_distance_in_meters, attacker_battle_grup, defender_battle_grup);
+
+        if (simulation_session != nullptr) {
+            simulation_session->round = round;
+            simulation_session->distance_in_meters = this->attacker_distance_in_meters;
+
+            simulation_session->AddRound(def_rounds, SideToStr(params.defending_side));
+            simulation_session->AddGroup(defender_battle_grup);
+            simulation_session->AddRound(att_rounds, SideToStr(params.attacking_side));
+            simulation_session->AddGroup(attacker_battle_grup);
+        }
 
         defender_moral_broke = MoralBroke(defender_battle_grup, moral_threshold);
         defender_was_mauled = AverageDamageExceedsThreshold(defender_battle_grup, damage_threshold);
@@ -130,8 +139,13 @@ void Fight::SimulateAttack(SimulationParams& params, Armory* armory, Deployment&
     assert(defender_won || attacker_won || draw);
 
     // TODO: deal with draws
-    if (!draw)
-        simulation_session.AddWinner(defender_won ? params.defending_side : params.attacking_side);
+    if (!draw && simulation_session != nullptr)
+        simulation_session->AddWinner(defender_won ? params.defending_side : params.attacking_side);
+
+    result.winner_side = defender_won ? params.defending_side : params.attacking_side;
+    result.winner_status = defender_won ? SideStatus::Defending : SideStatus::Attacking;
+
+    return result;
 }
 
 static BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& unit)
@@ -240,7 +254,7 @@ static Ammo& PickRightAmmunitionForTarget(Armory* armory, Device& firing_device,
     return armory->ammo.at(*firing_device.ammunition.begin());
 }
 
-std::vector<FireResult> Fire(Armory* armory, const f32 modifier, u16 distance_in_m, const std::vector<BattleGroup>& attacking_battlegroups, std::vector<BattleGroup>& targeted_battlegroups)
+std::vector<FireResult> Fire(Side firing_side, Armory* armory, const SimulationParams& params, u16 distance_in_m, const std::vector<BattleGroup>& attacking_battlegroups, std::vector<BattleGroup>& targeted_battlegroups)
 {
     std::vector<FireResult> results;
     std::random_device rd;
@@ -283,11 +297,13 @@ std::vector<FireResult> Fire(Armory* armory, const f32 modifier, u16 distance_in
                     fire_result.status = "HIT";
                     // Record damage
                     if (targeted_weapon->armor == Armor::Soft) {
-                        targeted_weapon_state -= ammunition_used_for_attack.soft * modifier;
-                        fire_result.dmg = ammunition_used_for_attack.soft * modifier;
+                        auto dmg = ApplyModifiers(firing_side, params, ammunition_used_for_attack.soft);
+                        fire_result.dmg = dmg;
+                        targeted_weapon_state -= dmg;
                     } else {
-                        targeted_weapon_state -= ammunition_used_for_attack.hard * modifier;
-                        fire_result.dmg = ammunition_used_for_attack.hard * modifier;
+                        auto dmg = ApplyModifiers(firing_side, params, ammunition_used_for_attack.soft);
+                        targeted_weapon_state -= dmg;
+                        fire_result.dmg = dmg;
                     }
 
                     if (targeted_weapon_state < 0)

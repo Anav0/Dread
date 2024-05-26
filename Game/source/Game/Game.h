@@ -2,7 +2,8 @@
 
 #include <array>
 
-#include "Engine/Constants.h";
+#include "Engine/GLM.h";
+#include "Misc/Constants.h";
 
 #define EXPORT extern "C" __declspec(dllexport)
 

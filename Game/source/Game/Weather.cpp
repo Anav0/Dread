@@ -110,12 +110,12 @@ std::string GroundConditionToStr(GroundCondition condition)
     }
 }
 
-Weather WeatherManager::GetWeatherForOblast(OblastCode code)
+Weather WeatherManager::GetWeatherForOblast(OblastCode code) const
 {
     return this->conditions.at(code).current_weather;
 }
 
-Weather WeatherManager::GetPrevWeatherForOblast(OblastCode code)
+Weather WeatherManager::GetPrevWeatherForOblast(OblastCode code) const
 {
     return this->conditions.at(code).prev_weather;
 }
@@ -125,6 +125,18 @@ void WeatherManager::UpdateWeather()
     for (auto it = this->conditions.begin(); it != conditions.end(); ++it) {
         UpdateCondition(it->second);
     }
+}
+
+GroundCondition WeatherManager::GetGroundCondition(OblastCode code) const
+{
+    auto& condition = this->conditions.at(code);
+    return condition.current_ground_cond;
+}
+
+GroundCondition WeatherManager::GetPrevGroundCondition(OblastCode code) const
+{
+    auto& condition = this->conditions.at(code);
+    return condition.prev_ground_cond;
 }
 
 void WeatherManager::Init(std::map<OblastCode, std::tuple<Weather, GroundCondition>> req)

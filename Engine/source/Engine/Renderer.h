@@ -6,7 +6,8 @@
 #include "BoundingBox.h"
 #include "Particles.h"
 #include "Buffers.h"
-#include "Constants.h"
+#include "GLM.h"
+#include "Misc/Constants.h"
 
 #include <array>
 

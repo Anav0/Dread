@@ -1,3 +1,6 @@
+#ifndef WEATHER_H
+#define WEATHER_H
+
 #pragma once
 
 #include "Entities.h"
@@ -46,8 +49,13 @@ private:
 
 public:
     void Init(std::map<OblastCode, std::tuple<Weather, GroundCondition>> conditions);
-    Weather GetWeatherForOblast(OblastCode);
-    Weather GetPrevWeatherForOblast(OblastCode);
+    Weather GetWeatherForOblast(OblastCode) const;
+    Weather GetPrevWeatherForOblast(OblastCode) const;
+
+    GroundCondition GetGroundCondition(OblastCode) const;
+    GroundCondition GetPrevGroundCondition(OblastCode) const;
 
     void UpdateWeather();
 };
+
+#endif

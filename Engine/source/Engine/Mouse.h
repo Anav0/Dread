@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Constants.h"
+#include "GLM.h"
+#include "Misc/Constants.h"
 #include "WindowManager.h"
 
 class Ray;

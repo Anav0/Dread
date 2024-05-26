@@ -6,7 +6,8 @@
 #include <algorithm>
 
 #include "Base.h"
-#include "Constants.h"
+#include "GLM.h"
+#include "Misc/Constants.h"
 #include "ResourceManager.h"
 #include "Shader.h"
 

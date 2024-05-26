@@ -4,8 +4,10 @@
 #include "glm/ext/matrix_transform.hpp"
 #pragma once
 
+#include "GLM.h"
+#include "Misc/Constants.h"
+
 #include "Base.h"
-#include "Constants.h"
 #include "Mesh.h"
 #include "Misc.h"
 #include "ResourceManager.h"

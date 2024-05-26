@@ -35,3 +35,52 @@ void ModifiersManager::LoadWeatherModifiers(const char* path)
         }
     }
 }
+
+f32 ModifiersManager::GetWeatherModifier(Weather weather, WeaponSystemGeneralType type, SideStatus status) const
+{
+    if (!this->weather_modifiers.contains(weather))
+        return 1.0;
+
+    if (!this->weather_modifiers.at(weather).contains(type))
+        return 1.0;
+
+    if (status == SideStatus::Attacking)
+        return this->weather_modifiers.at(weather).at(type).attack_modifier;
+    else
+        return this->weather_modifiers.at(weather).at(type).defense_modifier;
+}
+
+f32 ModifiersManager::GetGroundConditionModifier(GroundCondition ground_condition, WeaponSystemGeneralType type, SideStatus status) const
+{
+    if (!this->ground_condition_modifiers.contains(ground_condition))
+        return 1.0;
+
+    if (!this->ground_condition_modifiers.at(ground_condition).contains(type))
+        return 1.0;
+
+    if (status == SideStatus::Attacking)
+        return this->ground_condition_modifiers.at(ground_condition).at(type).attack_modifier;
+    else
+        return this->ground_condition_modifiers.at(ground_condition).at(type).defense_modifier;
+}
+
+u16 ApplySideModifier(const SideStatus status, const Modifier& modifier, u16 damage) {
+    if (status == SideStatus::Attacking) {
+        return damage * modifier.attack_modifier;
+    } else {
+        return damage * modifier.defense_modifier;
+    }
+}
+
+u16 ApplyModifiers(const Side side, const SimulationParams& params, u16 damage)
+{
+    if (side == params.attacking_side) {
+        auto modifier = params.attacking_side == Side::RU ? params.modifiers_manager.ru_modifier : params.modifiers_manager.ua_modifier;
+        return ApplySideModifier(SideStatus::Attacking, modifier, damage);
+    } else {
+        auto modifier = params.defending_side == Side::RU ? params.modifiers_manager.ru_modifier : params.modifiers_manager.ua_modifier;
+        return ApplySideModifier(SideStatus::Defending, modifier, damage);
+    }
+
+    assert(false);
+}

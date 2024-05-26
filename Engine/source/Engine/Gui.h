@@ -4,7 +4,9 @@
 #pragma once
 
 #include "Mouse.h"
-#include "Constants.h"
+#include "Colors.h"
+#include "GLM.h"
+#include "Misc/Constants.h"
 #include "Renderer.h"
 #include "TextRenderer.h"
 #include "Buffers.h"

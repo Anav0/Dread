@@ -2,7 +2,8 @@
 #define TextRenderer_H
 
 #include "shader.h"
-#include "Constants.h"
+#include "GLM.h"
+#include "Misc/Constants.h"
 
 #include <map>
 #include <vector>

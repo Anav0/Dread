@@ -4,7 +4,8 @@
 #pragma once
 
 #include "Base.h"
-#include "Constants.h"
+#include "GLM.h"
+#include "Misc/Constants.h"
 #include "BoundingBox.h"
 
 class Mesh;

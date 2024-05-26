@@ -1,4 +1,5 @@
 #include "Engine/Animator.h"
+#include "Engine/Colors.h"
 #include "Engine/Base.h"
 #include "Engine/Buffers.h"
 #include "Engine/Distribution.h"
@@ -11,10 +12,10 @@
 #include "Devices.h"
 #include "Entities.h"
 #include "EntityManager.h"
+#include "Modifiers.h"
 #include "Fight.h"
 #include "Game.h"
 #include "GameState.h"
-#include "Modifiers.h"
 #include "RenderHelpers.h"
 #include "Weather.h"
 

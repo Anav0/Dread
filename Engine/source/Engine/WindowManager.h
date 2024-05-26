@@ -3,7 +3,8 @@
 #include <iostream>
 
 // GLWF MUST ALWAYS BE INCLUDED AFTER GLAD
-#include "Constants.h"
+#include "GLM.h"
+#include "Misc/Constants.h"
 #include <GLFW/glfw3.h>
 
 #include "Camera.h"

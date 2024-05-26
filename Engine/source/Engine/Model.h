@@ -7,7 +7,8 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-#include "Constants.h"
+#include "GLM.h"
+#include "Misc/Constants.h"
 #include "Mesh.h"
 #include "Texture.h"
 

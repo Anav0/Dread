@@ -6,7 +6,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Constants.h"
+#include "GLM.h"
+#include "Misc/Constants.h"
 
 #include <vector>
 

@@ -3,8 +3,10 @@
 
 #pragma once
 
+#include "Engine/GLM.h"
+#include "Misc/Constants.h"
+
 #include "Engine/Base.h"
-#include "Engine/Constants.h"
 #include "Engine/Mesh.h"
 #include "Engine/bimap.h"
 

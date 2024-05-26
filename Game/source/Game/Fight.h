@@ -1,3 +1,6 @@
+#ifndef FIGHT_H
+#define FIGHT_H
+
 #pragma once
 
 #include <map>
@@ -6,14 +9,16 @@
 #include <string>
 #include <vector>
 
-#include "Engine/Constants.h"
-#include <Misc/CsvSaver.h>
+#include "Engine/GLM.h"
+#include "Misc/Constants.h"
+#include "Misc/CsvSaver.h"
 
 #include "Entities.h"
+#include "Modifiers.h"
 
-class Modifier;
 class WeatherManager;
-class ModifiersManager;
+// class Modifier;
+// class ModifiersManager;
 
 enum class UnitSize {
     Division,
@@ -130,6 +135,7 @@ struct Armory {
     std::optional<u32> GetWeaponIndexByName(const std::string& name);
 
     Armory() { }
+
     Armory(Armory& armory)
     {
         this->ammo = armory.ammo;
@@ -230,9 +236,8 @@ struct BattleGroup {
                     ss << w->name << ";";
                     ss << WeaponTypeToStr(w->type) << ";";
                     ss << individual_index << ";";
-                    ss << weapons_state.at(index) << ";";
-                    ss << ArmorToStr(w->armor)
-                       << "\n";
+                    ss << weapons_state[index] << ";";
+                    ss << ArmorToStr(w->armor) << "\n";
                 }
                 individual_index++;
             }
@@ -263,6 +268,11 @@ constexpr u8 SUPPORT_ASSETS = 8;
 // 0    UA HIT  BMP2   2A42   0.5 BMP1 100 24 76 2400
 
 WeaponSystemGeneralType StrToWeaponType(std::string& str);
+
+struct AttackResult {
+    SideStatus winner_status;
+    Side winner_side;
+};
 
 struct FireResult {
     u64 run;
@@ -436,6 +446,7 @@ struct SimulationSession {
 };
 
 struct SimulationParams {
+    const OblastCode oblast_code;
     Side attacking_side;
     Side defending_side;
 
@@ -443,10 +454,12 @@ struct SimulationParams {
     const ModifiersManager& modifiers_manager;
 
     SimulationParams(
-        const Side& attackingSide, 
+        const OblastCode oblast_code,
+        const Side& attackingSide,
         const WeatherManager& weather_manager,
         const ModifiersManager& modifiers_manager)
         : attacking_side(attackingSide)
+        , oblast_code(oblast_code)
         , defending_side(attackingSide == Side::RU ? Side::UA : Side::RU)
         , weather_manager(weather_manager)
         , modifiers_manager(modifiers_manager)
@@ -467,7 +480,7 @@ struct Fight {
     UnitStance ua_stance[MAX_UNITS];
     UnitStance ru_stance[MAX_UNITS];
 
-    void SimulateAttack(SimulationParams&, Armory*, Deployment&, SimulationSession&);
+    AttackResult SimulateAttack(SimulationParams&, Armory*, Deployment&, SimulationSession*);
 
     std::vector<BattleGroup> FormBattleGroups(Side side, Armory* armory, UnitStance stance, Deployment& deployment);
 
@@ -482,8 +495,17 @@ struct Fight {
 
 BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& unit);
 
-f32 GetModifier(SimulationParams& params, SideStatus status);
+std::vector<f32> GetModifiers(SimulationParams& params, WeaponSystemGeneralType type, SideStatus status);
 bool MoralBroke(std::vector<BattleGroup>& groups, f32 threshold);
 bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 threshold);
 std::tuple<bool, f32> TryToHitTarget(Ammo& ammo, u32 distance);
-std::vector<FireResult> Fire(Armory* armory, const f32 modifier, u16 distance_in_m, const std::vector<BattleGroup>& attacking_battlegroups, std::vector<BattleGroup>& targeted_battlegroups);
+
+std::vector<FireResult> Fire(
+    Side firing_side,
+    Armory* armory,
+    const SimulationParams&,
+    u16 distance_in_m,
+    const std::vector<BattleGroup>& attacking_battlegroups,
+    std::vector<BattleGroup>& targeted_battlegroups);
+
+#endif
