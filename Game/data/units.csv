@@ -5,7 +5,7 @@ Akatsia;9;9;1.0;;
 BMP1;64;64;1.0;;
 T72B3;48;48;1.0;;
 <1st Guard Tank Regiment;;RU;;Kharkiv;Regiment
-120mmMortar;16;0;1.0;;
-Akatsia;9;0;1.0;;
-BMP1;64;0;1.0;;
-T72B3;48;1;1.0;;
+120mmMortar;16;8;1.0;;
+Akatsia;9;4,5;1.0;;
+BMP1;64;32;1.0;;
+T72B3;48;24;1.0;;
