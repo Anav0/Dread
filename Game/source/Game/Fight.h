@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <array>
 #include <map>
 #include <random>
 #include <set>
@@ -195,25 +196,40 @@ std::string DomainToStr(WeaponDomain domain);
 
 std::string WeaponTypeToStr(WeaponSystemGeneralType type);
 
+struct WeaponInGroup {
+    WeaponSystem* weapon;
+    f32 morale;
+    f32 state;
+    f32 initial_state;
+};
+
+constexpr u32 MAX_BG_SIZE = 128;
 struct BattleGroup {
     std::string name;
-    u32 parent_unit_index;
+    std::string Side;
 
-    std::vector<WeaponSystem*> weapons;
-    std::vector<f32> morale;
-    std::vector<u16> weapons_counter;
-    std::vector<f32> weapons_state;
-    std::vector<f32> initial_weapons_state;
+    std::array<WeaponInGroup, MAX_BG_SIZE> weapons;
+
+    u32 parent_unit_index;
+    u32 real_size = 0;
+    u32 Attacking;
 
     RoundInfo round_info;
-    u32 Attacking;
-    std::string Side;
     u32 GroupIndex;
     std::string Domain;
 
     BattleGroup(Armory* armory)
     {
         round_info = RoundInfo(armory);
+    }
+
+    f32 AverageMorale()
+    {
+        f32 sum = 0;
+        for (u32 i = 0; i < real_size; i++) {
+            sum += weapons[i].morale;
+        }
+        return sum / real_size;
     }
 
     std::string ToCsvRow() const
@@ -223,24 +239,22 @@ struct BattleGroup {
         auto round_info_str = round_info.ToCsvRow();
 
         u32 index = 0;
-        u32 individual_index = 0;
-        for (auto& w : weapons) {
-            for (u32 i = 0; i <= weapons_counter.at(index); i++) {
-                for (auto& device_index : w->devices) {
-                    // Device& device = round_info.armory->devices.at(device_index);
-                    ss << round_info_str << ";";
-                    ss << Attacking << ";";
-                    ss << Side << ";";
-                    ss << GroupIndex << ";";
-                    ss << Domain << ";";
-                    ss << w->name << ";";
-                    ss << WeaponTypeToStr(w->type) << ";";
-                    ss << individual_index << ";";
-                    ss << weapons_state[index] << ";";
-                    ss << ArmorToStr(w->armor) << "\n";
-                }
-                individual_index++;
+        for (u32 i = 0; i < real_size; i++) {
+            auto& w = weapons[i];
+            for (auto& device_index : w.weapon->devices) {
+                // Device& device = round_info.armory->devices.at(device_index);
+                ss << round_info_str << ";";
+                ss << Attacking << ";";
+                ss << Side << ";";
+                ss << GroupIndex << ";";
+                ss << Domain << ";";
+                ss << w.weapon->name << ";";
+                ss << WeaponTypeToStr(w.weapon->type) << ";";
+                ss << index << ";";
+                ss << w.state << ";";
+                ss << ArmorToStr(w.weapon->armor) << "\n";
             }
+
             index++;
         }
 
@@ -269,9 +283,18 @@ constexpr u8 SUPPORT_ASSETS = 8;
 
 WeaponSystemGeneralType StrToWeaponType(std::string& str);
 
+struct Loss {
+    u32 index_in_armory;
+    u32 number_lost;
+    f32 percent_lost_from_bg;
+};
+
 struct AttackResult {
     SideStatus winner_status;
     Side winner_side;
+
+    std::vector<Loss> attacker_weapon_index_by_numbers_lost;
+    std::vector<Loss> defender_weapon_index_by_numbers_lost;
 };
 
 struct FireResult {
@@ -280,7 +303,7 @@ struct FireResult {
     std::string firing_side;
     std::string status;
     Device& firing_device;
-    WeaponSystem* firing_weapons_system;
+    const WeaponInGroup& firing_weapons_system;
     WeaponSystem* targeted_weapons_system;
     f32 acc;
     f32 starting_state;
@@ -290,7 +313,7 @@ struct FireResult {
     f32 morale_after_damage;
     u32 distance;
 
-    FireResult(Device& firing_device, WeaponSystem* firing_weapons_system, WeaponSystem* targeted_weapons_system)
+    FireResult(Device& firing_device, const WeaponInGroup& firing_weapons_system, WeaponSystem* targeted_weapons_system)
         : firing_weapons_system(firing_weapons_system)
         , firing_device(firing_device)
         , targeted_weapons_system(targeted_weapons_system) {};
@@ -302,8 +325,8 @@ struct FireResult {
            << round << ";"
            << firing_side << ";"
            << status << ";"
-           << firing_weapons_system->name << ";"
-           << WeaponTypeToStr(firing_weapons_system->type) << ";"
+           << firing_weapons_system.weapon->name << ";"
+           << WeaponTypeToStr(firing_weapons_system.weapon->type) << ";"
            << firing_device.name << ";"
            << acc << ";"
            << targeted_weapons_system->name << ";"

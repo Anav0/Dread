@@ -1,30 +1,16 @@
 #include <Game/Devices.h>
 #include <Game/Fight.h>
 #include <Game/Modifiers.h>
+#include <Game/Weather.h>
 
 #include "Misc/CsvSaver.h"
+
+#include "Problem.h"
 
 const char* units_path = "D:/Projects/Dread/Game/data/units.csv";
 const char* armory_path = "D:/Projects/Dread/Game/data/weapons.csv";
 const char* storage_path = "D:/Projects/Dread/Game/data/storage.csv";
 const char* conditions_path = "D:/Projects/Dread/Game/data/conditions.csv";
-
-/*
-
-Phases:
-
-        0. During one turn attacker can perform n number of attacks, based on his determination
-            0a. Each attack look like this:
-        1. Attacker forms battlegroups
-        2. Defender can fire at the gathering point if he has assets (aircraft, drones and artillery)
-        3. Battlegroups then move towards defenders positions
-        4. Assets on both sides fire if the range permits
-                5a. If the attackers morale breakes he tries to retreat
-                5b. If the defenders morale breakes they give away their positions
-                        5ba. Defender can counterattack to try to recapture lost positions
-        6.
-
-*/
 
 static BiMap<OblastCode, const std::string> OBLASTS;
 
@@ -84,7 +70,7 @@ static void Fill()
     UA 1023 20 10
 */
 
-constexpr u32 MAX_RUNS = 1000;
+constexpr u32 MAX_RUNS = 10;
 
 // TODO: copy pasta from Devices.cpp
 std::vector<std::string> split2(const std::string& s, char delimiter)
@@ -118,20 +104,19 @@ int main(int argc, char* argv[])
     auto save_only_this_arr = split2(argv[1], ';');
     auto save_only_this = std::set<std::string>(save_only_this_arr.begin(), save_only_this_arr.end());
 
-    Armory armory = LoadArmory(armory_path, storage_path);
+    Armory armory         = LoadArmory(armory_path, storage_path);
     Deployment deployment = LoadUnits(armory.weapons, OBLASTS, units_path);
 
     SimulationSession session = SimulationSession(&armory, deployment, save_only_this);
-
-    Modifier ru_modifier = Modifier(0.85, 1.0);
-    Modifier ua_modifier = Modifier(1.1, 1.25);
 
     WeatherManager weather_manager = WeatherManager();
     weather_manager.Init(GetInitialConditions2());
     ModifiersManager modifiers_manager = ModifiersManager();
     modifiers_manager.LoadWeatherModifiers(conditions_path);
+    modifiers_manager.ru_modifier = Modifier(0.55, 1.0);
+    modifiers_manager.ua_modifier = Modifier(1.1, 1.25);
 
-    SimulationParams params = SimulationParams(Side::RU, weather_manager, modifiers_manager);
+    SimulationParams params = SimulationParams(OblastCode::Donetsk, Side::RU, weather_manager, modifiers_manager);
 
     Fight fight;
 
@@ -158,7 +143,7 @@ int main(int argc, char* argv[])
 
         assert(armory_cpy.weapons.size() == armory.weapons.size());
 
-        fight.SimulateAttack(params, &armory_cpy, deployment_cpy, session);
+        fight.SimulateAttack(params, &armory_cpy, deployment_cpy, &session);
     }
 
     session.Flush();

@@ -1,11 +1,31 @@
 Name;Nickname;Side;Commander;Oblast;Size
 <3rd Tank Brigade;Iron;UA;;Kharkiv;Brigade
+82mmMortar;32;32;1.0;;
 120mmMortar;16;16;1.0;;
+A1-CM;6;6;1.0;;
+AGS-17;12;12;1.0;;
 Akatsia;9;9;1.0;;
 BMP1;64;64;1.0;;
+Car;42;42;1.0;;
+Grad;9;9;1.0;;
+Gvozdika;9;9;1.0;;
+Igla;60;60;1.0;;
+Javelin;12;12;1.0;;
+Leleka-100;6;6;1.0;;
+Microdrones;200;200;1.0;;
+Squad;405;405;1.0;;
 T72B3;48;48;1.0;;
 <1st Guard Tank Regiment;;RU;;Kharkiv;Regiment
+82mmMortar;32;16;1.0;;
 120mmMortar;16;8;1.0;;
-Akatsia;9;4,5;1.0;;
+A1-CM;6;3;1.0;;
+AGS-17;12;6;1.0;;
+Akatsia;9;5;1.0;;
 BMP1;64;32;1.0;;
+Car;42;21;1.0;;
+Grad;9;5;1.0;;
+Gvozdika;9;5;1.0;;
+Igla;60;30;1.0;;
+Microdrones;200;100;1.0;;
+Squad;405;203;1.0;;
 T72B3;48;24;1.0;;

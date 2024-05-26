@@ -95,12 +95,50 @@ project "Analysis"
    language "C++"
    targetdir "bin/%{cfg.buildcfg}"
    location "Analysis/"
-   links { "Misc", "Game" }
+   links { "Misc", "Game", "Metaheuristics" }
    files { "Analysis/source/**.h", "Analysis/source/main.cpp" }
    libdirs { "Analysis/libs" }
-   includedirs { "Analysis/includes", "Engine/source", "Engine/includes", "Game/source", "Game/includes", "Misc/source" }
+   includedirs { "Analysis/includes", "Engine/source", "Engine/includes", "Game/source", "Game/includes", "Misc/source", "Metaheuristics/source" }
    filter "configurations:Analysis"
       debugargs { "result;groups" }
+   filter "configurations:Debug"
+      defines { "DEBUG" }
+      debugargs { "result;groups" }
+      symbols "On"
+      debugdir "bin/Debug"
+   filter "configurations:Release"
+      defines { "NDEBUG" }
+      optimize "On"
+      debugdir "bin/Release"
+
+project "Metaheuristics"
+   kind "StaticLib"
+   language "C++"
+   targetdir "bin/%{cfg.buildcfg}"
+   location "Metaheuristics/"
+   links { "Misc" }
+   files { "Metaheuristics/source/**.h", "Metaheuristics/source/Metaheuristics/lib.cpp" }
+   libdirs { "Metaheuristics/libs" }
+   includedirs { "Metaheuristics/includes", "Misc/source" }
+   filter "configurations:Debug"
+      defines { "DEBUG" }
+      debugargs { "result;groups" }
+      symbols "On"
+      debugdir "bin/Debug"
+   filter "configurations:Release"
+      defines { "NDEBUG" }
+      optimize "On"
+      debugdir "bin/Release"
+
+project "Problems"
+   kind "ConsoleApp"
+   language "C++"
+   targetdir "bin/%{cfg.buildcfg}"
+   location "Problems/"
+   links { "Misc", "Metaheuristics" }
+   files { "Problems/source/**.h", "Problems/source/Problems/main.cpp" }
+   libdirs { "Problems/libs" }
+   includedirs { "Problems/includes", "Misc/source", "Metaheuristics/source" }
    filter "configurations:Debug"
       defines { "DEBUG" }
       debugargs { "result;groups" }
