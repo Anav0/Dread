@@ -84,16 +84,6 @@ static void Fill()
     UA 1023 20 10
 */
 
-struct Person {
-    std::string name, gender;
-    u32 age;
-
-    std::string ToCsvRow() const
-    {
-        return name + ";" + gender + ";" + std::to_string(age);
-    }
-};
-
 constexpr u32 MAX_RUNS = 1000;
 
 // TODO: copy pasta from Devices.cpp
