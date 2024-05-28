@@ -170,7 +170,7 @@ static BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& 
             group.weapons[group.real_size].weapon = weapon_ref;
             group.weapons[group.real_size].initial_state = weapon_ref->default_state;
             group.weapons[group.real_size].state = weapon_ref->default_state;
-            group.weapons[group.real_size].morale = 1.0f; //TODO: default for now
+            group.weapons[group.real_size].morale = 1.0f; // TODO: default for now
             group.real_size++;
         }
 
@@ -222,15 +222,17 @@ bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 thresho
     return v > threshold;
 };
 
-std::tuple<bool, f32> TryToHitTarget(std::mt19937 engine, Ammo& ammo, u32 distance)
+std::tuple<bool, f32> TryToHitTarget(std::mt19937 engine, Ammo* ammo, u32 distance)
 {
+    assert(ammo != nullptr);
+
     u32 index = 0;
-    Accuracy acc = ammo.accuracy[0];
+    Accuracy acc = ammo->accuracy[0];
     while (distance < acc.range_in_meters) {
         index++;
-        if (index > ammo.accuracy.size() - 1)
+        if (index > ammo->accuracy.size() - 1)
             break;
-        acc = ammo.accuracy[index];
+        acc = ammo->accuracy[index];
     }
 
     std::uniform_real_distribution<f32> distribution(0.0, 1.0);
@@ -254,13 +256,35 @@ std::tuple<BattleGroup&, WeaponInGroup&> PickTarget(std::uniform_int_distributio
     return { target_group, target_group.weapons[index] };
 }
 
-//TODO: pick ammo based on its characteristics
-static Ammo& PickRightAmmunitionForTarget(Armory* armory, Device& firing_device, WeaponSystem* target)
+// TODO: pick ammo based on its characteristics
+static bool TryPickingRightAmmunitionForTarget(Armory* armory, Device& firing_device, WeaponSystem* target, Ammo** ammo_picked)
 {
     assert(target != nullptr);
     assert(firing_device.ammunition.size() > 0);
 
-    return armory->ammo.at(*firing_device.ammunition.begin());
+    for (std::set<u32>::iterator ammo_index = firing_device.ammunition.begin(); ammo_index != firing_device.ammunition.end(); ++ammo_index) {
+        Ammo* ammo = &armory->ammo.at(*ammo_index);
+
+        if (ammo->domain != target->domain)
+            continue;
+
+        switch (target->armor) {
+        case Armor::Hard:
+            if (ammo->hard > 0 && ammo->domain == target->domain) {
+                *ammo_picked = ammo;
+                return true;
+            }
+            break;
+        case Armor::Soft:
+            if (ammo->soft > 0) {
+                *ammo_picked = ammo;
+                return true;
+            }
+            break;
+        }
+    }
+
+    return false;
 }
 
 std::vector<FireResult> Fire(Side firing_side, Armory* armory, const SimulationParams& params, u16 distance_in_m, const std::vector<BattleGroup>& attacking_battlegroups, std::vector<BattleGroup>& targeted_battlegroups)
@@ -286,13 +310,18 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, const SimulationP
                 auto& attacking_device = armory->devices.at(device_index);
 
                 auto [targeted_group, targeted_weapon] = PickTarget(dist, rnd_engine, targeted_battlegroups);
-                auto& ammunition_used_for_attack = PickRightAmmunitionForTarget(armory, attacking_device, targeted_weapon.weapon);
+
+                Ammo* ammo_used_for_attack = nullptr;
+                if (!TryPickingRightAmmunitionForTarget(armory, attacking_device, targeted_weapon.weapon, &ammo_used_for_attack))
+                    continue;
+
+                assert(ammo_used_for_attack->domain == targeted_weapon.weapon->domain);
 
                 // TODO: temporary
                 f32 targeted_weapon_state = targeted_weapon.state;
 
-                const bool is_out_of_range = ammunition_used_for_attack.accuracy[0].range_in_meters < distance_in_m;
-                const bool is_not_of_the_same_domain = (targeted_weapon.weapon->domain != ammunition_used_for_attack.domain);
+                const bool is_out_of_range           = ammo_used_for_attack->accuracy[0].range_in_meters < distance_in_m;
+                const bool is_not_of_the_same_domain = (targeted_weapon.weapon->domain != ammo_used_for_attack->domain);
 
                 if (is_attacking_weapon_disabled || is_out_of_range || is_not_of_the_same_domain)
                     continue;
@@ -301,16 +330,16 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, const SimulationP
                 fire_result.starting_state = targeted_weapon_state;
 
                 // Hit
-                auto [target_was_hit, acc] = TryToHitTarget(rnd_engine, ammunition_used_for_attack, distance_in_m);
+                auto [target_was_hit, acc] = TryToHitTarget(rnd_engine, ammo_used_for_attack, distance_in_m);
                 if (target_was_hit) {
                     fire_result.status = "HIT";
                     // Record damage
                     if (targeted_weapon.weapon->armor == Armor::Soft) {
-                        auto dmg = ApplyModifiers(firing_side, params, ammunition_used_for_attack.soft);
+                        auto dmg = ApplyModifiers(firing_side, params, ammo_used_for_attack->soft);
                         fire_result.dmg = dmg;
                         targeted_weapon_state -= dmg;
                     } else {
-                        auto dmg = ApplyModifiers(firing_side, params, ammunition_used_for_attack.soft);
+                        auto dmg = ApplyModifiers(firing_side, params, ammo_used_for_attack->soft);
                         targeted_weapon_state -= dmg;
                         fire_result.dmg = dmg;
                     }
