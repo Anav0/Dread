@@ -6,10 +6,10 @@
 #include <sstream>
 
 template <typename T>
-concept CsvRow = requires(const T& t) {
+concept CsvRow = requires(const T& t, std::ostringstream& rows) {
     {
-        t.ToCsvRow()
-    } -> std::convertible_to<std::string>;
+        t.ToCsvRow(rows)
+    } -> std::same_as<void>;
 };
 
 class CsvSaver {
@@ -42,7 +42,7 @@ public:
     template <CsvRow T>
     void AddRow(T& obj)
     {
-        rows << obj.ToCsvRow() << "\n";
+        obj.ToCsvRow(rows);
     }
 
     void Open(const char* path)

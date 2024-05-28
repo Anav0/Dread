@@ -70,7 +70,7 @@ static void Fill()
     UA 1023 20 10
 */
 
-constexpr u32 MAX_RUNS = 10;
+constexpr u32 MAX_RUNS = 50;
 
 // TODO: copy pasta from Devices.cpp
 std::vector<std::string> split2(const std::string& s, char delimiter)

@@ -179,7 +179,7 @@ struct RoundInfo {
     {
     }
 
-    std::string ToCsvRow() const
+    std::string ToString() const
     {
         std::stringstream ss;
 
@@ -232,11 +232,9 @@ struct BattleGroup {
         return sum / real_size;
     }
 
-    std::string ToCsvRow() const
+    void ToCsvRow(std::ostringstream& ss) const
     {
-        std::stringstream ss;
-
-        auto round_info_str = round_info.ToCsvRow();
+        auto round_info_str = round_info.ToString();
 
         u32 index = 0;
         for (u32 i = 0; i < real_size; i++) {
@@ -254,11 +252,8 @@ struct BattleGroup {
                 ss << w.state << ";";
                 ss << ArmorToStr(w.weapon->armor) << "\n";
             }
-
             index++;
         }
-
-        return ss.str();
     }
 };
 
@@ -318,9 +313,8 @@ struct FireResult {
         , firing_device(firing_device)
         , targeted_weapons_system(targeted_weapons_system) {};
 
-    std::string ToCsvRow() const
+    void ToCsvRow(std::ostringstream& ss) const
     {
-        std::stringstream ss;
         ss << run << ";"
            << round << ";"
            << firing_side << ";"
@@ -335,9 +329,7 @@ struct FireResult {
            << state_after_damage << ";"
            << morale << ";"
            << morale_after_damage << ";"
-           << distance;
-
-        return ss.str();
+           << distance << "\n";
     }
 };
 
