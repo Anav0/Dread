@@ -92,7 +92,6 @@ public:
     DreadMover(const DreadInstance& instance)
     {
         gen = std::mt19937(rd());
-        // dist = std::uniform_int_distribution<>(0, instance.values.size());
     }
 
     // Inherited via Mover

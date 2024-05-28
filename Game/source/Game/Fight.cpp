@@ -222,7 +222,7 @@ bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 thresho
     return v > threshold;
 };
 
-std::tuple<bool, f32> TryToHitTarget(std::mt19937 engine, Ammo* ammo, u32 distance)
+std::tuple<bool, f32> TryToHitTarget(std::mt19937& engine, Ammo* ammo, u32 distance)
 {
     assert(ammo != nullptr);
 
@@ -242,15 +242,15 @@ std::tuple<bool, f32> TryToHitTarget(std::mt19937 engine, Ammo* ammo, u32 distan
     return { value < acc.change_to_hit, acc.change_to_hit };
 }
 
-std::tuple<BattleGroup&, WeaponInGroup&> PickTarget(std::uniform_int_distribution<u32> dist, std::mt19937 mt, std::vector<BattleGroup>& enemy_groups)
+std::tuple<BattleGroup&, WeaponInGroup&> PickTarget(std::mt19937& mt, std::vector<BattleGroup>& enemy_groups)
 {
+    auto dist = std::uniform_int_distribution<u32>(0, enemy_groups.size() - 1);
     u32 index = dist(mt);
-    BattleGroup& target_group = enemy_groups.at(index);
 
+    BattleGroup& target_group = enemy_groups.at(index);
     assert(target_group.real_size > 0);
 
     dist = std::uniform_int_distribution<u32>(0, target_group.real_size);
-
     index = dist(mt);
 
     return { target_group, target_group.weapons[index] };
@@ -287,12 +287,11 @@ static bool TryPickingRightAmmunitionForTarget(Armory* armory, Device& firing_de
     return false;
 }
 
-std::vector<FireResult> Fire(Side firing_side, Armory* armory, const SimulationParams& params, u16 distance_in_m, const std::vector<BattleGroup>& attacking_battlegroups, std::vector<BattleGroup>& targeted_battlegroups)
+std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams& params, u16 distance_in_m, const std::vector<BattleGroup>& attacking_battlegroups, std::vector<BattleGroup>& targeted_battlegroups)
 {
     std::vector<FireResult> results;
-    std::random_device rd;
-    std::mt19937 rnd_engine(rd());
-    std::uniform_int_distribution<u32> dist(0, targeted_battlegroups.size() - 1);
+    results.reserve(256);
+
     std::uniform_int_distribution<u32> d6(0, 6);
 
     for (const BattleGroup& attacking_group : attacking_battlegroups) {
@@ -309,7 +308,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, const SimulationP
             for (u32 device_index : attacking_weapon_ref.weapon->devices) {
                 auto& attacking_device = armory->devices.at(device_index);
 
-                auto [targeted_group, targeted_weapon] = PickTarget(dist, rnd_engine, targeted_battlegroups);
+                auto [targeted_group, targeted_weapon] = PickTarget(params.rnd_engine, targeted_battlegroups);
 
                 Ammo* ammo_used_for_attack = nullptr;
                 if (!TryPickingRightAmmunitionForTarget(armory, attacking_device, targeted_weapon.weapon, &ammo_used_for_attack))
@@ -320,7 +319,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, const SimulationP
                 // TODO: temporary
                 f32 targeted_weapon_state = targeted_weapon.state;
 
-                const bool is_out_of_range           = ammo_used_for_attack->accuracy[0].range_in_meters < distance_in_m;
+                const bool is_out_of_range = ammo_used_for_attack->accuracy[0].range_in_meters < distance_in_m;
                 const bool is_not_of_the_same_domain = (targeted_weapon.weapon->domain != ammo_used_for_attack->domain);
 
                 if (is_attacking_weapon_disabled || is_out_of_range || is_not_of_the_same_domain)
@@ -330,7 +329,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, const SimulationP
                 fire_result.starting_state = targeted_weapon_state;
 
                 // Hit
-                auto [target_was_hit, acc] = TryToHitTarget(rnd_engine, ammo_used_for_attack, distance_in_m);
+                auto [target_was_hit, acc] = TryToHitTarget(params.rnd_engine, ammo_used_for_attack, distance_in_m);
                 if (target_was_hit) {
                     fire_result.status = "HIT";
                     // Record damage

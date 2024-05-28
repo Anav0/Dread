@@ -473,6 +473,8 @@ struct SimulationParams {
     const WeatherManager& weather_manager;
     const ModifiersManager& modifiers_manager;
 
+    std::mt19937 rnd_engine;
+
     SimulationParams(
         const OblastCode oblast_code,
         const Side& attackingSide,
@@ -484,6 +486,8 @@ struct SimulationParams {
         , weather_manager(weather_manager)
         , modifiers_manager(modifiers_manager)
     {
+        std::random_device rd;
+        rnd_engine = std::mt19937(rd());
     }
 };
 
@@ -518,12 +522,12 @@ BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& unit);
 std::vector<f32> GetModifiers(SimulationParams& params, WeaponSystemGeneralType type, SideStatus status);
 bool MoralBroke(std::vector<BattleGroup>& groups, f32 threshold);
 bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 threshold);
-std::tuple<bool, f32> TryToHitTarget(std::mt19937 engine, Ammo& ammo, u32 distance);
+std::tuple<bool, f32> TryToHitTarget(std::mt19937& engine, Ammo* ammo, u32 distance);
 
 std::vector<FireResult> Fire(
     Side firing_side,
     Armory* armory,
-    const SimulationParams&,
+    SimulationParams&,
     u16 distance_in_m,
     const std::vector<BattleGroup>& attacking_battlegroups,
     std::vector<BattleGroup>& targeted_battlegroups);
