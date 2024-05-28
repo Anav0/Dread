@@ -11,7 +11,7 @@ void AddUnitToState(Unit& unit, const std::string& oblast_name);
 
 void PrintArmory(Armory& armory);
 Armory LoadArmory(const char* path, const char* storage_path);
-Deployment LoadUnits(std::vector<WeaponSystem>& weapons, BiMap<OblastCode, const std::string>& oblast_names, const char* path);
+Deployment LoadUnits(std::vector<WeaponSystem>& weapons, const BiMap<OblastCode, const std::string>& oblast_names, const char* path);
 
 WeaponSystemGeneralType StrToWeaponType(std::string& str);
 std::string WeaponTypeToStr(WeaponSystemGeneralType type);
@@ -25,3 +25,16 @@ static void remove(std::string& str, char c);
 static void fill(std::vector<u32>& v, u32 value);
 Side StrToSide(const std::string& str);
 std::string SideToStr(Side side);
+
+static const BiMap<WeaponSystemGeneralType, std::string> WEAPON_TYPE_STRING_MAP = {
+    { WeaponSystemGeneralType::Drone, "Drone" },
+    { WeaponSystemGeneralType::Infantry, "Infantry" },
+    { WeaponSystemGeneralType::APC, "APC" },
+    { WeaponSystemGeneralType::Artillery, "Artillery" },
+    { WeaponSystemGeneralType::Vehicle, "Vehicle" },
+    { WeaponSystemGeneralType::IFV, "IFV" },
+    { WeaponSystemGeneralType::Tank, "Tank" },
+    { WeaponSystemGeneralType::MLRS, "MLRS" },
+    { WeaponSystemGeneralType::MANPADS, "MANPADS" },
+    { WeaponSystemGeneralType::ATGM, "ATGM" },
+};

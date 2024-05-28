@@ -12,36 +12,33 @@ const char* armory_path = "D:/Projects/Dread/Game/data/weapons.csv";
 const char* storage_path = "D:/Projects/Dread/Game/data/storage.csv";
 const char* conditions_path = "D:/Projects/Dread/Game/data/conditions.csv";
 
-static BiMap<OblastCode, const std::string> OBLASTS;
-
-static void Fill()
-{
-    OBLASTS.Insert(OblastCode::Zythomyr, "Zythomyr");
-    OBLASTS.Insert(OblastCode::Zaporizhia, "Zaporizhia");
-    OBLASTS.Insert(OblastCode::Zakarpatia, "Zakarpatia");
-    OBLASTS.Insert(OblastCode::Volyn, "Volyn");
-    OBLASTS.Insert(OblastCode::Vinnytsia, "Vinnytsia");
-    OBLASTS.Insert(OblastCode::Ternopil, "Ternopil");
-    OBLASTS.Insert(OblastCode::Sumy, "Sumy");
-    OBLASTS.Insert(OblastCode::Rivne, "Rivne");
-    OBLASTS.Insert(OblastCode::Poltava, "Poltava");
-    OBLASTS.Insert(OblastCode::Odessa, "Odessa");
-    OBLASTS.Insert(OblastCode::Mykolaiv, "Mykolaiv");
-    OBLASTS.Insert(OblastCode::Lviv, "Lviv");
-    OBLASTS.Insert(OblastCode::Luhansk, "Luhansk");
-    OBLASTS.Insert(OblastCode::Kirovohrad, "Kirovohrad");
-    OBLASTS.Insert(OblastCode::Kiev, "Kiev");
-    OBLASTS.Insert(OblastCode::Chmielnicki, "Chmielnicki");
-    OBLASTS.Insert(OblastCode::Kherson, "Kherson");
-    OBLASTS.Insert(OblastCode::Kharkiv, "Kharkiv");
-    OBLASTS.Insert(OblastCode::IvanoFrankivsk, "IvanoFrankivsk");
-    OBLASTS.Insert(OblastCode::Donetsk, "Donetsk");
-    OBLASTS.Insert(OblastCode::Dnipropetrovsk, "Dnipropetrovsk");
-    OBLASTS.Insert(OblastCode::Crimea, "Crimea");
-    OBLASTS.Insert(OblastCode::Chernihiv, "Chernihiv");
-    OBLASTS.Insert(OblastCode::Chernivtsi, "Chernivtsi");
-    OBLASTS.Insert(OblastCode::Cherkasy, "Cherkasy");
-}
+static const BiMap<OblastCode, const std::string> OBLASTS = {
+    { OblastCode::Zythomyr, "Zythomyr" },
+    { OblastCode::Zaporizhia, "Zaporizhia" },
+    { OblastCode::Zakarpatia, "Zakarpatia" },
+    { OblastCode::Volyn, "Volyn" },
+    { OblastCode::Vinnytsia, "Vinnytsia" },
+    { OblastCode::Ternopil, "Ternopil" },
+    { OblastCode::Sumy, "Sumy" },
+    { OblastCode::Rivne, "Rivne" },
+    { OblastCode::Poltava, "Poltava" },
+    { OblastCode::Odessa, "Odessa" },
+    { OblastCode::Mykolaiv, "Mykolaiv" },
+    { OblastCode::Lviv, "Lviv" },
+    { OblastCode::Luhansk, "Luhansk" },
+    { OblastCode::Kirovohrad, "Kirovohrad" },
+    { OblastCode::Kiev, "Kiev" },
+    { OblastCode::Chmielnicki, "Chmielnicki" },
+    { OblastCode::Kherson, "Kherson" },
+    { OblastCode::Kharkiv, "Kharkiv" },
+    { OblastCode::IvanoFrankivsk, "IvanoFrankivsk" },
+    { OblastCode::Donetsk, "Donetsk" },
+    { OblastCode::Dnipropetrovsk, "Dnipropetrovsk" },
+    { OblastCode::Crimea, "Crimea" },
+    { OblastCode::Chernihiv, "Chernihiv" },
+    { OblastCode::Chernivtsi, "Chernivtsi" },
+    { OblastCode::Cherkasy, "Cherkasy" },
+};
 
 /*
     Header file
@@ -99,12 +96,10 @@ int main(int argc, char* argv[])
 {
     assert(argc == 2);
 
-    Fill();
-
     auto save_only_this_arr = split2(argv[1], ';');
     auto save_only_this = std::set<std::string>(save_only_this_arr.begin(), save_only_this_arr.end());
 
-    Armory armory         = LoadArmory(armory_path, storage_path);
+    Armory armory = LoadArmory(armory_path, storage_path);
     Deployment deployment = LoadUnits(armory.weapons, OBLASTS, units_path);
 
     SimulationSession session = SimulationSession(&armory, deployment, save_only_this);

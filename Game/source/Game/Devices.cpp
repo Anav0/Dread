@@ -105,39 +105,14 @@ static void fill(std::vector<u32>& v, u32 value)
     }
 }
 
-// TODO: Switch to BiMap
 WeaponSystemGeneralType StrToWeaponType(std::string& str)
 {
-    static const std::map<std::string, WeaponSystemGeneralType> map = {
-        { "Drone", WeaponSystemGeneralType::Drone },
-        { "Infantry", WeaponSystemGeneralType::Infantry },
-        { "APC", WeaponSystemGeneralType::APC },
-        { "Artillery", WeaponSystemGeneralType::Artillery },
-        { "Vehicle", WeaponSystemGeneralType::Vehicle },
-        { "IFV", WeaponSystemGeneralType::IFV },
-        { "Tank", WeaponSystemGeneralType::Tank },
-        { "MLRS", WeaponSystemGeneralType::MLRS },
-        { "MANPADS", WeaponSystemGeneralType::MANPADS },
-        { "ATGM", WeaponSystemGeneralType::ATGM },
-    };
-    return map.at(str);
+    return WEAPON_TYPE_STRING_MAP.GetKey(str);
 }
 
 std::string WeaponTypeToStr(WeaponSystemGeneralType type)
 {
-    static const std::map<WeaponSystemGeneralType, std::string> map = {
-        { WeaponSystemGeneralType::Drone, "Drone" },
-        { WeaponSystemGeneralType::Infantry, "Infantry" },
-        { WeaponSystemGeneralType::APC, "APC" },
-        { WeaponSystemGeneralType::Artillery, "Artillery" },
-        { WeaponSystemGeneralType::Vehicle, "Vehicle" },
-        { WeaponSystemGeneralType::IFV, "IFV" },
-        { WeaponSystemGeneralType::Tank, "Tank" },
-        { WeaponSystemGeneralType::MLRS, "MLRS" },
-        { WeaponSystemGeneralType::MANPADS, "MANPADS" },
-        { WeaponSystemGeneralType::ATGM, "ATGM" },
-    };
-    return map.at(type);
+    return WEAPON_TYPE_STRING_MAP.GetValue(type);
 }
 
 Armory LoadArmory(const char* weapons_path, const char* storage_path)
@@ -326,7 +301,7 @@ static void AddUnitToState(Unit& unit, const std::string& oblast_name)
     }
 }
 
-Deployment LoadUnits(std::vector<WeaponSystem>& weapons, BiMap<OblastCode, const std::string>& oblast_names, const char* path)
+Deployment LoadUnits(std::vector<WeaponSystem>& weapons, const BiMap<OblastCode, const std::string>& oblast_names, const char* path)
 {
     Deployment deployment;
 

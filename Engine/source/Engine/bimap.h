@@ -11,6 +11,15 @@ private:
     std::map<ValueType, KeyType> value_to_key;
 
 public:
+    BiMap() { }
+    BiMap(const std::initializer_list<std::pair<KeyType, ValueType>>& pairs)
+    {
+        for (const auto& pair : pairs) {
+            key_to_value.insert(pair);
+            value_to_key.insert({ pair.second, pair.first });
+        }
+    }
+
     void Insert(KeyType key, ValueType value)
     {
         key_to_value.insert(std::pair(key, value));
