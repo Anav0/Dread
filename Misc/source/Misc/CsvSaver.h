@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <sstream>
 
 template <typename T>
 concept CsvRow = requires(const T& t) {
@@ -15,9 +16,9 @@ class CsvSaver {
 private:
     const char* path;
     std::ofstream file;
+    std::ostringstream rows;
 
     std::string header;
-    std::vector<std::string> rows;
 
 public:
     CsvSaver() { }
@@ -35,13 +36,13 @@ public:
 
     void AddRowRaw(const std::string& row)
     {
-        rows.push_back(row);
+        rows << row << "\n";
     }
 
     template <CsvRow T>
     void AddRow(T& obj)
     {
-        rows.push_back(obj.ToCsvRow());
+        rows << obj.ToCsvRow() << "\n";
     }
 
     void Open(const char* path)
@@ -52,13 +53,7 @@ public:
 
     void Flush()
     {
-        std::string bulk;
-        bulk.reserve(1024 * 1024); //1MB
-
-        for (auto& row : rows) {
-            bulk += row + "\n";
-        }
-        file << header << "\n" << bulk;
+        file << header << "\n" << rows.str();
     }
 
     void Close()
