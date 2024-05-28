@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
     Fight fight;
 
     for (u32 run = 0; run < MAX_RUNS; run++) {
-        if (run % 10 == 0) {
+        if (true) {
             printf("%i/%i\r", run, MAX_RUNS);
         }
 
@@ -146,7 +146,9 @@ int main(int argc, char* argv[])
         fight.SimulateAttack(params, &armory_cpy, deployment_cpy, &session);
     }
 
+    printf("Flush!\n");
     session.Flush();
+    printf("Close!\n");
     session.Close();
 
     return 0;
