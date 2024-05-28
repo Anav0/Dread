@@ -239,6 +239,11 @@ struct BattleGroup {
         u32 index = 0;
         for (u32 i = 0; i < real_size; i++) {
             auto& w = weapons[i];
+            const auto& name = WeaponTypeToStr(w.weapon->type);
+            const auto& type = ArmorToStr(w.weapon->armor);
+            const auto state = w.state;
+            const auto unit_name = w.weapon->name;
+
             for (auto& device_index : w.weapon->devices) {
                 // Device& device = round_info.armory->devices.at(device_index);
                 ss << round_info_str << ";";
@@ -246,11 +251,11 @@ struct BattleGroup {
                 ss << Side << ";";
                 ss << GroupIndex << ";";
                 ss << Domain << ";";
-                ss << w.weapon->name << ";";
-                ss << WeaponTypeToStr(w.weapon->type) << ";";
+                ss << unit_name << ";";
+                ss << name << ";";
                 ss << index << ";";
-                ss << w.state << ";";
-                ss << ArmorToStr(w.weapon->armor) << "\n";
+                ss << state << ";";
+                ss << type << "\n";
             }
             index++;
         }
@@ -513,7 +518,7 @@ BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& unit);
 std::vector<f32> GetModifiers(SimulationParams& params, WeaponSystemGeneralType type, SideStatus status);
 bool MoralBroke(std::vector<BattleGroup>& groups, f32 threshold);
 bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 threshold);
-std::tuple<bool, f32> TryToHitTarget(Ammo& ammo, u32 distance);
+std::tuple<bool, f32> TryToHitTarget(std::mt19937 engine, Ammo& ammo, u32 distance);
 
 std::vector<FireResult> Fire(
     Side firing_side,

@@ -222,7 +222,7 @@ bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 thresho
     return v > threshold;
 };
 
-std::tuple<bool, f32> TryToHitTarget(Ammo& ammo, u32 distance)
+std::tuple<bool, f32> TryToHitTarget(std::mt19937 engine, Ammo& ammo, u32 distance)
 {
     u32 index = 0;
     Accuracy acc = ammo.accuracy[0];
@@ -233,9 +233,7 @@ std::tuple<bool, f32> TryToHitTarget(Ammo& ammo, u32 distance)
         acc = ammo.accuracy[index];
     }
 
-    std::random_device rd;
     std::uniform_real_distribution<f32> distribution(0.0, 1.0);
-    std::mt19937 engine(rd());
 
     auto value = distribution(engine);
 
@@ -256,6 +254,7 @@ std::tuple<BattleGroup&, WeaponInGroup&> PickTarget(std::uniform_int_distributio
     return { target_group, target_group.weapons[index] };
 }
 
+//TODO: pick ammo based on its characteristics
 static Ammo& PickRightAmmunitionForTarget(Armory* armory, Device& firing_device, WeaponSystem* target)
 {
     assert(target != nullptr);
@@ -268,7 +267,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, const SimulationP
 {
     std::vector<FireResult> results;
     std::random_device rd;
-    std::mt19937 mt(rd());
+    std::mt19937 rnd_engine(rd());
     std::uniform_int_distribution<u32> dist(0, targeted_battlegroups.size() - 1);
     std::uniform_int_distribution<u32> d6(0, 6);
 
@@ -286,7 +285,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, const SimulationP
             for (u32 device_index : attacking_weapon_ref.weapon->devices) {
                 auto& attacking_device = armory->devices.at(device_index);
 
-                auto [targeted_group, targeted_weapon] = PickTarget(dist, mt, targeted_battlegroups);
+                auto [targeted_group, targeted_weapon] = PickTarget(dist, rnd_engine, targeted_battlegroups);
                 auto& ammunition_used_for_attack = PickRightAmmunitionForTarget(armory, attacking_device, targeted_weapon.weapon);
 
                 // TODO: temporary
@@ -302,7 +301,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, const SimulationP
                 fire_result.starting_state = targeted_weapon_state;
 
                 // Hit
-                auto [target_was_hit, acc] = TryToHitTarget(ammunition_used_for_attack, distance_in_m);
+                auto [target_was_hit, acc] = TryToHitTarget(rnd_engine, ammunition_used_for_attack, distance_in_m);
                 if (target_was_hit) {
                     fire_result.status = "HIT";
                     // Record damage
