@@ -40,33 +40,6 @@ static const BiMap<OblastCode, const std::string> OBLASTS = {
     { OblastCode::Cherkasy, "Cherkasy" },
 };
 
-/*
-    Header file
-
-    Instance ID, UA Weapons (Soft, Hard, N), RU Weapons (Soft, Hard, N)
-
-    ---
-
-    File A
-
-    We simulate k fights starting at l distance
-
-    Each line in data file looks like this:
-
-    # Iter Status Weapon Device ACC TargetWeapon StartingState Dmg StateAfterHit Distance
-    0    HIT   BMP2   2A42   0.5 BMP1 100 24 76 2400
-    ...
-    k-1 HIT   BMP2   2A42   0.5 BMP1 100 24 76 2400
-    k   MISS Javelin Missle 0.5 T72  100 360 0 1400
-
-    ---
-
-    File B
-
-    Winner UA_menlost UA_tank_lost UA_ifv_lost UA_cars_lost UA_drones_lost ... RU_tank_lost etc etc
-    UA 1023 20 10
-*/
-
 constexpr u32 MAX_RUNS = 50;
 
 // TODO: copy pasta from Devices.cpp
