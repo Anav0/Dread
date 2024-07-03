@@ -261,7 +261,7 @@ std::tuple<BattleGroup&, WeaponInGroup&> PickTarget(std::mt19937& mt, std::vecto
 }
 
 // TODO: pick ammo based on its characteristics
-static bool TryPickingRightAmmunitionForTarget(Armory* armory, Device& firing_device, WeaponSystem* target, Ammo** ammo_picked)
+bool TryPickingRightAmmunitionForTarget(Armory* armory, Device& firing_device, WeaponSystem* target, Ammo** ammo_picked)
 {
     assert(target != nullptr);
     assert(firing_device.ammunition.size() > 0);

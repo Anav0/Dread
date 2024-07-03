@@ -519,6 +519,8 @@ struct Fight {
 
 BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& unit);
 
+bool TryPickingRightAmmunitionForTarget(Armory* armory, Device& firing_device, WeaponSystem* target, Ammo** ammo_picked);
+
 std::vector<f32> GetModifiers(SimulationParams& params, WeaponSystemGeneralType type, SideStatus status);
 bool MoralBroke(std::vector<BattleGroup>& groups, f32 threshold);
 bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 threshold);
