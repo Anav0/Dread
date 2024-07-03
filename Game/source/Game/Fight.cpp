@@ -191,7 +191,8 @@ bool MoralBroke(std::vector<BattleGroup>& groups, f32 threshold)
     };
 
     for (BattleGroup& group : groups) {
-        if (group.AverageMorale() < threshold)
+        auto avg = group.AverageMorale();
+        if (avg < threshold)
             return true;
     }
 
