@@ -7,6 +7,7 @@
 
 #include "Problem.h"
 
+#include <algorithm>
 #include <format>
 #include <random>
 
@@ -173,6 +174,59 @@ static void TryToHitTarget_CannotHitSomethingOutOfRange()
     hit ? PRINT_FAILED : PRINT_PASS;
 }
 
+static void TryToHitTarget_UsesCorrectAccuracyRating()
+{
+    std::random_device rd;
+    auto rnd_engine = std::mt19937(rd());
+
+    Ammo ammo;
+    ammo.accuracy.push_back({ 4500, 0.5 });
+    ammo.accuracy.push_back({ 3500, 0.6 });
+    ammo.accuracy.push_back({ 2500, 0.7 });
+
+    auto [hit1, acc1] = TryToHitTarget(rnd_engine, &ammo, 4000); // Should use 0.5 acc
+    auto [hit2, acc2] = TryToHitTarget(rnd_engine, &ammo, 2500); // Should use 0.7 acc
+    auto [hit3, acc3] = TryToHitTarget(rnd_engine, &ammo, 1000); // Should use 0.7 acc
+
+    auto x = acc1 == 0.5;
+    auto y = acc2 == 0.7;
+    auto z = acc3 == 0.7;
+
+    x&& y&& z ? PRINT_FAILED : PRINT_PASS;
+}
+
+static void ApplyModifiers_GetsCorrectModifiers()
+{
+    WeatherManager weather_manager;
+
+    ModifiersManager modifiers_manager;
+    modifiers_manager.ru_modifier = { 0.5, 1.0 };
+    modifiers_manager.ua_modifier = { 1.0, 0.5 };
+
+    SimulationParams params = SimulationParams(OblastCode::Kharkiv, Side::UA, weather_manager, modifiers_manager);
+    auto initial_dmg = 100;
+
+    std::vector<bool> results;
+
+    auto dmg = ApplyModifiers(Side::UA, params, initial_dmg); // UA fires in attack
+    results.push_back(dmg == initial_dmg);
+
+    dmg = ApplyModifiers(Side::RU, params, initial_dmg); // RU fires in defense
+    results.push_back(dmg == initial_dmg);
+
+    // Change of attacking side
+
+    SimulationParams params2 = SimulationParams(OblastCode::Kharkiv, Side::RU, weather_manager, modifiers_manager);
+
+    dmg = ApplyModifiers(Side::UA, params2, initial_dmg); // UA fires in defense
+    results.push_back(dmg == 50);
+
+    dmg = ApplyModifiers(Side::RU, params2, initial_dmg); // RU fires in attack
+    results.push_back(dmg == 50);
+
+    std::all_of(results.begin(), results.end(), [](bool v) { return v; }) ? PRINT_PASS : PRINT_FAILED;
+}
+
 static void RunTests()
 {
     std::cout << "-----------------------\n";
@@ -192,6 +246,10 @@ static void RunTests()
 
     // Range
     TryToHitTarget_CannotHitSomethingOutOfRange();
+    TryToHitTarget_UsesCorrectAccuracyRating();
+
+    // Modifiers
+    ApplyModifiers_GetsCorrectModifiers();
 
     std::cout << "\n";
 }
