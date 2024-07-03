@@ -7,6 +7,9 @@
 
 #include "Problem.h"
 
+#include <format>
+#include <random>
+
 const char* units_path = "D:/Projects/Dread/Game/data/units.csv";
 const char* armory_path = "D:/Projects/Dread/Game/data/weapons.csv";
 const char* storage_path = "D:/Projects/Dread/Game/data/storage.csv";
@@ -65,8 +68,138 @@ std::map<OblastCode, std::tuple<Weather, GroundCondition>> GetInitialConditions2
     return conditions;
 }
 
+#define PRINT_PASS std::cout << std::format("{:70} {:->1}\n", __func__, " PASS")
+#define PRINT_FAILED std::cout << std::format("{:70} {:->1}", __func__, " FAIL")
+
+static Armory Fixture_Armory()
+{
+    Ammo ap, he;
+
+    ap.AA = 0.0;
+    ap.accuracy.push_back({ 4000, 0.2 });
+    ap.accuracy.push_back({ 2000, 0.6 });
+    ap.domain = WeaponDomain::Ground;
+    ap.hard = 100;
+    ap.soft = 0;
+
+    he.AA = 0.0;
+    he.accuracy.push_back({ 4000, 0.2 });
+    he.accuracy.push_back({ 2000, 0.6 });
+    he.domain = WeaponDomain::Ground;
+    he.hard = 0;
+    he.soft = 100;
+
+    Device cannon;
+    cannon.name = "Test gun 1";
+    cannon.ammunition.insert(0);
+    cannon.ammunition.insert(1);
+
+    auto armory = Armory();
+    armory.devices.push_back(cannon);
+    armory.ammo.push_back(ap);
+    armory.ammo.push_back(he);
+
+    return armory;
+}
+
+static std::vector<BattleGroup> Fixture_TestGroup(Armory* armory)
+{
+    const auto oblast = OblastCode::Kharkiv;
+    const auto attacker = Side::UA;
+    const auto modifiers_manager = ModifiersManager();
+    const auto weather_manager = WeatherManager();
+
+    std::vector<BattleGroup> test_groups;
+
+    BattleGroup A = BattleGroup(armory);
+    BattleGroup B = BattleGroup(armory);
+
+    A.Attacking = 1;
+    A.Domain = "Ground";
+    A.name = "Test firing group";
+    A.GroupIndex = 0;
+    A.real_size = 1;
+    A.parent_unit_index = 0;
+    A.Side = "UA";
+    A.weapons.at(0) = { nullptr, 0.2, 0.0, 1.0 };
+
+    B = BattleGroup(A);
+    B.weapons.at(0) = { nullptr, 0.4, 1.0, 1.0 };
+
+    test_groups.push_back(A);
+    test_groups.push_back(B);
+
+    return test_groups;
+}
+
+static void MoraleBroke_ReturnsTrueIfMoraleBelowThreshold()
+{
+    auto armory = Fixture_Armory();
+    auto groups = Fixture_TestGroup(&armory);
+    MoralBroke(groups, 0.7) ? PRINT_PASS : PRINT_FAILED;
+}
+
+static void MoraleBroke_ReturnsFalseIfMoraleAboveThreshold()
+{
+    auto armory = Fixture_Armory();
+    auto groups = Fixture_TestGroup(&armory);
+    MoralBroke(groups, 0.2) ? PRINT_FAILED : PRINT_PASS;
+}
+
+static void AverageDamageExceedsThreshold_ReturnsFalseIfDamageBelowThreshold()
+{
+    auto armory = Fixture_Armory();
+    auto groups = Fixture_TestGroup(&armory);
+
+    AverageDamageExceedsThreshold(groups, 0.9) ? PRINT_FAILED : PRINT_PASS;
+}
+
+static void AverageDamageExceedsThreshold_ReturnsTrueIfDamageAboveThreshold()
+{
+    auto armory = Fixture_Armory();
+    auto groups = Fixture_TestGroup(&armory);
+
+    AverageDamageExceedsThreshold(groups, 0.2) ? PRINT_PASS : PRINT_FAILED;
+}
+
+static void TryToHitTarget_CannotHitSomethingOutOfRange()
+{
+    Ammo ammo;
+    ammo.accuracy.push_back({ 4500, 0.5 });
+    std::random_device rd;
+    auto rnd_engine = std::mt19937(rd());
+    auto [hit, _] = TryToHitTarget(rnd_engine, &ammo, 6000);
+
+    hit ? PRINT_FAILED : PRINT_PASS;
+}
+
+static void RunTests()
+{
+    std::cout << "-----------------------\n";
+    std::cout << "---- RUNNING TESTS ----\n";
+    std::cout << "-----------------------\n";
+
+    auto armory = Fixture_Armory();
+    auto groups = Fixture_TestGroup(&armory);
+
+    // Groups have avg morale of 0.3 by default
+    MoraleBroke_ReturnsTrueIfMoraleBelowThreshold();
+    MoraleBroke_ReturnsFalseIfMoraleAboveThreshold();
+
+    // Groups have avg damage of 0.5 by default
+    AverageDamageExceedsThreshold_ReturnsFalseIfDamageBelowThreshold();
+    AverageDamageExceedsThreshold_ReturnsTrueIfDamageAboveThreshold();
+
+    // Range
+    TryToHitTarget_CannotHitSomethingOutOfRange();
+
+    std::cout << "\n";
+}
+
 int main(int argc, char* argv[])
 {
+    RunTests();
+
     assert(argc == 2);
 
     auto save_only_this_arr = split2(argv[1], ';');
