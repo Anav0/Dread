@@ -69,8 +69,8 @@ std::map<OblastCode, std::tuple<Weather, GroundCondition>> GetInitialConditions2
     return conditions;
 }
 
-#define PRINT_PASS std::cout << std::format("{:70} {:->1}\n", __func__, " PASS")
-#define PRINT_FAILED std::cout << std::format("{:70} {:->1}", __func__, " FAIL")
+#define PRINT_PASS std::cout << std::format("{:85} {:->1}\n", __func__, " PASS")
+#define PRINT_FAILED std::cout << std::format("{:85} {:->1}", __func__, " FAIL")
 
 static Armory Fixture_Armory()
 {
@@ -95,10 +95,52 @@ static Armory Fixture_Armory()
     cannon.ammunition.insert(0);
     cannon.ammunition.insert(1);
 
+    WeaponSystem weapon1;
+    weapon1.armor = Armor::Hard;
+    weapon1.name = "Test Tank";
+    weapon1.cost_in_dollars = 1000000;
+    weapon1.devices.push_back(0);
+    weapon1.domain = WeaponDomain::Ground;
+    weapon1.default_state = 100;
+    weapon1.type = WeaponSystemGeneralType::Tank;
+
+    WeaponSystem weapon2 = WeaponSystem(weapon1);
+    weapon2.name = "Test IFV";
+    weapon2.cost_in_dollars = 1000000;
+    weapon2.devices.push_back(0);
+    weapon2.domain = WeaponDomain::Ground;
+    weapon2.default_state = 100;
+    weapon2.type = WeaponSystemGeneralType::IFV;
+
+    WeaponSystem weapon3 = WeaponSystem(weapon2);
+    weapon3.armor = Armor::Soft;
+    weapon3.name = "Test Infantry";
+    weapon3.cost_in_dollars = 1000000;
+    weapon3.devices.push_back(0);
+    weapon3.domain = WeaponDomain::Ground;
+    weapon3.default_state = 100;
+    weapon3.type = WeaponSystemGeneralType::Infantry;
+
+    WeaponSystem weapon4 = WeaponSystem(weapon3);
+    weapon4.armor = Armor::Soft;
+    weapon4.name = "Test Drone";
+    weapon4.cost_in_dollars = 1000000;
+    weapon4.devices.push_back(0);
+    weapon4.domain = WeaponDomain::Air;
+    weapon4.default_state = 100;
+    weapon4.type = WeaponSystemGeneralType::Drone;
+
+
     auto armory = Armory();
     armory.devices.push_back(cannon);
+
     armory.ammo.push_back(ap);
     armory.ammo.push_back(he);
+
+    armory.weapons.push_back(weapon1);
+    armory.weapons.push_back(weapon2);
+    armory.weapons.push_back(weapon3);
+    armory.weapons.push_back(weapon4);
 
     return armory;
 }
@@ -227,6 +269,30 @@ static void ApplyModifiers_GetsCorrectModifiers()
     std::all_of(results.begin(), results.end(), [](bool v) { return v; }) ? PRINT_PASS : PRINT_FAILED;
 }
 
+static void TryPickingRightAmmunitionForTarget_PickesAmmoThatCorrespondsToTargetArmorAndDomain()
+{
+    auto armory = Fixture_Armory();
+
+    auto attacking_device = armory.devices.at(0);
+    auto hard_target  = armory.weapons.at(0);
+    auto soft_target  = armory.weapons.at(2);
+    auto drone_target = armory.weapons.at(3);
+
+    Ammo* ammo_used_for_hard_target = nullptr;
+    Ammo* ammo_used_for_soft_target = nullptr;
+    Ammo* ammo_used_for_diff_domain_target = nullptr;
+
+    auto picked_for_hard        = TryPickingRightAmmunitionForTarget(&armory, attacking_device, &hard_target, &ammo_used_for_hard_target);
+    auto picked_for_soft        = TryPickingRightAmmunitionForTarget(&armory, attacking_device, &soft_target, &ammo_used_for_soft_target);
+    auto picked_for_diff_domain = TryPickingRightAmmunitionForTarget(&armory, attacking_device, &drone_target, &ammo_used_for_diff_domain_target);
+
+    auto hard_passed        = ammo_used_for_hard_target->hard > 0.0;
+    auto soft_passed        = ammo_used_for_soft_target->soft > 0.0;
+    auto diff_domain_passed = ammo_used_for_diff_domain_target == nullptr && !picked_for_diff_domain;
+
+    diff_domain_passed && hard_passed && soft_passed ? PRINT_PASS : PRINT_FAILED;
+}
+
 static void RunTests()
 {
     std::cout << "-----------------------\n";
@@ -250,6 +316,9 @@ static void RunTests()
 
     // Modifiers
     ApplyModifiers_GetsCorrectModifiers();
+
+    // Ammo
+    TryPickingRightAmmunitionForTarget_PickesAmmoThatCorrespondsToTargetArmorAndDomain();
 
     std::cout << "\n";
 }
