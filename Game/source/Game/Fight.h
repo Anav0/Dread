@@ -477,7 +477,7 @@ struct SimulationParams {
 
     SimulationParams(
         const OblastCode oblast_code,
-        const Side& attackingSide,
+        const Side attackingSide,
         const WeatherManager& weather_manager,
         const ModifiersManager& modifiers_manager)
         : attacking_side(attackingSide)
