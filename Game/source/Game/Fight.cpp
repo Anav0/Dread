@@ -236,6 +236,9 @@ std::tuple<bool, f32> TryToHitTarget(std::mt19937& engine, Ammo* ammo, u32 dista
         acc = ammo->accuracy[index];
     }
 
+    if (acc.range_in_meters < distance)
+        return { false, 0.0 };
+
     std::uniform_real_distribution<f32> distribution(0.0, 1.0);
 
     auto value = distribution(engine);
