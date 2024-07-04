@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
     weather_manager.Init(GetInitialConditions2());
     ModifiersManager modifiers_manager = ModifiersManager();
     modifiers_manager.LoadWeatherModifiers(conditions_path);
-    modifiers_manager.ru_modifier = Modifier(0.55, 1.0);
+    modifiers_manager.ru_modifier = Modifier(2.55, 1.0);
     modifiers_manager.ua_modifier = Modifier(1.1, 1.25);
 
     SimulationParams params = SimulationParams(OblastCode::Donetsk, Side::RU, weather_manager, modifiers_manager);

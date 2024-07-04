@@ -64,23 +64,15 @@ f32 ModifiersManager::GetGroundConditionModifier(GroundCondition ground_conditio
         return this->ground_condition_modifiers.at(ground_condition).at(type).defense_modifier;
 }
 
-u16 ApplySideModifier(const SideStatus status, const Modifier& modifier, u16 damage) {
-    if (status == SideStatus::Attacking) {
-        return damage * modifier.attack_modifier;
-    } else {
-        return damage * modifier.defense_modifier;
-    }
+// TODO: Implement
+HitDirection DeterminHitDirection(TargetingInfo& targeting_info)
+{
+    return HitDirection::HullFront;
 }
 
-u16 ApplyModifiers(const Side side, const SimulationParams& params, u16 damage)
+bool ArmorWasPenetrated(TargetingInfo& targeting_info)
 {
-    if (side == params.attacking_side) {
-        auto modifier = params.attacking_side == Side::RU ? params.modifiers_manager.ru_modifier : params.modifiers_manager.ua_modifier;
-        return ApplySideModifier(SideStatus::Attacking, modifier, damage);
-    } else {
-        auto modifier = params.defending_side == Side::RU ? params.modifiers_manager.ru_modifier : params.modifiers_manager.ua_modifier;
-        return ApplySideModifier(SideStatus::Defending, modifier, damage);
-    }
-
-    assert(false);
+    HitDirection dir = DeterminHitDirection(targeting_info);
+    u32 armor_value = targeting_info.targeted_weapon->weapon->GetArmorAt(dir);
+    return armor_value < targeting_info.ammo_to_use->penetration;
 }

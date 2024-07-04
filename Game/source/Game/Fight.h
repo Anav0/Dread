@@ -20,6 +20,17 @@
 class WeatherManager;
 // class Modifier;
 // class ModifiersManager;
+enum class HitDirection {
+    Top,
+
+    HullFront,
+    HullSide,
+    HullRear,
+
+    TurretFront,
+    TurretSide,
+    TurretRear,
+};
 
 enum class UnitSize {
     Division,
@@ -29,6 +40,13 @@ enum class UnitSize {
     Company,
     Platoon,
     Squad,
+};
+
+enum class DamageType {
+    Kinetic,
+    HEAT,
+    Tandem,
+    HE
 };
 
 const std::map<std::string, UnitSize> STR_TO_SIZE = {
@@ -41,6 +59,13 @@ const std::map<std::string, UnitSize> STR_TO_SIZE = {
     { "Squad", UnitSize::Squad },
 };
 
+const BiMap<std::string, DamageType> STR_TO_DAMAGE_TYPE = {
+    { "HE", DamageType::HE },
+    { "HEAT", DamageType::HEAT },
+    { "Kinetic", DamageType::Kinetic },
+    { "Tandem", DamageType::Tandem },
+};
+
 enum class WeaponDomain {
     Cyber,
     Ground,
@@ -48,16 +73,12 @@ enum class WeaponDomain {
     Sea,
 };
 
-enum class Armor {
-    Soft,
-    Hard,
-};
-
 enum class WeaponSystemGeneralType {
     Infantry,
     APC,
     IFV,
     Artillery,
+    Mortar,
     MLRS,
     Vehicle,
     Drone,
@@ -73,11 +94,23 @@ struct Accuracy {
 
 struct Ammo {
     std::string name;
-    WeaponDomain domain;
-    u16 soft;
-    u16 hard;
-    u16 AA;
+    WeaponDomain domain; // Domain of the potential target
+    DamageType damage_type;
+    u16 penetration;
+    u16 fragmentation;
     std::vector<Accuracy> accuracy;
+};
+
+struct Armor {
+    u32 top;
+
+    u32 hull_front;
+    u32 hull_rear;
+    u32 hull_side;
+
+    u32 turret_front;
+    u32 turret_rear;
+    u32 turret_side;
 };
 
 struct Device {
@@ -85,7 +118,9 @@ struct Device {
     std::set<u32> ammunition;
 };
 
-struct WeaponSystem {
+class Armory;
+class WeaponSystem {
+public:
     Armor armor;
     WeaponDomain domain;
     WeaponSystemGeneralType type;
@@ -98,7 +133,20 @@ struct WeaponSystem {
     u32 cost_in_dollars;
 
     std::vector<u32> devices;
+
+    std::map<WeaponDomain, u32> cached_max_range_per_domain_soft;
+
+    u32 GetArmorAt(HitDirection);
+    bool IsArmored();
 };
+
+struct Capabilities {
+    bool hard;
+    bool soft;
+
+    std::set<WeaponDomain> domains;
+};
+Capabilities GetCapabilities(Armory*, Device&);
 
 enum class Side {
     UA,
@@ -191,7 +239,6 @@ struct RoundInfo {
     }
 };
 
-std::string ArmorToStr(Armor armor);
 std::string DomainToStr(WeaponDomain domain);
 
 std::string WeaponTypeToStr(WeaponSystemGeneralType type);
@@ -240,7 +287,6 @@ struct BattleGroup {
         for (u32 i = 0; i < real_size; i++) {
             auto& w = weapons[i];
             const auto& name = WeaponTypeToStr(w.weapon->type);
-            const auto& type = ArmorToStr(w.weapon->armor);
             const auto state = w.state;
             const auto unit_name = w.weapon->name;
 
@@ -254,8 +300,7 @@ struct BattleGroup {
                 ss << unit_name << ";";
                 ss << name << ";";
                 ss << index << ";";
-                ss << state << ";";
-                ss << type << "\n";
+                ss << state << "\n";
             }
             index++;
         }
@@ -297,44 +342,35 @@ struct AttackResult {
     std::vector<Loss> defender_weapon_index_by_numbers_lost;
 };
 
+struct TargetingInfo {
+    bool can_fire;
+    BattleGroup* targeted_group;
+    WeaponInGroup* targeted_weapon;
+    WeaponInGroup* weapon_to_use;
+    Device* device_to_use;
+    Ammo* ammo_to_use;
+};
+
 struct FireResult {
     u64 run;
     u64 round;
     std::string firing_side;
     std::string status;
-    Device& firing_device;
-    const WeaponInGroup& firing_weapons_system;
-    WeaponSystem* targeted_weapons_system;
+    TargetingInfo targeting_info;
     f32 acc;
     f32 starting_state;
-    f32 dmg;
-    f32 state_after_damage;
     f32 morale;
     f32 morale_after_damage;
     u32 distance;
 
-    FireResult(Device& firing_device, const WeaponInGroup& firing_weapons_system, WeaponSystem* targeted_weapons_system)
-        : firing_weapons_system(firing_weapons_system)
-        , firing_device(firing_device)
-        , targeted_weapons_system(targeted_weapons_system) {};
+    FireResult(TargetingInfo targeting_info)
+        : targeting_info(targeting_info) {};
 
+    // TODO:
     void ToCsvRow(std::ostringstream& ss) const
     {
-        ss << run << ";"
-           << round << ";"
-           << firing_side << ";"
-           << status << ";"
-           << firing_weapons_system.weapon->name << ";"
-           << WeaponTypeToStr(firing_weapons_system.weapon->type) << ";"
-           << firing_device.name << ";"
-           << acc << ";"
-           << targeted_weapons_system->name << ";"
-           << starting_state << ";"
-           << dmg << ";"
-           << state_after_damage << ";"
-           << morale << ";"
-           << morale_after_damage << ";"
-           << distance << "\n";
+        ss << "EMPTY"
+           << "\n";
     }
 };
 
@@ -519,12 +555,15 @@ struct Fight {
 
 BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& unit);
 
-bool TryPickingRightAmmunitionForTarget(Armory* armory, Device& firing_device, WeaponSystem* target, Ammo** ammo_picked);
-
 std::vector<f32> GetModifiers(SimulationParams& params, WeaponSystemGeneralType type, SideStatus status);
 bool MoralBroke(std::vector<BattleGroup>& groups, f32 threshold);
 bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 threshold);
-std::tuple<bool, f32> TryToHitTarget(std::mt19937& engine, Ammo* ammo, u32 distance);
+TargetingInfo TryPickingTarget(const WeaponInGroup& firing_weapon, std::mt19937& mt, std::vector<BattleGroup>& enemy_groups, u32 distance);
+std::tuple<bool, f32> TryToHitTarget(TargetingInfo&, std::mt19937&, u32 distance);
+
+bool IsAP(Ammo*);
+
+bool IsHE(Ammo*);
 
 std::vector<FireResult> Fire(
     Side firing_side,

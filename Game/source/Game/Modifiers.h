@@ -44,8 +44,7 @@ public:
     f32 GetWeatherModifier(Weather, WeaponSystemGeneralType, SideStatus) const;
     f32 GetGroundConditionModifier(GroundCondition, WeaponSystemGeneralType, SideStatus) const;
 };
-
-u16 ApplySideModifier(const SideStatus status, const Modifier& modifier, u16 damage);
-u16 ApplyModifiers(const Side side, const SimulationParams& params, u16 damage);
+class TargetingInfo;
+bool ArmorWasPenetrated(TargetingInfo&);
 
 #endif

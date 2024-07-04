@@ -18,7 +18,6 @@ std::string WeaponTypeToStr(WeaponSystemGeneralType type);
 
 //----
 std::vector<std::string> split(const std::string& s, char delimiter);
-Armor StrToArmor(std::string& str);
 WeaponDomain DomainStrToEnum(std::string& text);
 std::vector<Accuracy> StrToAccuracy(std::string& text);
 static void remove(std::string& str, char c);

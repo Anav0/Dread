@@ -23,17 +23,6 @@ std::vector<std::string> split(const std::string& s, char delimiter)
     return tokens;
 }
 
-Armor StrToArmor(std::string& str)
-{
-    assert(str == "Soft" || str == "Hard");
-
-    if (str == "Soft")
-        return Armor::Soft;
-
-    if (str == "Hard")
-        return Armor::Hard;
-}
-
 WeaponDomain DomainStrToEnum(std::string& text)
 {
     if (text == "Ground")
@@ -82,7 +71,7 @@ void PrintArmory(Armory& armory)
 
             for (u32 a : armory.devices[d].ammunition) {
                 auto& ammo = armory.ammo[a];
-                printf("\t\tAmmo: %s Soft: %i Hard: %i UA: %i RU: %i\n", ammo.name.c_str(), ammo.soft, ammo.hard, armory.ua_ammo_quantity[a], armory.ru_ammo_quantity[a]);
+                printf("\t\tAmmo: %s Damage Type: %s Damage: %i UA Qty: %i RU Qty: %i\n", ammo.name.c_str(), STR_TO_DAMAGE_TYPE.GetKey(ammo.damage_type), ammo.penetration, armory.ua_ammo_quantity[a], armory.ru_ammo_quantity[a]);
                 for (auto& acc : ammo.accuracy) {
                     printf("\t\t\t %f at %im\n", acc.change_to_hit, acc.range_in_meters);
                 }
@@ -153,7 +142,6 @@ Armory LoadArmory(const char* weapons_path, const char* storage_path)
             WeaponSystem w;
             w.name = parts[0].substr(1);
             w.default_state = std::stoi(parts[1]);
-            w.armor = StrToArmor(parts[3]);
             w.domain = DomainStrToEnum(parts[4]);
             w.type = StrToWeaponType(parts[6]);
 
@@ -177,10 +165,9 @@ Armory LoadArmory(const char* weapons_path, const char* storage_path)
             Ammo ammo;
             ammo.name = parts[0];
             ammo.domain = DomainStrToEnum(parts[1]);
-            ammo.soft = std::stoi(parts[2]);
-            ammo.hard = std::stoi(parts[3]);
-            ammo.AA = std::stoi(parts[4]);
-            ammo.accuracy = StrToAccuracy(parts[5]);
+            ammo.damage_type = STR_TO_DAMAGE_TYPE.GetValue(parts[2]);
+            ammo.penetration = std::stoi(parts[3]);
+            ammo.accuracy = StrToAccuracy(parts[4]);
 
             ammunition.push_back(ammo);
             device->ammunition.insert(ammunition.size() - 1);

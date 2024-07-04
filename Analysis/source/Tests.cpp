@@ -4,23 +4,45 @@
 
 #include "Tests.h"
 
+Armor NoArmor() {
+    Armor armor;
+    armor.top = 0;
+    armor.hull_front = 0;
+    armor.hull_side = 0;
+    armor.hull_rear = 0;
+    armor.turret_front = 0;
+    armor.turret_side = 0;
+    armor.turret_rear = 0;
+    return armor;
+}
+
+Armor TankArmor() {
+    Armor armor;
+    armor.top = 50;
+    armor.hull_front = 350;
+    armor.hull_side = 150;
+    armor.hull_rear = 250;
+    armor.turret_front = 350;
+    armor.turret_side = 150;
+    armor.turret_rear = 250;
+    return armor;
+}
+
 Armory Fixture_Armory()
 {
     Ammo ap, he;
 
-    ap.AA = 0.0;
     ap.accuracy.push_back({ 4000, 0.2 });
     ap.accuracy.push_back({ 2000, 0.6 });
     ap.domain = WeaponDomain::Ground;
-    ap.hard = 100;
-    ap.soft = 0;
+    ap.penetration = 350;
+    ap.fragmentation = 0;
 
-    he.AA = 0.0;
     he.accuracy.push_back({ 4000, 0.2 });
     he.accuracy.push_back({ 2000, 0.6 });
     he.domain = WeaponDomain::Ground;
-    he.hard = 0;
-    he.soft = 100;
+    he.penetration = 0;
+    he.fragmentation = 100;
 
     Device cannon;
     cannon.name = "Test gun 1";
@@ -28,7 +50,7 @@ Armory Fixture_Armory()
     cannon.ammunition.insert(1);
 
     WeaponSystem weapon1;
-    weapon1.armor = Armor::Hard;
+    weapon1.armor = TankArmor();
     weapon1.name = "Test Tank";
     weapon1.cost_in_dollars = 1000000;
     weapon1.devices.push_back(0);
@@ -45,7 +67,7 @@ Armory Fixture_Armory()
     weapon2.type = WeaponSystemGeneralType::IFV;
 
     WeaponSystem weapon3 = WeaponSystem(weapon2);
-    weapon3.armor = Armor::Soft;
+    weapon3.armor = NoArmor();
     weapon3.name = "Test Infantry";
     weapon3.cost_in_dollars = 1000000;
     weapon3.devices.push_back(0);
@@ -54,7 +76,7 @@ Armory Fixture_Armory()
     weapon3.type = WeaponSystemGeneralType::Infantry;
 
     WeaponSystem weapon4 = WeaponSystem(weapon3);
-    weapon4.armor = Armor::Soft;
+    weapon4.armor = NoArmor();
     weapon4.name = "Test Drone";
     weapon4.cost_in_dollars = 1000000;
     weapon4.devices.push_back(0);
@@ -142,7 +164,12 @@ void TryToHitTarget_CannotHitSomethingOutOfRange()
     ammo.accuracy.push_back({ 4500, 0.5 });
     std::random_device rd;
     auto rnd_engine = std::mt19937(rd());
-    auto [hit, _] = TryToHitTarget(rnd_engine, &ammo, 6000);
+
+    TargetingInfo info;
+    info.ammo_to_use = &ammo;
+    info.can_fire = true;
+
+    auto [hit, _] = TryToHitTarget(info, rnd_engine, 6000);
 
     hit ? PRINT_FAILED : PRINT_PASS;
 }
@@ -157,71 +184,19 @@ void TryToHitTarget_UsesCorrectAccuracyRating()
     ammo.accuracy.push_back({ 3500, 0.6 });
     ammo.accuracy.push_back({ 2500, 0.7 });
 
-    auto [hit1, acc1] = TryToHitTarget(rnd_engine, &ammo, 4000); // Should use 0.5 acc
-    auto [hit2, acc2] = TryToHitTarget(rnd_engine, &ammo, 2500); // Should use 0.7 acc
-    auto [hit3, acc3] = TryToHitTarget(rnd_engine, &ammo, 1000); // Should use 0.7 acc
+    TargetingInfo info;
+    info.ammo_to_use = &ammo;
+    info.can_fire = true;
+
+    auto [hit1, acc1] = TryToHitTarget(info, rnd_engine, 4000); // Should use 0.5 acc
+    auto [hit2, acc2] = TryToHitTarget(info, rnd_engine, 2500); // Should use 0.7 acc
+    auto [hit3, acc3] = TryToHitTarget(info, rnd_engine, 1000); // Should use 0.7 acc
 
     auto x = acc1 == 0.5;
     auto y = acc2 == 0.7;
     auto z = acc3 == 0.7;
 
     x&& y&& z ? PRINT_FAILED : PRINT_PASS;
-}
-
-void ApplyModifiers_GetsCorrectModifiers()
-{
-    WeatherManager weather_manager;
-
-    ModifiersManager modifiers_manager;
-    modifiers_manager.ru_modifier = { 0.5, 1.0 };
-    modifiers_manager.ua_modifier = { 1.0, 0.5 };
-
-    SimulationParams params = SimulationParams(OblastCode::Kharkiv, Side::UA, weather_manager, modifiers_manager);
-    auto initial_dmg = 100;
-
-    std::vector<bool> results;
-
-    auto dmg = ApplyModifiers(Side::UA, params, initial_dmg); // UA fires in attack
-    results.push_back(dmg == initial_dmg);
-
-    dmg = ApplyModifiers(Side::RU, params, initial_dmg); // RU fires in defense
-    results.push_back(dmg == initial_dmg);
-
-    // Change of attacking side
-
-    SimulationParams params2 = SimulationParams(OblastCode::Kharkiv, Side::RU, weather_manager, modifiers_manager);
-
-    dmg = ApplyModifiers(Side::UA, params2, initial_dmg); // UA fires in defense
-    results.push_back(dmg == 50);
-
-    dmg = ApplyModifiers(Side::RU, params2, initial_dmg); // RU fires in attack
-    results.push_back(dmg == 50);
-
-    std::all_of(results.begin(), results.end(), [](bool v) { return v; }) ? PRINT_PASS : PRINT_FAILED;
-}
-
-void TryPickingRightAmmunitionForTarget_PickesAmmoThatCorrespondsToTargetArmorAndDomain()
-{
-    auto armory = Fixture_Armory();
-
-    auto attacking_device = armory.devices.at(0);
-    auto hard_target = armory.weapons.at(0);
-    auto soft_target = armory.weapons.at(2);
-    auto drone_target = armory.weapons.at(3);
-
-    Ammo* ammo_used_for_hard_target = nullptr;
-    Ammo* ammo_used_for_soft_target = nullptr;
-    Ammo* ammo_used_for_diff_domain_target = nullptr;
-
-    auto picked_for_hard = TryPickingRightAmmunitionForTarget(&armory, attacking_device, &hard_target, &ammo_used_for_hard_target);
-    auto picked_for_soft = TryPickingRightAmmunitionForTarget(&armory, attacking_device, &soft_target, &ammo_used_for_soft_target);
-    auto picked_for_diff_domain = TryPickingRightAmmunitionForTarget(&armory, attacking_device, &drone_target, &ammo_used_for_diff_domain_target);
-
-    auto hard_passed = ammo_used_for_hard_target->hard > 0.0;
-    auto soft_passed = ammo_used_for_soft_target->soft > 0.0;
-    auto diff_domain_passed = ammo_used_for_diff_domain_target == nullptr && !picked_for_diff_domain;
-
-    diff_domain_passed&& hard_passed&& soft_passed ? PRINT_PASS : PRINT_FAILED;
 }
 
 void RunTests()
@@ -244,12 +219,6 @@ void RunTests()
     // Range
     TryToHitTarget_CannotHitSomethingOutOfRange();
     TryToHitTarget_UsesCorrectAccuracyRating();
-
-    // Modifiers
-    ApplyModifiers_GetsCorrectModifiers();
-
-    // Ammo
-    TryPickingRightAmmunitionForTarget_PickesAmmoThatCorrespondsToTargetArmorAndDomain();
 
     std::cout << "\n";
 }
