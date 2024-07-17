@@ -2,16 +2,27 @@
 
 #include <optional>
 #include <vector>
+#include <string>
+#include <string_view>
 
 #include "Fight.h"
+
+constexpr char USE_NAME_AS_ID_CHAR = '-';
 
 std::optional<u32> GetCommanderIndexByName(const std::string& name);
 std::optional<u32> GetWeaponIndexByName(std::vector<WeaponSystem>& weapons, const std::string& name);
 void AddUnitToState(Unit& unit, const std::string& oblast_name);
 
 void PrintArmory(Armory& armory);
-Armory LoadArmory(const char* path, const char* storage_path);
+
+Armory LoadArmory(const char* weapons_path, const char* ammo_path, const char* devices_path, const char* storage_path);
+void LoadAmmo(Armory* armory, const char* path);
+void LoadDevices(Armory* armory, const char* path);
 Deployment LoadUnits(std::vector<WeaponSystem>& weapons, const BiMap<OblastCode, const std::string>& oblast_names, const char* path);
+
+std::set<u32> ParseDevices(Armory* armory, std::string& devices_str);
+std::set<u32> ParseAmmo(Armory* armory, std::string& ammo_str);
+
 
 WeaponSystemGeneralType StrToWeaponType(std::string& str);
 std::string WeaponTypeToStr(WeaponSystemGeneralType type);
@@ -36,4 +47,5 @@ static const BiMap<WeaponSystemGeneralType, std::string> WEAPON_TYPE_STRING_MAP 
     { WeaponSystemGeneralType::MLRS, "MLRS" },
     { WeaponSystemGeneralType::MANPADS, "MANPADS" },
     { WeaponSystemGeneralType::ATGM, "ATGM" },
+    { WeaponSystemGeneralType::Mortar, "Mortar" },
 };

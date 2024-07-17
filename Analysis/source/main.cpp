@@ -10,10 +10,12 @@
 #include "Tests.h"
 #include "Tests.cpp"
 
-const char* units_path = "D:/Projects/Dread/Game/data/units.csv";
-const char* armory_path = "D:/Projects/Dread/Game/data/weapons.csv";
-const char* storage_path = "D:/Projects/Dread/Game/data/storage.csv";
-const char* conditions_path = "D:/Projects/Dread/Game/data/conditions.csv";
+const char* units_path       = "D:/Projects/Dread/Game/data/units";
+const char* weapons_path     = "D:/Projects/Dread/Game/data/weapons.csv";
+const char* devices_path     = "D:/Projects/Dread/Game/data/devices.csv";
+const char* ammo_path        = "D:/Projects/Dread/Game/data/ammo.csv";
+const char* storage_path     = "D:/Projects/Dread/Game/data/storage.csv";
+const char* conditions_path  = "D:/Projects/Dread/Game/data/conditions.csv";
 
 static const BiMap<OblastCode, const std::string> OBLASTS = {
     { OblastCode::Zythomyr, "Zythomyr" },
@@ -77,8 +79,8 @@ int main(int argc, char* argv[])
     auto save_only_this_arr = split2(argv[1], ';');
     auto save_only_this = std::set<std::string>(save_only_this_arr.begin(), save_only_this_arr.end());
 
-    Armory armory = LoadArmory(armory_path, storage_path);
-    Deployment deployment = LoadUnits(armory.weapons, OBLASTS, units_path);
+    Armory armory = LoadArmory(weapons_path, ammo_path, devices_path, storage_path);
+    Deployment deployment = LoadUnits(&armory, units_path);
 
     SimulationSession session = SimulationSession(&armory, deployment, save_only_this);
 

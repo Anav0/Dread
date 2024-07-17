@@ -51,7 +51,41 @@ std::vector<Accuracy> StrToAccuracy(std::string& text)
     return ratings;
 }
 
-std::optional<u32> Armory::GetWeaponIndexByName(const std::string& name)
+std::optional<u32> Armory::GetAmmoIndexById(std::string_view ammo_id)
+{
+    u32 i = 0;
+
+    for (auto& a : ammo) {
+        if (a.id == ammo_id) {
+            return { i };
+        }
+        i++;
+    }
+    return std::nullopt;
+}
+
+std::optional<u32> Armory::GetDeviceIndexById(std::string_view device_id)
+{
+    u32 i = 0;
+    for (auto& d : devices) {
+        if (d.id == device_id)
+            return { i };
+        i++;
+    }
+    return std::nullopt;
+}
+
+// Speed:
+// Pointer:
+WeaponSystem* Armory::GetWeaponById(std::string_view id)
+{
+    for (auto& w : weapons) {
+        if (w.id == id)
+            return &w;
+    }
+}
+
+std::optional<u32> Armory::GetWeaponIndexByName(std::string_view name)
 {
     u32 i = 0;
     for (auto& w : weapons) {
@@ -104,129 +138,168 @@ std::string WeaponTypeToStr(WeaponSystemGeneralType type)
     return WEAPON_TYPE_STRING_MAP.GetValue(type);
 }
 
-Armory LoadArmory(const char* weapons_path, const char* storage_path)
+std::set<u32> ParseAmmo(Armory* armory, std::string& ammo_str)
 {
-    Armory armory;
-    std::vector<WeaponSystem> weapons;
-    std::vector<Device> devices;
-    std::vector<Ammo> ammunition;
+    auto ids = split(ammo_str, ',');
 
-    std::ifstream file(weapons_path);
+    std::set<u32> ammo_ids;
+    for (std::string_view id : ids) {
+        auto ammo_id = armory->GetAmmoIndexById(id);
+        assert(ammo_id.has_value());
+        ammo_ids.insert(ammo_id.value());
+    }
+
+    return ammo_ids;
+}
+std::set<u32> ParseDevices(Armory* armory, std::string& devices_str)
+{
+    auto ids = split(devices_str, ',');
+
+    std::set<u32> device_ids;
+    for (const auto& id : ids) {
+        auto device_id = armory->GetDeviceIndexById(id);
+        assert(device_id.has_value());
+        device_ids.insert(device_id.value());
+    }
+
+    return device_ids;
+}
+
+void LoadAmmo(Armory* armory, const char* path)
+{
+    std::ifstream file(path);
 
     if (!file.is_open()) {
-        printf("Failed to read data file\n");
+        printf("Failed to read weapons file\n");
         assert(false);
     }
-
-    WeaponSystem* weapon_system = nullptr;
-    Device* device = nullptr;
 
     std::string line;
-
-    std::map<std::string, u32> device_name_by_index;
-    std::map<std::string, u32> weapon_name_by_index;
-    std::map<std::string, u32> ammo_name_by_index;
-
-    getline(file, line);
-
+    getline(file, line); // Skip header
     while (getline(file, line)) {
-        if (line == "" || line.starts_with('#'))
+        if (line == "")
             continue;
 
         auto parts = split(line, ';');
 
-        if (parts[0] == "")
-            continue;
+        Ammo a;
+        a.id = parts[0][0] == USE_NAME_AS_ID_CHAR ? parts[1] : parts[0];
+        a.name = parts[1];
+        a.domain = DomainStrToEnum(parts[2]);
+        a.damage_type = STR_TO_DAMAGE_TYPE.GetValue(parts[3]);
+        a.penetration = std::stoi(parts[4]);
+        a.fragmentation = std::stoi(parts[5]);
+        a.accuracy = StrToAccuracy(parts[6]);
 
-        if (line.starts_with(WEAPON_CHAR)) {
-            WeaponSystem w;
-            w.name = parts[0].substr(1);
-            w.default_state = std::stoi(parts[1]);
-            w.domain = DomainStrToEnum(parts[4]);
-            w.type = StrToWeaponType(parts[6]);
-
-            weapons.push_back(w);
-            weapon_system = &weapons[weapons.size() - 1];
-            weapon_name_by_index.insert(std::pair(parts[0], weapons.size() - 1));
-        } else if (line.starts_with(DEVICE_CHAR)) {
-            if (device_name_by_index.contains(parts[0])) {
-                weapon_system->devices.push_back(device_name_by_index.at(parts[0]));
-                device = &devices[device_name_by_index.at(parts[0])];
-            } else {
-                Device d;
-                d.name = parts[0].substr(1);
-                devices.push_back(d);
-                device = &devices[devices.size() - 1];
-
-                weapon_system->devices.push_back(devices.size() - 1);
-                device_name_by_index.insert(std::pair(device->name, devices.size() - 1));
-            }
-        } else {
-            Ammo ammo;
-            ammo.name = parts[0];
-            ammo.domain = DomainStrToEnum(parts[1]);
-            ammo.damage_type = STR_TO_DAMAGE_TYPE.GetValue(parts[2]);
-            ammo.penetration = std::stoi(parts[3]);
-            ammo.accuracy = StrToAccuracy(parts[4]);
-
-            ammunition.push_back(ammo);
-            device->ammunition.insert(ammunition.size() - 1);
-            ammo_name_by_index.insert(std::pair(parts[0], ammunition.size() - 1));
-        }
+        armory->ammo.push_back(a);
     }
-
-    armory.weapons = weapons;
-    armory.devices = devices;
-    armory.ammo = ammunition;
-
-    assert(armory.weapons.size() > 0);
-    assert(armory.devices.size() > 0);
-    assert(armory.ammo.size() > 0);
 
     file.close();
+}
 
-    // Load quantities
-    std::ifstream storage_file(storage_path);
-    if (!storage_file.is_open()) {
-        printf("Failed to read storage file\n");
+void LoadDevices(Armory* armory, const char* path)
+{
+    std::ifstream file(path);
+
+    if (!file.is_open()) {
+        printf("Failed to read weapons file\n");
         assert(false);
     }
-    armory.ua_weapons_quantity.reserve(armory.weapons.size());
-    armory.ua_ammo_quantity.reserve(armory.ammo.size());
 
-    armory.ru_weapons_quantity.reserve(armory.weapons.size());
-    armory.ru_ammo_quantity.reserve(armory.ammo.size());
+    std::string line;
+    getline(file, line); // Skip header
+    while (getline(file, line)) {
+        if (line == "")
+            continue;
 
-    fill(armory.ua_weapons_quantity, 0);
-    fill(armory.ua_ammo_quantity, 0);
-
-    fill(armory.ru_weapons_quantity, 0);
-    fill(armory.ru_ammo_quantity, 0);
-
-    getline(storage_file, line);
-    // NOTE: slow af
-    while (getline(storage_file, line)) {
         auto parts = split(line, ';');
 
-        std::string& asset_name = parts[0];
-        std::string ua_quantity_str = parts[1];
-        std::string ru_quantity_str = parts[2];
+        Device d;
+        d.id = parts[0][0] == USE_NAME_AS_ID_CHAR ? parts[1] : parts[0];
+        d.name = parts[1];
+        d.ammunition = ParseAmmo(armory, parts[2]);
 
-        u64 ua_quantity = std::stoi(ua_quantity_str);
-        u64 ru_quantity = std::stoi(ru_quantity_str);
-
-        if (asset_name.starts_with(WEAPON_CHAR)) {
-            assert(weapon_name_by_index.contains(asset_name));
-            u32 weapon_index = weapon_name_by_index.at(asset_name);
-            armory.ua_weapons_quantity[weapon_index] = ua_quantity;
-            armory.ru_weapons_quantity[weapon_index] = ru_quantity;
-        } else {
-            assert(ammo_name_by_index.contains(asset_name));
-            u32 ammo_index = ammo_name_by_index.at(asset_name);
-            armory.ua_ammo_quantity[ammo_index] = ua_quantity;
-            armory.ru_ammo_quantity[ammo_index] = ru_quantity;
-        }
+        armory->devices.push_back(d);
     }
+
+    file.close();
+}
+
+void LoadWeapons(Armory* armory, const char* path)
+{
+    std::ifstream file(path);
+
+    if (!file.is_open()) {
+        printf("Failed to read weapons file\n");
+        assert(false);
+    }
+
+    std::string line;
+    getline(file, line); // Skip header
+    while (getline(file, line)) {
+        if (line == "")
+            continue;
+
+        auto parts = split(line, ';');
+
+        WeaponSystem w;
+        w.id = parts[0][0] == USE_NAME_AS_ID_CHAR ? parts[1] : parts[0];
+        w.name = parts[1];
+
+        w.armor.top = std::stoi(parts[2]);
+
+        w.armor.hull_front = std::stoi(parts[3]);
+        w.armor.hull_rear = std::stoi(parts[4]);
+        w.armor.hull_side = std::stoi(parts[5]);
+
+        w.armor.turret_front = std::stoi(parts[6]);
+        w.armor.turret_rear = std::stoi(parts[7]);
+        w.armor.turret_side = std::stoi(parts[8]);
+
+        w.domain = DomainStrToEnum(parts[23]);
+        w.type = StrToWeaponType(parts[24]);
+        // NOTE: We ignore image id
+        w.cost_in_dollars = std::stoi(parts[26]);
+
+        // SPEED:
+        w.devices = ParseDevices(armory, parts[27]);
+
+        armory->weapons.push_back(w);
+    }
+
+    file.close();
+}
+
+// TODO: for now we assume both sides have plenty of stuff
+void LoadQuantities(Armory* armory, const char* path)
+{
+    // std::ifstream storage_file(path);
+    // if (!storage_file.is_open()) {
+    //     printf("Failed to read storage file\n");
+    //     assert(false);
+    // }
+    armory->ua_weapons_quantity.reserve(armory->weapons.size());
+    armory->ua_ammo_quantity.reserve(armory->ammo.size());
+
+    armory->ru_weapons_quantity.reserve(armory->weapons.size());
+    armory->ru_ammo_quantity.reserve(armory->ammo.size());
+
+    fill(armory->ua_weapons_quantity, 10000);
+    fill(armory->ua_ammo_quantity, 10000);
+
+    fill(armory->ru_weapons_quantity, 10000);
+    fill(armory->ru_ammo_quantity, 10000);
+}
+
+Armory LoadArmory(const char* weapons_path, const char* ammo_path, const char* devices_path, const char* storage_path)
+{
+    Armory armory;
+
+    // NOTE: order matters!
+    LoadAmmo(&armory, ammo_path);
+    LoadDevices(&armory, devices_path);
+    LoadWeapons(&armory, weapons_path);
+    LoadQuantities(&armory, storage_path);
 
     return armory;
 }
@@ -277,86 +350,79 @@ std::optional<u32> GetWeaponIndexByName(std::vector<WeaponSystem>& weapons, cons
 
 static void AddUnitToState(Unit& unit, const std::string& oblast_name)
 {
-    if (unit.side == Side::UA) {
-        assert(OBLAST_NAMES.ContainsValue(oblast_name));
-        STATE.troops_deployment.ukr_units.push_back(unit);
-        STATE.troops_deployment.ukr_assigned.push_back(OBLAST_NAMES.GetKey(oblast_name));
-    } else {
-        assert(OBLAST_NAMES.ContainsValue(oblast_name));
-        STATE.troops_deployment.ru_units.push_back(unit);
-        STATE.troops_deployment.ru_assigned.push_back(OBLAST_NAMES.GetKey(oblast_name));
-    }
+    assert(OBLAST_NAMES.ContainsValue(oblast_name));
+
+    STATE.troops_deployment.units.push_back(unit);
+    STATE.troops_deployment.assigned.push_back(OBLAST_NAMES.GetKey(oblast_name));
 }
 
-Deployment LoadUnits(std::vector<WeaponSystem>& weapons, const BiMap<OblastCode, const std::string>& oblast_names, const char* path)
+void LoadUnitOOB(Armory* armory, Deployment* deployment, const std::string& oob_path)
 {
-    Deployment deployment;
-
-    std::ifstream storage_file(path);
-    if (!storage_file.is_open()) {
-        printf("Failed to read units file\n");
+    std::ifstream oob_file(oob_path);
+    if (!oob_file.is_open()) {
+        printf("Failed to read units oob file\n");
         assert(false);
     }
 
     std::string line;
-    getline(storage_file, line);
+    getline(oob_file, line);
 
-    Unit unit;
-    bool seen_unit = false;
-    std::vector<std::string> parts;
-    std::string last_oblast;
-
-    while (getline(storage_file, line)) {
-        if (line == "" || line.starts_with('#'))
+    while (getline(oob_file, line)) {
+        if (line == "")
             continue;
 
-        parts = split(line, ';');
+        auto parts = split(line, ';');
 
-        if (parts[0].starts_with('<')) {
-            if (seen_unit) {
-                if (unit.side == Side::RU) {
-                    deployment.ru_units.push_back(unit);
-                    deployment.ru_assigned.push_back(oblast_names.GetKey(last_oblast));
-                } else {
-                    deployment.ukr_units.push_back(unit);
-                    deployment.ukr_assigned.push_back(oblast_names.GetKey(last_oblast));
-                }
-                unit = Unit();
-            }
+        auto unit = deployment->GetUnitById(parts[0]);
+        auto weapon = armory->GetWeaponById(parts[1]);
+    }
+}
 
-            unit.name = parts[0].substr(1);
-            unit.nickname = parts[1];
-            unit.side = StrToSide(parts[2]);
-            last_oblast = parts[4];
-            unit.size = STR_TO_SIZE.at(parts[5]);
-            seen_unit = true;
-            /*
-            auto cmdr = GetCommanderIndexByName(parts[3]);
-            assert(cmdr.has_value());
-            unit.commander_index = *cmdr;
-            */
-
-        } else {
-            auto weapon_index = GetWeaponIndexByName(weapons, parts[0]);
-            assert(weapon_index.has_value());
-            unit.weapons.push_back(*weapon_index);
-            unit.weapons_toe.push_back(std::stoi(parts[1]));
-            unit.weapons_counter.push_back(std::stoi(parts[2]));
-            unit.morale.push_back(std::stof(parts[3]));
-        }
+void LoadUnitGeneralInfo(Deployment* deployment, const std::string& general_info_path)
+{
+    std::ifstream general_info_file(general_info_path);
+    if (!general_info_file.is_open()) {
+        printf("Failed to read units general info file\n");
+        assert(false);
     }
 
-#if DEBUG
-    PrintUnit(unit);
-#endif
+    std::string line;
+    getline(general_info_file, line);
 
-    if (unit.side == Side::RU) {
-        deployment.ru_units.push_back(unit);
-        deployment.ru_assigned.push_back(oblast_names.GetKey(last_oblast));
-    } else {
-        deployment.ukr_units.push_back(unit);
-        deployment.ukr_assigned.push_back(oblast_names.GetKey(last_oblast));
+    Unit unit;
+    std::string deployed_to_oblast;
+
+    while (getline(general_info_file, line)) {
+        if (line == "")
+            continue;
+
+        auto parts = split(line, ',');
+
+        unit.id = parts[0];
+        unit.name = parts[1];
+        unit.nickname = parts[2];
+        unit.side = StrToSide(parts[3]);
+        unit.commander_index = std::stoi(parts[4]);
+        unit.size = STR_TO_SIZE.at(parts[6]);
+        deployed_to_oblast = parts[4];
+
+        deployment->units.push_back(unit);
+        deployment->assigned.push_back(OBLAST_NAMES.GetKey(deployed_to_oblast));
+
+        // TODO: load commander info
     }
+}
+
+Deployment LoadUnits(Armory* armory, const std::string& path)
+{
+    auto general_info_path = path + "_general.csv";
+    auto oob_info_path = path + "_oob.csv";
+
+    Deployment deployment;
+
+    LoadUnitGeneralInfo(&deployment, general_info_path);
+    LoadUnitOOB(armory, &deployment, oob_info_path);
 
     return deployment;
 }
+

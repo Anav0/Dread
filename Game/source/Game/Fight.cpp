@@ -5,6 +5,15 @@
 #include <numeric>
 #include <random>
 
+Unit* Deployment::GetUnitById(std::string_view id)
+{
+    for (auto& unit : units) {
+        if (unit.id == id) {
+            return &unit;
+        }
+    }
+}
+
 std::vector<BattleGroup> Fight::FormBattleGroups(Side side, Armory* armory, UnitStance stance, Deployment& deployment)
 {
     UnitStance* stances;
@@ -168,8 +177,8 @@ static BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& 
         for (u32 i = 0; i < n; i++) {
             group.weapons[group.real_size] = WeaponInGroup();
             group.weapons[group.real_size].weapon = weapon_ref;
-            group.weapons[group.real_size].initial_state = weapon_ref->default_state;
-            group.weapons[group.real_size].state = weapon_ref->default_state;
+            // group.weapons[group.real_size].initial_state = weapon_ref->default_state;
+            // group.weapons[group.real_size].state = weapon_ref->default_state;
             group.weapons[group.real_size].morale = 1.0f; // TODO: default for now
             group.real_size++;
         }
@@ -246,6 +255,7 @@ std::tuple<bool, f32> TryToHitTarget(TargetingInfo& info, std::mt19937& engine, 
     return { value < acc.change_to_hit, acc.change_to_hit };
 }
 
+// TODO: fill
 TargetingInfo TryPickingTarget(const WeaponInGroup& firing_weapon, std::mt19937& mt, std::vector<BattleGroup>& enemy_groups, u32 distance)
 {
     TargetingInfo ti;
@@ -285,7 +295,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams&
             auto [target_was_hit, acc] = TryToHitTarget(targeting_info, params.rnd_engine, distance_in_m);
             if (target_was_hit) {
                 fire_result.status = "HIT";
-                //NOTE: for now all penetrating damage result in destruction of the equipment
+                // NOTE: for now all penetrating damage result in destruction of the equipment
                 if (ArmorWasPenetrated(targeting_info)) {
                     targeting_info.targeted_weapon->state = 0.0;
                 }

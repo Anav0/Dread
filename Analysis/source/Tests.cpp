@@ -53,35 +53,31 @@ Armory Fixture_Armory()
     weapon1.armor = TankArmor();
     weapon1.name = "Test Tank";
     weapon1.cost_in_dollars = 1000000;
-    weapon1.devices.push_back(0);
+    weapon1.devices.insert(0);
     weapon1.domain = WeaponDomain::Ground;
-    weapon1.default_state = 100;
     weapon1.type = WeaponSystemGeneralType::Tank;
 
     WeaponSystem weapon2 = WeaponSystem(weapon1);
     weapon2.name = "Test IFV";
     weapon2.cost_in_dollars = 1000000;
-    weapon2.devices.push_back(0);
+    weapon2.devices.insert(0);
     weapon2.domain = WeaponDomain::Ground;
-    weapon2.default_state = 100;
     weapon2.type = WeaponSystemGeneralType::IFV;
 
     WeaponSystem weapon3 = WeaponSystem(weapon2);
     weapon3.armor = NoArmor();
     weapon3.name = "Test Infantry";
     weapon3.cost_in_dollars = 1000000;
-    weapon3.devices.push_back(0);
+    weapon3.devices.insert(0);
     weapon3.domain = WeaponDomain::Ground;
-    weapon3.default_state = 100;
     weapon3.type = WeaponSystemGeneralType::Infantry;
 
     WeaponSystem weapon4 = WeaponSystem(weapon3);
     weapon4.armor = NoArmor();
     weapon4.name = "Test Drone";
     weapon4.cost_in_dollars = 1000000;
-    weapon4.devices.push_back(0);
+    weapon4.devices.insert(0);
     weapon4.domain = WeaponDomain::Air;
-    weapon4.default_state = 100;
     weapon4.type = WeaponSystemGeneralType::Drone;
 
     auto armory = Armory();

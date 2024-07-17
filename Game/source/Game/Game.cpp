@@ -324,10 +324,12 @@ GameState* GameInit(WindowManager* window)
 
     const char* armory_path = "D:/Projects/Dread/Game/data/weapons.csv";
     const char* storage_path = "D:/Projects/Dread/Game/data/simulation.csv";
+    const char* ammo_path = "D:/Projects/Dread/Game/data/ammo.csv";
+    const char* devices_path = "D:/Projects/Dread/Game/data/devices.csv";
     const char* units_path = "D:/Projects/Dread/Game/data/units.csv";
     const char* conditions_path = "D:/Projects/Dread/Game/data/conditions.csv";
     
-    Armory armory = LoadArmory(armory_path, storage_path);
+    Armory armory = LoadArmory(armory_path, ammo_path, devices_path, storage_path);
 
     PrintArmory(armory);
     STATE.armory = armory;

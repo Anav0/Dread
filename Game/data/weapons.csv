@@ -1,6 +1,6 @@
-ID;Name;Armor top (KE);Hull front (KE);Hull back (KE);Hull side (KE);Turrent front (KE);Turret back (KE);Turret side (KE);Armor top (CE);Hull front (CE);Hull back (CE);Hull side (CE);Turrent front (CE);Turret back (CE);Turret side (CE);Armor top (TD);Hull front TD);Hull back TD);Hull side TD);Turrent front TD);Turret back TD);Turret side TD);Domain;Type;Default state;Image ID;Cost;Devices
--;BMP-2;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;Ground;IFV;100;NONE;100;2A42,PKT
--;BMP-1;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;Ground;IFV;100;NONE;100;2A28,PKT
--;T-72B3;20;380;40;80;380;80;150;20;380;40;80;380;80;150;20;380;40;80;380;80;150;Ground;Tank;100;NONE;100;2A46,PKT
-82mm;82mm mortar;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;Ground;Mortar;100;NONE;100;82mm
-120mm;120mm mortar;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;Ground;Mortar;100;NONE;100;120mm
+ID;Name;Armor top (KE);Hull front (KE);Hull back (KE);Hull side (KE);Turrent front (KE);Turret back (KE);Turret side (KE);Armor top (CE);Hull front (CE);Hull back (CE);Hull side (CE);Turrent front (CE);Turret back (CE);Turret side (CE);Armor top (TD);Hull front TD);Hull back TD);Hull side TD);Turrent front TD);Turret back TD);Turret side TD);Domain;Type;Image ID;Cost;Devices
+-;BMP-2;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;Ground;IFV;NONE;100;2A42,PKT
+-;BMP-1;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;10;Ground;IFV;NONE;100;2A28,PKT
+-;T-72B3;20;380;40;80;380;80;150;20;380;40;80;380;80;150;20;380;40;80;380;80;150;Ground;Tank;NONE;100;2A46,PKT
+82mm;82mm mortar;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;Ground;Mortar;NONE;100;82mm
+120mm;120mm mortar;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;Ground;Mortar;NONE;100;120mm

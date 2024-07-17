@@ -93,6 +93,7 @@ struct Accuracy {
 };
 
 struct Ammo {
+    std::string id;
     std::string name;
     WeaponDomain domain; // Domain of the potential target
     DamageType damage_type;
@@ -114,6 +115,7 @@ struct Armor {
 };
 
 struct Device {
+    std::string id;
     std::string name;
     std::set<u32> ammunition;
 };
@@ -121,18 +123,17 @@ struct Device {
 class Armory;
 class WeaponSystem {
 public:
+    std::string id;
     Armor armor;
     WeaponDomain domain;
     WeaponSystemGeneralType type;
 
-    f32 default_state;
-
     std::string name;
 
-    u16 image_pos_on_atlas;
-    u32 cost_in_dollars;
+    u16 image_pos_on_atlas = 0;
+    u32 cost_in_dollars = 0;
 
-    std::vector<u32> devices;
+    std::set<u32> devices;
 
     std::map<WeaponDomain, u32> cached_max_range_per_domain_soft;
 
@@ -158,6 +159,7 @@ struct Commander {
 };
 
 struct Unit {
+    std::string id;
     std::string name;
     std::string nickname;
     UnitSize size;
@@ -181,7 +183,13 @@ struct Armory {
     std::vector<u32> ru_ammo_quantity;
     std::vector<u32> ru_weapons_quantity;
 
-    std::optional<u32> GetWeaponIndexByName(const std::string& name);
+    std::map<std::string, u32> UnitIdToUnitIndex;
+    std::map<std::string, u32> UnitIdToUnitSide;
+
+    WeaponSystem* GetWeaponById(std::string_view id);
+    std::optional<u32> GetWeaponIndexByName(std::string_view name);
+    std::optional<u32> GetDeviceIndexById(std::string_view device_id);
+    std::optional<u32> GetAmmoIndexById(std::string_view ammo_id);
 
     Armory() { }
 
@@ -322,9 +330,6 @@ enum class UnitStance {
 
 constexpr u8 MAX_UNITS = 24;
 constexpr u8 SUPPORT_ASSETS = 8;
-
-// # Iter FiringSide Status Weapon Device ACC TargetWeapon StartingState Dmg StateAfterHit Distance
-// 0    UA HIT  BMP2   2A42   0.5 BMP1 100 24 76 2400
 
 WeaponSystemGeneralType StrToWeaponType(std::string& str);
 
