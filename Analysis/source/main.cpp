@@ -17,33 +17,6 @@ const char* ammo_path        = "D:/Projects/Dread/Game/data/ammo.csv";
 const char* storage_path     = "D:/Projects/Dread/Game/data/storage.csv";
 const char* conditions_path  = "D:/Projects/Dread/Game/data/conditions.csv";
 
-static const BiMap<OblastCode, const std::string> OBLASTS = {
-    { OblastCode::Zythomyr, "Zythomyr" },
-    { OblastCode::Zaporizhia, "Zaporizhia" },
-    { OblastCode::Zakarpatia, "Zakarpatia" },
-    { OblastCode::Volyn, "Volyn" },
-    { OblastCode::Vinnytsia, "Vinnytsia" },
-    { OblastCode::Ternopil, "Ternopil" },
-    { OblastCode::Sumy, "Sumy" },
-    { OblastCode::Rivne, "Rivne" },
-    { OblastCode::Poltava, "Poltava" },
-    { OblastCode::Odessa, "Odessa" },
-    { OblastCode::Mykolaiv, "Mykolaiv" },
-    { OblastCode::Lviv, "Lviv" },
-    { OblastCode::Luhansk, "Luhansk" },
-    { OblastCode::Kirovohrad, "Kirovohrad" },
-    { OblastCode::Kiev, "Kiev" },
-    { OblastCode::Chmielnicki, "Chmielnicki" },
-    { OblastCode::Kherson, "Kherson" },
-    { OblastCode::Kharkiv, "Kharkiv" },
-    { OblastCode::IvanoFrankivsk, "IvanoFrankivsk" },
-    { OblastCode::Donetsk, "Donetsk" },
-    { OblastCode::Dnipropetrovsk, "Dnipropetrovsk" },
-    { OblastCode::Crimea, "Crimea" },
-    { OblastCode::Chernihiv, "Chernihiv" },
-    { OblastCode::Chernivtsi, "Chernivtsi" },
-    { OblastCode::Cherkasy, "Cherkasy" },
-};
 
 constexpr u32 MAX_RUNS = 50;
 

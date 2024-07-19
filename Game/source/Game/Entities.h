@@ -71,7 +71,33 @@ const std::map<OblastCode, f32> INITIAL_CONTROL = {
     { OblastCode::Cherkasy, 1.0f },
 };
 
-static BiMap<OblastCode, const std::string> OBLAST_NAMES;
+static const BiMap<OblastCode, const std::string> OBLASTS = {
+    { OblastCode::Zythomyr, "Zythomyr" },
+    { OblastCode::Zaporizhia, "Zaporizhia" },
+    { OblastCode::Zakarpatia, "Zakarpatia" },
+    { OblastCode::Volyn, "Volyn" },
+    { OblastCode::Vinnytsia, "Vinnytsia" },
+    { OblastCode::Ternopil, "Ternopil" },
+    { OblastCode::Sumy, "Sumy" },
+    { OblastCode::Rivne, "Rivne" },
+    { OblastCode::Poltava, "Poltava" },
+    { OblastCode::Odessa, "Odessa" },
+    { OblastCode::Mykolaiv, "Mykolaiv" },
+    { OblastCode::Lviv, "Lviv" },
+    { OblastCode::Luhansk, "Luhansk" },
+    { OblastCode::Kirovohrad, "Kirovohrad" },
+    { OblastCode::Kiev, "Kiev" },
+    { OblastCode::Chmielnicki, "Chmielnicki" },
+    { OblastCode::Kherson, "Kherson" },
+    { OblastCode::Kharkiv, "Kharkiv" },
+    { OblastCode::IvanoFrankivsk, "IvanoFrankivsk" },
+    { OblastCode::Donetsk, "Donetsk" },
+    { OblastCode::Dnipropetrovsk, "Dnipropetrovsk" },
+    { OblastCode::Crimea, "Crimea" },
+    { OblastCode::Chernihiv, "Chernihiv" },
+    { OblastCode::Chernivtsi, "Chernivtsi" },
+    { OblastCode::Cherkasy, "Cherkasy" },
+};
 
 enum class FactorToShow {
     Air,

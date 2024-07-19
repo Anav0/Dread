@@ -350,8 +350,8 @@ std::optional<u32> GetWeaponIndexByName(std::vector<WeaponSystem>& weapons, cons
 
 static void AddUnitToState(Unit& unit, const std::string& oblast_name)
 {
-    assert(OBLAST_NAMES.ContainsValue(oblast_name));
-    STATE.troops_deployment.Insert(unit, OBLAST_NAMES.GetKey(oblast_name));
+    assert(OBLASTS.ContainsValue(oblast_name));
+    STATE.troops_deployment.Insert(unit, OBLASTS.GetKey(oblast_name));
 }
 
 void LoadUnitOOB(Armory* armory, Deployment* deployment, const std::string& oob_path)
@@ -402,9 +402,8 @@ void LoadUnitGeneralInfo(Deployment* deployment, const std::string& general_info
         unit.side = StrToSide(parts[3]);
         unit.commander_index = std::stoi(parts[4]);
         unit.size = STR_TO_SIZE.at(parts[6]);
-        deployed_to_oblast = parts[4];
 
-        deployment->Insert(unit, OBLAST_NAMES.GetKey(deployed_to_oblast));
+        deployment->Insert(unit, OBLASTS.GetKey(parts[5]));
 
         // TODO: load commander info
     }

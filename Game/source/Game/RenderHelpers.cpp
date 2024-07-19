@@ -213,7 +213,7 @@ void AddMap()
         // Create entity
         auto code = static_cast<OblastCode>(i);
         auto control = INITIAL_CONTROL.at(code);
-        std::string name = OBLAST_NAMES.GetValue(code);
+        std::string name = OBLASTS.GetValue(code);
         ID id = E.CreateOblast(Oblast(static_cast<OblastCode>(i), position, name.c_str(), control));
 
         // Create buffer for mesh or use existing one
