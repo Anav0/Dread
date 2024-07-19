@@ -5,13 +5,19 @@
 #include <numeric>
 #include <random>
 
-Unit* Deployment::GetUnitById(std::string_view id)
+u32 Deployment::Insert(Unit unit, OblastCode code)
 {
-    for (auto& unit : units) {
-        if (unit.id == id) {
-            return &unit;
-        }
-    }
+    units.push_back(unit);
+    assigned.push_back(code);
+    auto index = units.size() - 1;
+    unit_id_by_unit_index.insert({ unit.id, index });
+    return index;
+}
+
+Unit* Deployment::GetUnitById(const std::string& id)
+{
+    auto index = unit_id_by_unit_index.at(id);
+    return &units.at(index);
 }
 
 std::vector<BattleGroup> Fight::FormBattleGroups(Side side, Armory* armory, UnitStance stance, Deployment& deployment)
@@ -20,15 +26,7 @@ std::vector<BattleGroup> Fight::FormBattleGroups(Side side, Armory* armory, Unit
     i32* unit_indexes;
     std::vector<Unit>* units;
 
-    if (side == Side::UA) {
-        stances = this->ua_stance;
-        unit_indexes = this->ua_units;
-        units = &deployment.ukr_units;
-    } else {
-        stances = this->ru_stance;
-        unit_indexes = this->ru_units;
-        units = &deployment.ru_units;
-    }
+    units = &deployment.units;
 
     std::vector<BattleGroup> battle_groups;
     bool pushed_something_to_group = false;

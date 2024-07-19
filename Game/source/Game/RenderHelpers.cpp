@@ -285,8 +285,8 @@ void DrawUnitToken(Oblast* oblast, Unit& unit)
 void DrawDeployedUnits()
 {
     u32 i = 0;
-    for (auto& c : STATE.troops_deployment.ukr_assigned) {
-        Unit& unit = STATE.troops_deployment.ukr_units.at(i);
+    for (auto& c : STATE.troops_deployment.assigned) {
+        Unit& unit     = STATE.troops_deployment.units.at(i);
         Oblast* oblast = GetOblast(c);
 
         if (STATE.selected_oblast == oblast->code) {

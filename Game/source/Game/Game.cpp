@@ -333,7 +333,7 @@ GameState* GameInit(WindowManager* window)
 
     PrintArmory(armory);
     STATE.armory = armory;
-    STATE.troops_deployment = LoadUnits(STATE.armory.weapons, OBLAST_NAMES, units_path);
+    STATE.troops_deployment = LoadUnits(&STATE.armory, units_path);
     STATE.weather_manager = WeatherManager();
     STATE.weather_manager.Init(GetInitialConditions());
     STATE.modifiers_manager = ModifiersManager();

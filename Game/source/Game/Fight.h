@@ -183,9 +183,6 @@ struct Armory {
     std::vector<u32> ru_ammo_quantity;
     std::vector<u32> ru_weapons_quantity;
 
-    std::map<std::string, u32> UnitIdToUnitIndex;
-    std::map<std::string, u32> UnitIdToUnitSide;
-
     WeaponSystem* GetWeaponById(std::string_view id);
     std::optional<u32> GetWeaponIndexByName(std::string_view name);
     std::optional<u32> GetDeviceIndexById(std::string_view device_id);
@@ -205,20 +202,23 @@ struct Armory {
     }
 };
 
+using UnitId    = std::string;
+using UnitIndex = u32;
+
 struct Deployment {
-    std::vector<Unit> ukr_units;
-    std::vector<OblastCode> ukr_assigned;
-    std::vector<Unit> ru_units;
-    std::vector<OblastCode> ru_assigned;
+    std::vector<Unit> units;
+    std::vector<OblastCode> assigned;
+
+    std::map<UnitId, UnitIndex> unit_id_by_unit_index;
 
     Deployment() { }
     Deployment(Deployment& deployment)
     {
-        this->ukr_units = deployment.ukr_units;
-        this->ukr_assigned = deployment.ukr_assigned;
-        this->ru_units = deployment.ru_units;
-        this->ru_assigned = deployment.ru_assigned;
+        this->units = deployment.units;
+        this->assigned = deployment.assigned;
     }
+    Unit* GetUnitById(const std::string& id);
+    u32 Insert(Unit, OblastCode);
 };
 
 void PrintUnit(Armory& armory, Unit& unit);
@@ -321,11 +321,14 @@ enum class SideStatus {
 };
 
 enum class UnitStance {
-    Reserve,
+    None,
     Committed,
-    Retreating,
-    Redeployed,
     Defending,
+    Reserve,
+    Redeploying,
+    Retreating,
+    Routing,
+    Resting,
 };
 
 constexpr u8 MAX_UNITS = 24;
