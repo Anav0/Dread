@@ -64,3 +64,4 @@ Analysis/result.csv
 *.layout
 Performance
 UI ideas
+*.csv#
