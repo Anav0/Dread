@@ -77,6 +77,21 @@ std::optional<u32> Armory::GetDeviceIndexById(std::string_view device_id)
 
 // Speed:
 // Pointer:
+std::optional<u32> Armory::GetWeaponIndexById(std::string_view id)
+{
+    u32 i = 0;
+    for (auto& w : weapons) {
+        if (w.id == id)
+            return { i };
+        i++;
+    }
+
+    return std::nullopt;
+}
+
+
+// Speed:
+// Pointer:
 WeaponSystem* Armory::GetWeaponById(std::string_view id)
 {
     for (auto& w : weapons) {
@@ -180,7 +195,7 @@ void LoadAmmo(Armory* armory, const char* path)
         if (line == "")
             continue;
 
-        auto parts = split(line, ';');
+        auto parts = split(line, COMMON_SPLIT_CHAR);
 
         Ammo a;
         a.id = parts[0][0] == USE_NAME_AS_ID_CHAR ? parts[1] : parts[0];
@@ -212,7 +227,7 @@ void LoadDevices(Armory* armory, const char* path)
         if (line == "")
             continue;
 
-        auto parts = split(line, ';');
+        auto parts = split(line, COMMON_SPLIT_CHAR);
 
         Device d;
         d.id = parts[0][0] == USE_NAME_AS_ID_CHAR ? parts[1] : parts[0];
@@ -240,7 +255,7 @@ void LoadWeapons(Armory* armory, const char* path)
         if (line == "")
             continue;
 
-        auto parts = split(line, ';');
+        auto parts = split(line, COMMON_SPLIT_CHAR);
 
         WeaponSystem w;
         w.id = parts[0][0] == USE_NAME_AS_ID_CHAR ? parts[1] : parts[0];
@@ -369,10 +384,15 @@ void LoadUnitOOB(Armory* armory, Deployment* deployment, const std::string& oob_
         if (line == "")
             continue;
 
-        auto parts = split(line, ';');
+        auto parts = split(line, COMMON_SPLIT_CHAR);
+        assert(parts.size() == 3);
 
-        auto unit = deployment->GetUnitById(parts[0]);
-        auto weapon = armory->GetWeaponById(parts[1]);
+        auto unit         = deployment->GetUnitById(parts[0]);
+        auto weapon_index = armory->GetWeaponIndexById(parts[1]).value();
+
+        unit->weapons.push_back(weapon_index);
+        unit->weapons_counter.push_back(std::stoi(parts[2]));
+        unit->morale.push_back(1.0);
     }
 }
 
@@ -394,7 +414,7 @@ void LoadUnitGeneralInfo(Deployment* deployment, const std::string& general_info
         if (line == "")
             continue;
 
-        auto parts = split(line, ',');
+        auto parts = split(line, COMMON_SPLIT_CHAR);
 
         unit.id = parts[0];
         unit.name = parts[1];
@@ -402,6 +422,7 @@ void LoadUnitGeneralInfo(Deployment* deployment, const std::string& general_info
         unit.side = StrToSide(parts[3]);
         unit.commander_index = std::stoi(parts[4]);
         unit.size = STR_TO_SIZE.at(parts[6]);
+        unit.stance = STR_TO_UNIT_STANCE.GetValue(parts[7]);
 
         deployment->Insert(unit, OBLASTS.GetKey(parts[5]));
 
@@ -409,7 +430,7 @@ void LoadUnitGeneralInfo(Deployment* deployment, const std::string& general_info
     }
 }
 
-Deployment LoadUnits(Armory* armory, const std::string& path)
+Deployment LoadDeployment(Armory* armory, const std::string& path)
 {
     auto general_info_path = path + "_general.csv";
     auto oob_info_path = path + "_oob.csv";
@@ -421,4 +442,3 @@ Deployment LoadUnits(Armory* armory, const std::string& path)
 
     return deployment;
 }
-

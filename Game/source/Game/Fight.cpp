@@ -20,27 +20,26 @@ Unit* Deployment::GetUnitById(const std::string& id)
     return &units.at(index);
 }
 
-std::vector<BattleGroup> Fight::FormBattleGroups(Side side, Armory* armory, UnitStance stance, Deployment& deployment)
+std::vector<BattleGroup> Fight::FormBattleGroups(OblastCode oblast, Side side, Armory* armory, UnitStance stance, Deployment& deployment)
 {
     UnitStance* stances;
-    i32* unit_indexes;
     std::vector<Unit>* units;
-
-    units = &deployment.units;
 
     std::vector<BattleGroup> battle_groups;
     bool pushed_something_to_group = false;
-    for (u8 i = 0; i < MAX_UNITS; i++) {
-        UnitStance ua_unit_stance = stances[i];
-        if (ua_unit_stance == stance) {
-            i32 unit_index = unit_indexes[i];
-            if (unit_index != -1) {
-                Unit& unit = units->at(unit_index);
-                battle_groups.push_back(FormBattleGroup(armory, unit_index, unit));
-                pushed_something_to_group = true;
-            }
-        }
+    u32 i = 0;
+    for (auto& unit : deployment.units) {
+        auto unit_oblast = deployment.assigned.at(i);
+
+        if (unit.stance != stance || unit.side != side || unit_oblast != oblast)
+            continue;
+        
+        battle_groups.push_back(FormBattleGroup(armory, i, unit));
+        pushed_something_to_group = true;
+
+        i++;
     }
+
     assert(pushed_something_to_group);
     return battle_groups;
 }
@@ -70,8 +69,8 @@ AttackResult Fight::SimulateAttack(SimulationParams& params, Armory* armory, Dep
 {
     AttackResult result;
 
-    std::vector<BattleGroup> attacker_battle_grup = FormBattleGroups(params.attacking_side, armory, UnitStance::Committed, deployment);
-    std::vector<BattleGroup> defender_battle_grup = FormBattleGroups(params.defending_side, armory, UnitStance::Defending, deployment);
+    std::vector<BattleGroup> attacker_battle_grup = FormBattleGroups(params.oblast_code, params.attacking_side, armory, UnitStance::Commited, deployment);
+    std::vector<BattleGroup> defender_battle_grup = FormBattleGroups(params.oblast_code, params.defending_side, armory, UnitStance::Defending, deployment);
 
     u32 group_index = 0;
     for (auto& group : attacker_battle_grup) {
@@ -160,6 +159,8 @@ static BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& 
     group.name = "BG from " + unit.name;
     group.parent_unit_index = parent_unit_index;
 
+    assert(unit.weapons.size());
+
     u32 index = 0;
     for (u32 weapon_index : unit.weapons) {
         if (unit.weapons_counter[index] < 0) {
@@ -175,8 +176,6 @@ static BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& 
         for (u32 i = 0; i < n; i++) {
             group.weapons[group.real_size] = WeaponInGroup();
             group.weapons[group.real_size].weapon = weapon_ref;
-            // group.weapons[group.real_size].initial_state = weapon_ref->default_state;
-            // group.weapons[group.real_size].state = weapon_ref->default_state;
             group.weapons[group.real_size].morale = 1.0f; // TODO: default for now
             group.real_size++;
         }

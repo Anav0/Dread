@@ -296,12 +296,12 @@ GameState* GameInit(WindowManager* window)
     const char* devices_path    = "D:/Projects/Dread/Game/data/devices.csv";
     const char* units_path      = "D:/Projects/Dread/Game/data/units.csv";
     const char* conditions_path = "D:/Projects/Dread/Game/data/conditions.csv";
-    
+
     Armory armory = LoadArmory(armory_path, ammo_path, devices_path, storage_path);
 
     PrintArmory(armory);
     STATE.armory = armory;
-    STATE.troops_deployment = LoadUnits(&STATE.armory, units_path);
+    STATE.troops_deployment = LoadDeployment(&STATE.armory, units_path);
     STATE.weather_manager = WeatherManager();
     STATE.weather_manager.Init(GetInitialConditions());
     STATE.modifiers_manager = ModifiersManager();

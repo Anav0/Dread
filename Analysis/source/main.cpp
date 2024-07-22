@@ -3,9 +3,9 @@
 #include <Game/Modifiers.h>
 #include <Game/Weather.h>
 
-#include "Misc/CsvSaver.h"
+// #include "Misc/CsvSaver.h"
 
-#include "Problem.h"
+// #include "Problem.h"
 
 #include "Tests.h"
 #include "Tests.cpp"
@@ -16,7 +16,6 @@ const char* devices_path     = "D:/Projects/Dread/Game/data/devices.csv";
 const char* ammo_path        = "D:/Projects/Dread/Game/data/ammo.csv";
 const char* storage_path     = "D:/Projects/Dread/Game/data/storage.csv";
 const char* conditions_path  = "D:/Projects/Dread/Game/data/conditions.csv";
-
 
 constexpr u32 MAX_RUNS = 50;
 
@@ -52,8 +51,8 @@ int main(int argc, char* argv[])
     auto save_only_this_arr = split2(argv[1], ';');
     auto save_only_this = std::set<std::string>(save_only_this_arr.begin(), save_only_this_arr.end());
 
-    Armory armory = LoadArmory(weapons_path, ammo_path, devices_path, storage_path);
-    Deployment deployment = LoadUnits(&armory, units_path);
+    Armory armory         = LoadArmory(weapons_path, ammo_path, devices_path, storage_path);
+    Deployment deployment = LoadDeployment(&armory, units_path);
 
     SimulationSession session = SimulationSession(&armory, deployment, save_only_this);
 
@@ -79,7 +78,7 @@ int main(int argc, char* argv[])
         fight.ua_stance[0] = UnitStance::Defending;
 
         fight.ru_units[0] = 0;
-        fight.ru_stance[0] = UnitStance::Committed;
+        fight.ru_stance[0] = UnitStance::Commited;
 
         session.run = run;
 

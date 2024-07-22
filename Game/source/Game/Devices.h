@@ -8,6 +8,7 @@
 #include "Fight.h"
 
 constexpr char USE_NAME_AS_ID_CHAR = '-';
+constexpr char COMMON_SPLIT_CHAR   = ';';
 
 std::optional<u32> GetCommanderIndexByName(const std::string& name);
 std::optional<u32> GetWeaponIndexByName(std::vector<WeaponSystem>& weapons, const std::string& name);
@@ -18,7 +19,7 @@ void PrintArmory(Armory& armory);
 Armory LoadArmory(const char* weapons_path, const char* ammo_path, const char* devices_path, const char* storage_path);
 void LoadAmmo(Armory* armory, const char* path);
 void LoadDevices(Armory* armory, const char* path);
-Deployment LoadUnits(Armory* armory, const std::string& path);
+Deployment LoadDeployment(Armory* armory, const std::string& path);
 
 std::set<u32> ParseDevices(Armory* armory, std::string& devices_str);
 std::set<u32> ParseAmmo(Armory* armory, std::string& ammo_str);

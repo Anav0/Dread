@@ -175,31 +175,6 @@ void AddSupportingCountries()
     STATE.countries.push_back(Country(CountryCode::UK, "United Kingdom", 0.95, 0));
 }
 
-void AddWeapons(Unit& unit, std::string weapon_name, u32 n)
-{
-    auto weapon_index = STATE.armory.GetWeaponIndexByName(weapon_name);
-    assert(weapon_index.has_value());
-
-    u32 index = 0;
-    bool found_same_weapon = false;
-    for (auto existing_weapon_index : unit.weapons) {
-        if (existing_weapon_index  == weapon_index) {
-            found_same_weapon = true;
-            break;
-        }
-        index++;
-    }
-
-    if (found_same_weapon) {
-        unit.weapons_counter[index] += n;
-    } else {
-        unit.weapons.push_back(*weapon_index);
-        unit.weapons_counter.push_back(n);
-    }
-
-    unit.morale.push_back(1.0f);
-}
-
 void AddMap()
 {
     int i = 0;

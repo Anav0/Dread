@@ -17,7 +17,7 @@ void ModifiersManager::LoadWeatherModifiers(const char* path)
         if (line == "")
             continue;
 
-        auto parts = split(line, ';');
+        auto parts = split(line, COMMON_SPLIT_CHAR);
 
         std::string& condition_str = parts[0];
 

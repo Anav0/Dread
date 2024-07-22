@@ -32,6 +32,17 @@ enum class HitDirection {
     TurretRear,
 };
 
+enum class UnitStance {
+    None,
+    Commited,
+    Defending,
+    Reserve,
+    Redeploying,
+    Retreating,
+    Routing,
+    Resting,
+};
+
 enum class UnitSize {
     Division,
     Brigade,
@@ -57,6 +68,16 @@ const std::map<std::string, UnitSize> STR_TO_SIZE = {
     { "Company", UnitSize::Company },
     { "Platoon", UnitSize::Platoon },
     { "Squad", UnitSize::Squad },
+};
+
+const BiMap<std::string, UnitStance> STR_TO_UNIT_STANCE = {
+    { "Commited",    UnitStance::Commited },
+    { "Defending",   UnitStance::Defending },
+    { "None",        UnitStance::None },
+    { "Redeploying", UnitStance::Redeploying },
+    { "Reserve",     UnitStance::Reserve },
+    { "Resting",     UnitStance::Resting },
+    { "Routing",     UnitStance::Routing },
 };
 
 const BiMap<std::string, DamageType> STR_TO_DAMAGE_TYPE = {
@@ -164,6 +185,7 @@ struct Unit {
     std::string nickname;
     UnitSize size;
     Side side;
+    UnitStance stance;
     u32 commander_index;
 
     std::vector<u32> weapons;
@@ -187,6 +209,7 @@ struct Armory {
     std::optional<u32> GetWeaponIndexByName(std::string_view name);
     std::optional<u32> GetDeviceIndexById(std::string_view device_id);
     std::optional<u32> GetAmmoIndexById(std::string_view ammo_id);
+    std::optional<u32> GetWeaponIndexById(std::string_view weapon_id);
 
     Armory() { }
 
@@ -320,16 +343,6 @@ enum class SideStatus {
     Defending,
 };
 
-enum class UnitStance {
-    None,
-    Committed,
-    Defending,
-    Reserve,
-    Redeploying,
-    Retreating,
-    Routing,
-    Resting,
-};
 
 constexpr u8 MAX_UNITS = 24;
 constexpr u8 SUPPORT_ASSETS = 8;
@@ -550,7 +563,7 @@ struct Fight {
 
     AttackResult SimulateAttack(SimulationParams&, Armory*, Deployment&, SimulationSession*);
 
-    std::vector<BattleGroup> FormBattleGroups(Side side, Armory* armory, UnitStance stance, Deployment& deployment);
+    std::vector<BattleGroup> FormBattleGroups(OblastCode oblast, Side side, Armory* armory, UnitStance stance, Deployment& deployment);
 
     Fight()
     {
