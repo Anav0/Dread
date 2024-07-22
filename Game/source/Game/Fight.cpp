@@ -1,5 +1,6 @@
 #include "Fight.h"
 #include "GameState.h"
+#include "Templates.h"
 
 #include <algorithm>
 #include <numeric>
@@ -102,6 +103,7 @@ AttackResult Fight::SimulateAttack(SimulationParams& params, Armory* armory, Dep
     f32 damage_threshold = 0.6;
     f32 moral_threshold = 0.6;
 
+    bool fired_at_least_once = false;
     while (!defender_moral_broke && !attacker_moral_broke && !attacker_was_mauled && !defender_was_mauled) {
 
         // Attacking groups go forward!
@@ -113,6 +115,8 @@ AttackResult Fight::SimulateAttack(SimulationParams& params, Armory* armory, Dep
 
         auto def_rounds = Fire(params.defending_side, armory, params, this->attacker_distance_in_meters, defender_battle_grup, attacker_battle_grup);
         auto att_rounds = Fire(params.attacking_side, armory, params, this->attacker_distance_in_meters, attacker_battle_grup, defender_battle_grup);
+
+        fired_at_least_once = def_rounds.size() || att_rounds.size();
 
         if (simulation_session != nullptr) {
             simulation_session->round = round;
@@ -134,6 +138,8 @@ AttackResult Fight::SimulateAttack(SimulationParams& params, Armory* armory, Dep
 
         assert(round < 10000);
     }
+
+    assert(fired_at_least_once);
 
     bool defender_won = attacker_moral_broke || attacker_was_mauled;
     bool attacker_won = defender_moral_broke || defender_was_mauled;
@@ -170,7 +176,16 @@ static BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& 
 
         WeaponSystem* weapon_ref = &armory->weapons[weapon_index];
 
-        u32 n = unit.weapons_counter[index] * 0.8;
+        auto& unit_template_n = TEMPLATES.at(unit.type);
+        auto desired_size     = unit_template_n.at(weapon_ref->type);
+        auto total            = unit.weapons_counter[index];
+
+        u32 n = 0;
+        if (total < desired_size)
+            n = total;
+        else
+            n = desired_size;
+
         unit.weapons_counter[index] -= n;
 
         for (u32 i = 0; i < n; i++) {
@@ -214,9 +229,9 @@ bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 thresho
     for (auto& group : groups) {
         for (u32 i = 0; i < group.real_size; i++) {
             auto& weapon_system = group.weapons[i];
-            if (weapon_system.state <= 0) {
+            if (UnitDestroyed(weapon_system)) {
                 destroyed++;
-            } else if (weapon_system.state < weapon_system.initial_state) {
+            } else if (UnitDamaged(weapon_system)) {
                 damaged++;
             } else {
                 intact++;
@@ -276,9 +291,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams&
         for (u32 i = 0; i < attacking_group.real_size; i++) {
             auto& attacking_weapon_ref = attacking_group.weapons[i];
 
-            const bool is_attacking_weapon_disabled = attacking_weapon_ref.state <= 0;
-
-            if (is_attacking_weapon_disabled)
+            if (UnitDisabled(attacking_weapon_ref))
                 continue;
 
             TargetingInfo targeting_info = TryPickingTarget(attacking_weapon_ref, params.rnd_engine, targeted_battlegroups, distance_in_m);
@@ -286,18 +299,17 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams&
                 continue;
 
             FireResult fire_result = FireResult(targeting_info);
-            fire_result.starting_state = targeting_info.targeted_weapon->state;
 
             // Hit
             auto [target_was_hit, acc] = TryToHitTarget(targeting_info, params.rnd_engine, distance_in_m);
             if (target_was_hit) {
-                fire_result.status = "HIT";
-                // NOTE: for now all penetrating damage result in destruction of the equipment
+                fire_result.hit_or_miss = "HIT";
                 if (ArmorWasPenetrated(targeting_info)) {
-                    targeting_info.targeted_weapon->state = 0.0;
+                    //TODO: incorporate more statuses
+                    targeting_info.targeted_weapon->statuses.insert(WeaponSystemStatus::OnFire);
                 }
             } else {
-                fire_result.status = "MISS";
+                fire_result.hit_or_miss = "MISS";
             }
 
             results.push_back(fire_result);

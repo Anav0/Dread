@@ -60,6 +60,23 @@ enum class DamageType {
     HE
 };
 
+enum class UnitType {
+    Panzer,
+    Infantry,
+    Mech,
+    Airborn,
+    Static,
+};
+
+
+const BiMap<std::string, UnitType> STR_TO_UNIT_TYPE = {
+    { "Panzer", UnitType::Panzer },
+    { "Infantry", UnitType::Infantry },
+    { "Mech", UnitType::Mech },
+    { "Airborn", UnitType::Airborn },
+    { "Static", UnitType::Static },
+};
+
 const std::map<std::string, UnitSize> STR_TO_SIZE = {
     { "Division", UnitSize::Division },
     { "Brigade", UnitSize::Brigade },
@@ -162,18 +179,11 @@ public:
     bool IsArmored();
 };
 
-struct Capabilities {
-    bool hard;
-    bool soft;
-
-    std::set<WeaponDomain> domains;
-};
-Capabilities GetCapabilities(Armory*, Device&);
-
 enum class Side {
     UA,
     RU
 };
+
 
 struct Commander {
     char* name;
@@ -186,6 +196,7 @@ struct Unit {
     UnitSize size;
     Side side;
     UnitStance stance;
+    UnitType type;
     u32 commander_index;
 
     std::vector<u32> weapons;
@@ -274,12 +285,59 @@ std::string DomainToStr(WeaponDomain domain);
 
 std::string WeaponTypeToStr(WeaponSystemGeneralType type);
 
+enum class WeaponSystemStatus {
+    OnFire,
+    Immobilized,
+    DriverKilled,
+    GunnerKilled,
+    CmdrKilled,
+    Abondoned,
+    TurretJammed,
+};
+
+const BiMap<WeaponSystemStatus, std::string> STR_TO_UNIT_STATUS = {
+    { WeaponSystemStatus::OnFire, "OnFire" },
+    { WeaponSystemStatus::Immobilized, "Immobilized" },
+    { WeaponSystemStatus::DriverKilled, "DriverKilled" },
+    { WeaponSystemStatus::GunnerKilled, "GunnerKilled" },
+    { WeaponSystemStatus::CmdrKilled, "CmdrKilled" },
+    { WeaponSystemStatus::Abondoned, "Abondoned" },
+    { WeaponSystemStatus::TurretJammed, "TurretJammed" },
+};
+
 struct WeaponInGroup {
     WeaponSystem* weapon;
     f32 morale;
-    f32 state;
-    f32 initial_state;
+    std::set<WeaponSystemStatus> statuses;
 };
+
+inline bool UnitDestroyed(const WeaponInGroup& weapon) {
+    return weapon.statuses.contains(WeaponSystemStatus::OnFire) 
+        || weapon.statuses.contains(WeaponSystemStatus::Abondoned)
+        || (weapon.statuses.contains(WeaponSystemStatus::DriverKilled)&&weapon.statuses.contains(WeaponSystemStatus::GunnerKilled)&& weapon.statuses.contains(WeaponSystemStatus::CmdrKilled));
+}
+
+inline bool UnitDisabled(const WeaponInGroup& weapon) {
+    return UnitDestroyed(weapon)
+        || weapon.statuses.contains(WeaponSystemStatus::TurretJammed);
+}
+
+inline bool UnitDamaged(const WeaponInGroup& weapon) {
+    return weapon.statuses.contains(WeaponSystemStatus::Immobilized) 
+        || weapon.statuses.contains(WeaponSystemStatus::TurretJammed)
+        || weapon.statuses.contains(WeaponSystemStatus::DriverKilled)
+        || weapon.statuses.contains(WeaponSystemStatus::GunnerKilled)
+        || weapon.statuses.contains(WeaponSystemStatus::CmdrKilled);
+}
+
+inline std::string StatusesToStr(std::set<WeaponSystemStatus> statuses) {
+    std::string output;
+
+    for (auto s : statuses) 
+        output += STR_TO_UNIT_STATUS.GetValue(s) + ", ";
+    
+    return output;
+}
 
 constexpr u32 MAX_BG_SIZE = 128;
 struct BattleGroup {
@@ -318,7 +376,6 @@ struct BattleGroup {
         for (u32 i = 0; i < real_size; i++) {
             auto& w = weapons[i];
             const auto& name = WeaponTypeToStr(w.weapon->type);
-            const auto state = w.state;
             const auto unit_name = w.weapon->name;
 
             for (auto& device_index : w.weapon->devices) {
@@ -331,7 +388,7 @@ struct BattleGroup {
                 ss << unit_name << ";";
                 ss << name << ";";
                 ss << index << ";";
-                ss << state << "\n";
+                ss << StatusesToStr(w.statuses) << "\n";
             }
             index++;
         }
@@ -376,10 +433,9 @@ struct FireResult {
     u64 run;
     u64 round;
     std::string firing_side;
-    std::string status;
+    std::string hit_or_miss;
     TargetingInfo targeting_info;
     f32 acc;
-    f32 starting_state;
     f32 morale;
     f32 morale_after_damage;
     u32 distance;

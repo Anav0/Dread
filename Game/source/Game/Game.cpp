@@ -8,6 +8,7 @@
 #include "Engine/Renderer.h"
 #include "Engine/WindowManager.h"
 #include "EntityManager.h"
+#include "Templates.h"
 
 #include "Devices.h"
 #include "Entities.h"
@@ -27,6 +28,7 @@
 #include "Modifiers.cpp"
 #include "RenderHelpers.cpp"
 #include "Weather.cpp"
+#include "Templates.cpp"
 
 #include "glad/glad.h"
 

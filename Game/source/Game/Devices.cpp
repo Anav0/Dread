@@ -421,8 +421,9 @@ void LoadUnitGeneralInfo(Deployment* deployment, const std::string& general_info
         unit.nickname = parts[2];
         unit.side = StrToSide(parts[3]);
         unit.commander_index = std::stoi(parts[4]);
-        unit.size = STR_TO_SIZE.at(parts[6]);
-        unit.stance = STR_TO_UNIT_STANCE.GetValue(parts[7]);
+        unit.size   = STR_TO_SIZE.at(parts[6]);
+        unit.type   = STR_TO_UNIT_TYPE.GetValue(parts[7]);
+        unit.stance = STR_TO_UNIT_STANCE.GetValue(parts[8]);
 
         deployment->Insert(unit, OBLASTS.GetKey(parts[5]));
 

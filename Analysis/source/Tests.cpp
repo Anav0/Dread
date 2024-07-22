@@ -113,10 +113,10 @@ std::vector<BattleGroup> Fixture_TestGroup(Armory* armory)
     A.real_size = 1;
     A.parent_unit_index = 0;
     A.Side = "UA";
-    A.weapons.at(0) = { nullptr, 0.2, 0.0, 1.0 };
+    A.weapons.at(0) = { nullptr, 0.2 };
 
     B = BattleGroup(A);
-    B.weapons.at(0) = { nullptr, 0.4, 1.0, 1.0 };
+    B.weapons.at(0) = { nullptr, 0.4 };
 
     test_groups.push_back(A);
     test_groups.push_back(B);
