@@ -34,7 +34,7 @@ std::vector<BattleGroup> Fight::FormBattleGroups(OblastCode oblast, Side side, A
 
         if (unit.stance != stance || unit.side != side || unit_oblast != oblast)
             continue;
-        
+
         battle_groups.push_back(FormBattleGroup(armory, i, unit));
         pushed_something_to_group = true;
 
@@ -177,8 +177,8 @@ static BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& 
         WeaponSystem* weapon_ref = &armory->weapons[weapon_index];
 
         auto& unit_template_n = TEMPLATES.at(unit.type);
-        auto desired_size     = unit_template_n.at(weapon_ref->type);
-        auto total            = unit.weapons_counter[index];
+        auto desired_size = unit_template_n.at(weapon_ref->type);
+        auto total = unit.weapons_counter[index];
 
         u32 n = 0;
         if (total < desired_size)
@@ -189,7 +189,7 @@ static BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& 
         unit.weapons_counter[index] -= n;
 
         for (u32 i = 0; i < n; i++) {
-            group.weapons[group.real_size] = WeaponInGroup();
+            group.weapons[group.real_size] = WeaponSystemInGroup();
             group.weapons[group.real_size].weapon = weapon_ref;
             group.weapons[group.real_size].morale = 1.0f; // TODO: default for now
             group.real_size++;
@@ -207,7 +207,7 @@ static BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& 
 
 bool MoralBroke(std::vector<BattleGroup>& groups, f32 threshold)
 {
-    auto reducer_morale = [](u32 acc, const WeaponInGroup& w) {
+    auto reducer_morale = [](u32 acc, const WeaponSystemInGroup& w) {
         return acc + w.morale;
     };
 
@@ -267,13 +267,81 @@ std::tuple<bool, f32> TryToHitTarget(TargetingInfo& info, std::mt19937& engine, 
     return { value < acc.change_to_hit, acc.change_to_hit };
 }
 
-// TODO: fill
-TargetingInfo TryPickingTarget(const WeaponInGroup& firing_weapon, std::mt19937& mt, std::vector<BattleGroup>& enemy_groups, u32 distance)
+PriorityQueue ConstructPriorityQueue(Armory* armory, const std::vector<BattleGroup>& groups)
 {
-    TargetingInfo ti;
+    PriorityQueue queue;
 
-    for (auto& group : enemy_groups) {
-        for (auto& w : group.weapons) {
+    u32 i = 0;
+    u32 j = 0;
+    for (auto& g : groups) {
+        queue.push_back({});
+        for (u32 k = 0; k < g.real_size; k++) {
+            u32 priority = 0.0;
+            auto& w = g.weapons.at(k);
+            auto target_domain = w.weapon->domain;
+
+            if (w.weapon->IsArmored())
+                priority += 1;
+
+            if (w.weapon->type == WeaponSystemGeneralType::Tank)
+                priority += 2;
+
+            if (w.weapon->IsArtillery())
+                priority += 4;
+
+            if (w.weapon->IsAA())
+                priority += 4;
+
+            if (UnitDestroyed(w))
+                priority = 0;
+
+            queue.at(i).push_back({ j, priority });
+            j++;
+        }
+
+        std::sort(queue.at(i).begin(), queue.at(i).end(), std::greater {});
+
+        i++;
+    }
+    return queue;
+}
+
+// TODO: Pick targets by priority
+TargetingInfo TryTargeting(Armory* armory, const WeaponSystemInGroup& firing_weapon, std::vector<BattleGroup>& enemy_groups, PriorityQueue queue, u32 distance)
+{
+    TargetingInfo ti {};
+
+    assert(firing_weapon.weapon->max_distance > 0);
+    assert(firing_weapon.weapon->max_penetration > 0 || firing_weapon.weapon->max_fragmentation > 0);
+
+    if (!firing_weapon.weapon->CanReach(distance))
+        return ti;
+
+    u32 i = 0;
+
+    for (auto& priority_list : queue) {
+        auto& targeted_group = enemy_groups.at(i);
+        for (auto& priority : priority_list) {
+            auto& potential_target_weapon = targeted_group.weapons.at(priority.index);
+
+            if (UnitDestroyed(potential_target_weapon))
+                continue;
+
+            if (potential_target_weapon.morale <= 0.0)
+                continue;
+
+            if (!firing_weapon.weapon->CanPenetrate(potential_target_weapon.weapon, HitDirection::HullSide))
+                continue;
+
+            auto [device, ammo] = firing_weapon.weapon->PickRightDevice(armory, potential_target_weapon.weapon, distance);
+
+            ti.can_fire = true;
+            ti.targeted_group = &enemy_groups.at(i);
+            ti.targeted_weapon = &enemy_groups.at(i).weapons.at(priority.index);
+            ti.ammo_to_use = ammo;
+            ti.device_to_use = device;
+
+            return ti;
         }
     }
 
@@ -287,6 +355,8 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams&
 
     const std::uniform_int_distribution<u32> d6(0, 6);
 
+    auto queue = ConstructPriorityQueue(armory, targeted_battlegroups);
+
     for (const BattleGroup& attacking_group : attacking_battlegroups) {
         for (u32 i = 0; i < attacking_group.real_size; i++) {
             auto& attacking_weapon_ref = attacking_group.weapons[i];
@@ -294,7 +364,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams&
             if (UnitDisabled(attacking_weapon_ref))
                 continue;
 
-            TargetingInfo targeting_info = TryPickingTarget(attacking_weapon_ref, params.rnd_engine, targeted_battlegroups, distance_in_m);
+            auto targeting_info = TryTargeting(armory, attacking_weapon_ref, targeted_battlegroups, queue, distance_in_m);
             if (!targeting_info.can_fire)
                 continue;
 
@@ -305,7 +375,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams&
             if (target_was_hit) {
                 fire_result.hit_or_miss = "HIT";
                 if (ArmorWasPenetrated(targeting_info)) {
-                    //TODO: incorporate more statuses
+                    // TODO: incorporate more statuses
                     targeting_info.targeted_weapon->statuses.insert(WeaponSystemStatus::OnFire);
                 }
             } else {
@@ -348,6 +418,72 @@ std::string DomainToStr(WeaponDomain domain)
     return map.at(domain);
 }
 
+inline bool WeaponSystem::CanReach(u32 distance_m) const
+{
+    return distance_m < max_distance;
+}
+
+void WeaponSystem::Precompute(Armory* armory)
+{
+    for (auto device_index : devices) {
+        auto& device = armory->devices.at(device_index);
+
+        for (auto& ammo_index : device.ammunition) {
+            auto& ammo = armory->ammo.at(ammo_index);
+
+            if (max_distance < ammo.accuracy.at(0).range_in_meters) {
+                max_distance = ammo.accuracy.at(0).range_in_meters;
+            }
+
+            if (IsAP(&ammo) && ammo.penetration > max_penetration) {
+                max_penetration = ammo.penetration;
+            }
+
+            if (IsHE(&ammo) && ammo.fragmentation > max_fragmentation) {
+                max_fragmentation = ammo.fragmentation;
+            }
+
+        }
+    }
+
+    assert(max_distance > 0);
+}
+
+bool WeaponSystem::CanBePenetrated(Ammo* ammo_used, HitDirection dir) const
+{
+    return false;
+}
+
+inline bool WeaponSystem::CanPenetrate(WeaponSystem* enemy, HitDirection dir) const
+{
+    auto armor = enemy->GetArmorAt(dir);
+    return max_penetration > armor;
+}
+
+std::pair<Device*, Ammo*> WeaponSystem::PickRightDevice(Armory* armory, const WeaponSystem* target, u32 distance) const
+{
+    for (auto device_index : devices) {
+         auto device = &armory->devices.at(device_index);
+         for (auto ammo_index : device->ammunition) {
+             auto ammo = &armory->ammo.at(ammo_index);
+             auto in_range = ammo->accuracy.at(0).range_in_meters >= distance;
+
+             if (!in_range)
+                 continue;
+
+             if (target->IsArmored() && IsAP(ammo) && target->CanBePenetrated(ammo, HitDirection::HullFront)) {
+                 return { device, ammo };
+             } 
+
+             if (in_range && ammo->fragmentation > 0)
+                 return { device, ammo };
+             
+         }
+    }
+
+    return { nullptr, nullptr };
+}
+
 u32 WeaponSystem::GetArmorAt(HitDirection dir)
 {
     switch (dir) {
@@ -369,9 +505,21 @@ u32 WeaponSystem::GetArmorAt(HitDirection dir)
     assert(false);
 }
 
-bool WeaponSystem::IsArmored()
+inline bool WeaponSystem::IsArmored() const
 {
     return this->armor.hull_front > 0;
+}
+
+inline bool WeaponSystem::IsArtillery() const
+{
+    return this->type == WeaponSystemGeneralType::MLRS
+        || this->type == WeaponSystemGeneralType::Artillery
+        || this->type == WeaponSystemGeneralType::Mortar;
+}
+
+inline bool WeaponSystem::IsAA() const
+{
+    return this->type == WeaponSystemGeneralType::MANPADS;
 }
 
 bool IsAP(Ammo* ammo)
@@ -383,3 +531,22 @@ bool IsHE(Ammo* ammo)
 {
     return ammo->damage_type == DamageType::HE || ammo->damage_type == DamageType::HEAT || ammo->damage_type == DamageType::Tandem;
 }
+
+// bool WeaponSystem::CanDestroyArmoredTargets(Armory* armory, WeaponDomain domain) const
+//{
+//     return false;
+// }
+//
+// bool WeaponSystem::CanDestroySoftTargets(Armory* armory, WeaponDomain domain) const
+//{
+//     for (auto device_index : devices) {
+//         auto& device = armory->devices.at(device_index);
+//         for (auto ammo_index : device.ammunition) {
+//             auto ammo = &armory->ammo.at(ammo_index);
+//
+//             if (IsHE(ammo)) { }
+//
+//         }
+//     }
+//     return false;
+// }

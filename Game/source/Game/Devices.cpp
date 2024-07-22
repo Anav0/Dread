@@ -279,6 +279,8 @@ void LoadWeapons(Armory* armory, const char* path)
         // SPEED:
         w.devices = ParseDevices(armory, parts[27]);
 
+        w.Precompute(armory);
+
         armory->weapons.push_back(w);
     }
 

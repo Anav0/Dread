@@ -68,7 +68,6 @@ enum class UnitType {
     Static,
 };
 
-
 const BiMap<std::string, UnitType> STR_TO_UNIT_TYPE = {
     { "Panzer", UnitType::Panzer },
     { "Infantry", UnitType::Infantry },
@@ -88,13 +87,13 @@ const std::map<std::string, UnitSize> STR_TO_SIZE = {
 };
 
 const BiMap<std::string, UnitStance> STR_TO_UNIT_STANCE = {
-    { "Commited",    UnitStance::Commited },
-    { "Defending",   UnitStance::Defending },
-    { "None",        UnitStance::None },
+    { "Commited", UnitStance::Commited },
+    { "Defending", UnitStance::Defending },
+    { "None", UnitStance::None },
     { "Redeploying", UnitStance::Redeploying },
-    { "Reserve",     UnitStance::Reserve },
-    { "Resting",     UnitStance::Resting },
-    { "Routing",     UnitStance::Routing },
+    { "Reserve", UnitStance::Reserve },
+    { "Resting", UnitStance::Resting },
+    { "Routing", UnitStance::Routing },
 };
 
 const BiMap<std::string, DamageType> STR_TO_DAMAGE_TYPE = {
@@ -169,21 +168,31 @@ public:
     std::string name;
 
     u16 image_pos_on_atlas = 0;
-    u32 cost_in_dollars = 0;
+    u32 cost_in_dollars    = 0;
+
+    // Computed in Init()
+    u32 max_distance      = 0;
+    u32 max_penetration   = 0;
+    u32 max_fragmentation = 0;
 
     std::set<u32> devices;
 
-    std::map<WeaponDomain, u32> cached_max_range_per_domain_soft;
+    void Precompute(Armory*);
 
+    bool CanBePenetrated(Ammo*, HitDirection) const;
+    bool CanPenetrate(WeaponSystem*, HitDirection) const;
+    std::pair<Device*, Ammo*> PickRightDevice(Armory*, const WeaponSystem*, u32 distance) const;
     u32 GetArmorAt(HitDirection);
-    bool IsArmored();
+    bool CanReach(u32 distance_m) const;
+    bool IsArmored() const;
+    bool IsArtillery() const;
+    bool IsAA() const;
 };
 
 enum class Side {
     UA,
     RU
 };
-
 
 struct Commander {
     char* name;
@@ -236,7 +245,7 @@ struct Armory {
     }
 };
 
-using UnitId    = std::string;
+using UnitId = std::string;
 using UnitIndex = u32;
 
 struct Deployment {
@@ -305,46 +314,68 @@ const BiMap<WeaponSystemStatus, std::string> STR_TO_UNIT_STATUS = {
     { WeaponSystemStatus::TurretJammed, "TurretJammed" },
 };
 
-struct WeaponInGroup {
+struct WeaponSystemInGroup {
     WeaponSystem* weapon;
     f32 morale;
     std::set<WeaponSystemStatus> statuses;
 };
 
-inline bool UnitDestroyed(const WeaponInGroup& weapon) {
-    return weapon.statuses.contains(WeaponSystemStatus::OnFire) 
+inline bool UnitDestroyed(const WeaponSystemInGroup& weapon)
+{
+    return weapon.statuses.contains(WeaponSystemStatus::OnFire)
         || weapon.statuses.contains(WeaponSystemStatus::Abondoned)
-        || (weapon.statuses.contains(WeaponSystemStatus::DriverKilled)&&weapon.statuses.contains(WeaponSystemStatus::GunnerKilled)&& weapon.statuses.contains(WeaponSystemStatus::CmdrKilled));
+        || (weapon.statuses.contains(WeaponSystemStatus::DriverKilled) && weapon.statuses.contains(WeaponSystemStatus::GunnerKilled) && weapon.statuses.contains(WeaponSystemStatus::CmdrKilled));
 }
 
-inline bool UnitDisabled(const WeaponInGroup& weapon) {
+inline bool UnitDisabled(const WeaponSystemInGroup& weapon)
+{
     return UnitDestroyed(weapon)
         || weapon.statuses.contains(WeaponSystemStatus::TurretJammed);
 }
 
-inline bool UnitDamaged(const WeaponInGroup& weapon) {
-    return weapon.statuses.contains(WeaponSystemStatus::Immobilized) 
+inline bool UnitDamaged(const WeaponSystemInGroup& weapon)
+{
+    return weapon.statuses.contains(WeaponSystemStatus::Immobilized)
         || weapon.statuses.contains(WeaponSystemStatus::TurretJammed)
         || weapon.statuses.contains(WeaponSystemStatus::DriverKilled)
         || weapon.statuses.contains(WeaponSystemStatus::GunnerKilled)
         || weapon.statuses.contains(WeaponSystemStatus::CmdrKilled);
 }
 
-inline std::string StatusesToStr(std::set<WeaponSystemStatus> statuses) {
+inline std::string StatusesToStr(std::set<WeaponSystemStatus> statuses)
+{
     std::string output;
 
-    for (auto s : statuses) 
+    for (auto s : statuses)
         output += STR_TO_UNIT_STATUS.GetValue(s) + ", ";
-    
+
     return output;
 }
+
+struct Priority {
+    u32 index;
+    u32 priority;
+
+    bool operator<(const Priority& other) const
+    {
+        return priority < other.priority;
+    }
+
+    bool operator>(const Priority& other) const
+    {
+        return priority > other.priority;
+    }
+};
+
+// SPEED:
+using PriorityQueue = std::vector<std::vector<Priority>>;
 
 constexpr u32 MAX_BG_SIZE = 128;
 struct BattleGroup {
     std::string name;
     std::string Side;
 
-    std::array<WeaponInGroup, MAX_BG_SIZE> weapons;
+    std::array<WeaponSystemInGroup, MAX_BG_SIZE> weapons;
 
     u32 parent_unit_index;
     u32 real_size = 0;
@@ -400,7 +431,6 @@ enum class SideStatus {
     Defending,
 };
 
-
 constexpr u8 MAX_UNITS = 24;
 constexpr u8 SUPPORT_ASSETS = 8;
 
@@ -423,8 +453,8 @@ struct AttackResult {
 struct TargetingInfo {
     bool can_fire;
     BattleGroup* targeted_group;
-    WeaponInGroup* targeted_weapon;
-    WeaponInGroup* weapon_to_use;
+    WeaponSystemInGroup* targeted_weapon;
+    WeaponSystemInGroup* weapon_to_use;
     Device* device_to_use;
     Ammo* ammo_to_use;
 };
@@ -635,7 +665,8 @@ BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& unit);
 std::vector<f32> GetModifiers(SimulationParams& params, WeaponSystemGeneralType type, SideStatus status);
 bool MoralBroke(std::vector<BattleGroup>& groups, f32 threshold);
 bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 threshold);
-TargetingInfo TryPickingTarget(const WeaponInGroup& firing_weapon, std::mt19937& mt, std::vector<BattleGroup>& enemy_groups, u32 distance);
+PriorityQueue ConstructPriorityQueue(Armory*, const std::vector<BattleGroup>&);
+TargetingInfo TryTargeting(Armory*, const WeaponSystemInGroup& firing_weapon, std::vector<BattleGroup>& enemy_groups, PriorityQueue, u32 distance);
 std::tuple<bool, f32> TryToHitTarget(TargetingInfo&, std::mt19937&, u32 distance);
 
 bool IsAP(Ammo*);
