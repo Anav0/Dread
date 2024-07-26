@@ -248,14 +248,22 @@ std::tuple<bool, f32> TryToHitTarget(TargetingInfo& info, std::mt19937& engine, 
 {
     assert(info.can_fire);
 
-    u32 index = 0;
-    Accuracy acc = info.ammo_to_use->accuracy[0];
-    while (distance < acc.range_in_meters) {
-        index++;
-        if (index > info.ammo_to_use->accuracy.size() - 1)
+    u32 correct_accuracy_index = 0;
+    for(;;) {
+        if (correct_accuracy_index > info.ammo_to_use->accuracy.size() - 1)
             break;
-        acc = info.ammo_to_use->accuracy[index];
+
+        auto& a = info.ammo_to_use->accuracy.at(correct_accuracy_index);
+
+        if (distance > a.range_in_meters) {
+            correct_accuracy_index--;
+            break;
+        }
+
+        correct_accuracy_index++;
     }
+
+    auto& acc = info.ammo_to_use->accuracy.at(correct_accuracy_index);
 
     if (acc.range_in_meters < distance)
         return { false, 0.0 };
@@ -340,9 +348,11 @@ TargetingInfo TryTargeting(Armory* armory, const WeaponSystemInGroup& firing_wea
             ti.targeted_weapon = &enemy_groups.at(i).weapons.at(priority.index);
             ti.ammo_to_use = ammo;
             ti.device_to_use = device;
+            ti.weapon_to_use = &firing_weapon;
 
             return ti;
         }
+        i++;
     }
 
     return ti;

@@ -44,7 +44,9 @@ std::map<OblastCode, std::tuple<Weather, GroundCondition>> GetInitialConditions2
 
 int main(int argc, char* argv[])
 {
+#if DEBUG
     RunTests();
+#endif
 
     assert(argc == 2);
 

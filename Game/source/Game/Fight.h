@@ -452,11 +452,11 @@ struct AttackResult {
 
 struct TargetingInfo {
     bool can_fire;
-    BattleGroup* targeted_group;
+    const BattleGroup* targeted_group;
     WeaponSystemInGroup* targeted_weapon;
-    WeaponSystemInGroup* weapon_to_use;
-    Device* device_to_use;
-    Ammo* ammo_to_use;
+    const WeaponSystemInGroup* weapon_to_use;
+    const Device* device_to_use;
+    const Ammo* ammo_to_use;
 };
 
 struct FireResult {
