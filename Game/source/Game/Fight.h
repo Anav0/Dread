@@ -183,7 +183,7 @@ public:
     bool CanBePenetrated(Ammo*, HitDirection) const;
     bool CanPenetrate(WeaponSystem*, HitDirection) const;
     std::pair<Device*, Ammo*> PickRightDevice(Armory*, const WeaponSystem*, u32 distance) const;
-    u32 GetArmorAt(HitDirection);
+    constexpr u32 GetArmorAt(HitDirection);
     bool CanReach(u32 distance_m) const;
     bool IsArmored() const;
     bool IsArtillery() const;
@@ -324,15 +324,18 @@ struct WeaponSystemInGroup {
 
 inline bool UnitDestroyed(const WeaponSystemInGroup& weapon)
 {
+    bool is_crew_dead = HAS_FLAG(weapon.statuses, WeaponSystemStatus::DriverKilled) && HAS_FLAG(weapon.statuses, WeaponSystemStatus::GunnerKilled) && HAS_FLAG(weapon.statuses, WeaponSystemStatus::CmdrKilled);
+
     return HAS_FLAG(weapon.statuses, WeaponSystemStatus::OnFire)
         || HAS_FLAG(weapon.statuses, WeaponSystemStatus::Abondoned)
-        || (HAS_FLAG(weapon.statuses, WeaponSystemStatus::DriverKilled) && HAS_FLAG(weapon.statuses, WeaponSystemStatus::GunnerKilled) && HAS_FLAG(weapon.statuses, WeaponSystemStatus::CmdrKilled));
+        || is_crew_dead;
 }
 
-inline bool UnitDisabled(const WeaponSystemInGroup& weapon)
+inline bool UnitCanFire(const WeaponSystemInGroup& weapon)
 {
-    return UnitDestroyed(weapon)
-        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::TurretJammed);
+    return !UnitDestroyed(weapon) && 
+        HAS_NO_FLAG(weapon.statuses, WeaponSystemStatus::TurretJammed) && 
+        HAS_NO_FLAG(weapon.statuses, WeaponSystemStatus::GunnerKilled);
 }
 
 inline bool UnitDamaged(const WeaponSystemInGroup& weapon)

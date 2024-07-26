@@ -371,7 +371,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams&
         for (u32 i = 0; i < attacking_group.real_size; i++) {
             auto& attacking_weapon_ref = attacking_group.weapons[i];
 
-            if (UnitDisabled(attacking_weapon_ref))
+            if (!UnitCanFire(attacking_weapon_ref))
                 continue;
 
             auto targeting_info = TryTargeting(armory, attacking_weapon_ref, targeted_battlegroups, queue, distance_in_m);
@@ -494,7 +494,7 @@ std::pair<Device*, Ammo*> WeaponSystem::PickRightDevice(Armory* armory, const We
     return { nullptr, nullptr };
 }
 
-u32 WeaponSystem::GetArmorAt(HitDirection dir)
+constexpr u32 WeaponSystem::GetArmorAt(HitDirection dir)
 {
     switch (dir) {
     case HitDirection::Top:
