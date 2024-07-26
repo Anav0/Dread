@@ -32,8 +32,10 @@ std::vector<BattleGroup> Fight::FormBattleGroups(OblastCode oblast, Side side, A
     for (auto& unit : deployment.units) {
         auto unit_oblast = deployment.assigned.at(i);
 
-        if (unit.stance != stance || unit.side != side || unit_oblast != oblast)
+        if (unit.stance != stance || unit.side != side || unit_oblast != oblast) {
+            i++;
             continue;
+        }
 
         battle_groups.push_back(FormBattleGroup(armory, i, unit));
         pushed_something_to_group = true;
@@ -43,6 +45,21 @@ std::vector<BattleGroup> Fight::FormBattleGroups(OblastCode oblast, Side side, A
 
     assert(pushed_something_to_group);
     return battle_groups;
+}
+
+void Fight::DissolveBattleGroups(std::vector<BattleGroup>& groups, Deployment& deployment)
+{
+    for (auto& group : groups) {
+        auto& unit = deployment.units.at(group.parent_unit_index);
+
+        for (u32 i = 0; i < group.real_size; i++) {
+            auto& w = group.weapons.at(i);
+            if (UnitDestroyed(w))
+                continue;
+
+            unit.weapons_counter.at(w.index_of_weapon_in_parent_unit)++;
+        }
+    }
 }
 
 std::vector<f32> GetModifiers(SimulationParams& params, WeaponSystemGeneralType type, SideStatus status)
@@ -68,7 +85,7 @@ std::vector<f32> GetModifiers(SimulationParams& params, WeaponSystemGeneralType 
 
 AttackResult Fight::SimulateAttack(SimulationParams& params, Armory* armory, Deployment& deployment, SimulationSession* simulation_session = nullptr)
 {
-    AttackResult result;
+    AttackResult result {};
 
     std::vector<BattleGroup> attacker_battle_grup = FormBattleGroups(params.oblast_code, params.attacking_side, armory, UnitStance::Commited, deployment);
     std::vector<BattleGroup> defender_battle_grup = FormBattleGroups(params.oblast_code, params.defending_side, armory, UnitStance::Defending, deployment);
@@ -103,7 +120,7 @@ AttackResult Fight::SimulateAttack(SimulationParams& params, Armory* armory, Dep
     f32 damage_threshold = 0.6;
     f32 moral_threshold = 0.6;
 
-    bool fired_at_least_once = false;
+    u16 cqb_rounds = 0;
     while (!defender_moral_broke && !attacker_moral_broke && !attacker_was_mauled && !defender_was_mauled) {
 
         // Attacking groups go forward!
@@ -115,8 +132,6 @@ AttackResult Fight::SimulateAttack(SimulationParams& params, Armory* armory, Dep
 
         auto def_rounds = Fire(params.defending_side, armory, params, this->attacker_distance_in_meters, defender_battle_grup, attacker_battle_grup);
         auto att_rounds = Fire(params.attacking_side, armory, params, this->attacker_distance_in_meters, attacker_battle_grup, defender_battle_grup);
-
-        fired_at_least_once = def_rounds.size() || att_rounds.size();
 
         if (simulation_session != nullptr) {
             simulation_session->round = round;
@@ -136,10 +151,12 @@ AttackResult Fight::SimulateAttack(SimulationParams& params, Armory* armory, Dep
 
         round++;
 
-        assert(round < 10000);
+        if (attacker_distance_in_meters <= 0) {
+            if (cqb_rounds > 10)
+                break;
+            cqb_rounds++;
+        }
     }
-
-    assert(fired_at_least_once);
 
     bool defender_won = attacker_moral_broke || attacker_was_mauled;
     bool attacker_won = defender_moral_broke || defender_was_mauled;
@@ -148,12 +165,18 @@ AttackResult Fight::SimulateAttack(SimulationParams& params, Armory* armory, Dep
 
     assert(defender_won || attacker_won || draw);
 
-    // TODO: deal with draws
-    if (!draw && simulation_session != nullptr)
-        simulation_session->AddWinner(defender_won ? params.defending_side : params.attacking_side);
 
-    result.winner_side = defender_won ? params.defending_side : params.attacking_side;
-    result.winner_status = defender_won ? SideStatus::Defending : SideStatus::Attacking;
+    DissolveBattleGroups(attacker_battle_grup, deployment);
+    DissolveBattleGroups(defender_battle_grup, deployment);
+
+     result.status = AttackResultStatus::Draw;
+    if (defender_won)
+        result.status = AttackResultStatus::DefenderWon;
+    else
+        result.status = AttackResultStatus::AttackerWon;
+    
+    if (simulation_session != nullptr)
+        simulation_session->AddResult(result.status);
 
     return result;
 }
@@ -191,6 +214,7 @@ static BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& 
         for (u32 i = 0; i < n; i++) {
             group.weapons[group.real_size] = WeaponSystemInGroup();
             group.weapons[group.real_size].weapon = weapon_ref;
+            group.weapons[group.real_size].index_of_weapon_in_parent_unit = index;
             group.weapons[group.real_size].morale = 1.0f; // TODO: default for now
             group.real_size++;
         }
@@ -238,6 +262,8 @@ bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 thresho
             }
         }
     }
+
+    printf("Destroyed: %i, Damaged: %i, Intact: %i\n", destroyed, damaged, intact);
 
     auto v = ((destroyed) / (static_cast<float>(destroyed) + damaged + intact));
 

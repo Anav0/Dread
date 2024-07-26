@@ -316,9 +316,9 @@ const BiMap<WeaponSystemStatus, std::string> STR_TO_UNIT_STATUS = {
 };
 
 struct WeaponSystemInGroup {
+    u32 index_of_weapon_in_parent_unit;
     WeaponSystem* weapon;
     f32 morale;
-    // WeaponSystemStatus flags
     u32 statuses;
 };
 
@@ -442,12 +442,20 @@ struct Loss {
     f32 percent_lost_from_bg;
 };
 
-struct AttackResult {
-    SideStatus winner_status;
-    Side winner_side;
+enum class AttackResultStatus {
+    AttackerWon,
+    DefenderWon,
+    Draw,
+};
 
-    std::vector<Loss> attacker_weapon_index_by_numbers_lost;
-    std::vector<Loss> defender_weapon_index_by_numbers_lost;
+const BiMap<AttackResultStatus, std::string> STR_TO_ATTACK_RESULT_STATUS = {
+    { AttackResultStatus::AttackerWon, "AttackerWon" },
+    { AttackResultStatus::DefenderWon, "DefenderWon" },
+    { AttackResultStatus::Draw,        "Draw"        },
+};
+
+struct AttackResult {
+    AttackResultStatus status;
 };
 
 struct TargetingInfo {
@@ -540,12 +548,12 @@ struct SimulationSession {
         }
     };
 
-    void AddWinner(Side winner)
+    void AddResult(AttackResultStatus status)
     {
         if (!ShouldSaveResult())
             return;
 
-        std::string str = std::to_string(this->run) + ";" + SideToStr(winner);
+        std::string str = std::to_string(this->run) + ";" + STR_TO_ATTACK_RESULT_STATUS.GetValue(status);
         fight_result_saver.AddRowRaw(str);
     }
 
@@ -650,6 +658,8 @@ struct Fight {
     AttackResult SimulateAttack(SimulationParams&, Armory*, Deployment&, SimulationSession*);
 
     std::vector<BattleGroup> FormBattleGroups(OblastCode oblast, Side side, Armory* armory, UnitStance stance, Deployment& deployment);
+
+    void DissolveBattleGroups(std::vector<BattleGroup>&, Deployment&);
 
     Fight()
     {
