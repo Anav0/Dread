@@ -386,7 +386,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams&
                 fire_result.hit_or_miss = "HIT";
                 if (ArmorWasPenetrated(targeting_info)) {
                     // TODO: incorporate more statuses
-                    targeting_info.targeted_weapon->statuses.insert(WeaponSystemStatus::OnFire);
+                    SET_FLAG(targeting_info.targeted_weapon->statuses, WeaponSystemStatus::OnFire);
                 }
             } else {
                 fire_result.hit_or_miss = "MISS";

@@ -13,6 +13,7 @@
 #include "Engine/GLM.h"
 #include "Misc/Constants.h"
 #include "Misc/CsvSaver.h"
+#include "Misc/Flags.h"
 
 #include "Entities.h"
 #include "Modifiers.h"
@@ -294,14 +295,14 @@ std::string DomainToStr(WeaponDomain domain);
 
 std::string WeaponTypeToStr(WeaponSystemGeneralType type);
 
-enum class WeaponSystemStatus {
-    OnFire,
-    Immobilized,
-    DriverKilled,
-    GunnerKilled,
-    CmdrKilled,
-    Abondoned,
-    TurretJammed,
+enum WeaponSystemStatus : u32 {
+    OnFire       = FLAG(0),
+    Immobilized  = FLAG(1),
+    DriverKilled = FLAG(2),
+    GunnerKilled = FLAG(3),
+    CmdrKilled   = FLAG(4),
+    Abondoned    = FLAG(5),
+    TurretJammed = FLAG(6),
 };
 
 const BiMap<WeaponSystemStatus, std::string> STR_TO_UNIT_STATUS = {
@@ -317,39 +318,35 @@ const BiMap<WeaponSystemStatus, std::string> STR_TO_UNIT_STATUS = {
 struct WeaponSystemInGroup {
     WeaponSystem* weapon;
     f32 morale;
-    std::set<WeaponSystemStatus> statuses;
+    // WeaponSystemStatus flags
+    u32 statuses;
 };
 
 inline bool UnitDestroyed(const WeaponSystemInGroup& weapon)
 {
-    return weapon.statuses.contains(WeaponSystemStatus::OnFire)
-        || weapon.statuses.contains(WeaponSystemStatus::Abondoned)
-        || (weapon.statuses.contains(WeaponSystemStatus::DriverKilled) && weapon.statuses.contains(WeaponSystemStatus::GunnerKilled) && weapon.statuses.contains(WeaponSystemStatus::CmdrKilled));
+    return HAS_FLAG(weapon.statuses, WeaponSystemStatus::OnFire)
+        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::Abondoned)
+        || (HAS_FLAG(weapon.statuses, WeaponSystemStatus::DriverKilled) && HAS_FLAG(weapon.statuses, WeaponSystemStatus::GunnerKilled) && HAS_FLAG(weapon.statuses, WeaponSystemStatus::CmdrKilled));
 }
 
 inline bool UnitDisabled(const WeaponSystemInGroup& weapon)
 {
     return UnitDestroyed(weapon)
-        || weapon.statuses.contains(WeaponSystemStatus::TurretJammed);
+        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::TurretJammed);
 }
 
 inline bool UnitDamaged(const WeaponSystemInGroup& weapon)
 {
-    return weapon.statuses.contains(WeaponSystemStatus::Immobilized)
-        || weapon.statuses.contains(WeaponSystemStatus::TurretJammed)
-        || weapon.statuses.contains(WeaponSystemStatus::DriverKilled)
-        || weapon.statuses.contains(WeaponSystemStatus::GunnerKilled)
-        || weapon.statuses.contains(WeaponSystemStatus::CmdrKilled);
+    return HAS_FLAG(weapon.statuses, WeaponSystemStatus::Immobilized)
+        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::TurretJammed)
+        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::DriverKilled)
+        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::GunnerKilled)
+        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::CmdrKilled);
 }
 
-inline std::string StatusesToStr(std::set<WeaponSystemStatus> statuses)
+inline std::string StatusesToStr(u32 statuses)
 {
-    std::string output;
-
-    for (auto s : statuses)
-        output += STR_TO_UNIT_STATUS.GetValue(s) + ", ";
-
-    return output;
+    return "TMP";
 }
 
 struct Priority {

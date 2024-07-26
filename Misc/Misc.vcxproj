@@ -137,6 +137,7 @@
     <ClInclude Include="source\Misc\Allocators.h" />
     <ClInclude Include="source\Misc\Constants.h" />
     <ClInclude Include="source\Misc\CsvSaver.h" />
+    <ClInclude Include="source\Misc\Flags.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Misc\lib.cpp" />
