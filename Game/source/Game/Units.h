@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "Misc/Flags.h"
+#include "Ethnicity.h"
 
 class Armory;
 
@@ -158,26 +159,6 @@ struct Commander {
     char* name;
 };
 
-enum class Faith : u16 {
-    Catholic   = FLAG(1),
-    Protestant = FLAG(2),
-    Orthodox   = FLAG(3),
-    Sunni      = FLAG(4),
-    Shia       = FLAG(5),
-    Buddist    = FLAG(6),
-    Judaism    = FLAG(7),
-};
-
-struct Ethnicity {
-    char* name;
-    Faith faith;
-};
-
-struct EthnicityInfo {
-    Ethnicity ethnicity;
-    f32 percent;
-};
-
 struct WeaponInfo {
     u32 index_in_armory;
     f32 morale;
@@ -191,6 +172,11 @@ WeaponInfo(const u32& index_in_armory, const u16& initial_n, const u16& n, const
         , n(n)
     {
     }
+};
+
+struct EthnicityInfo {
+    Ethnicity ethnicity;
+    f32 percent;
 };
 
 struct Unit {

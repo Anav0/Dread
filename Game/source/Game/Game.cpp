@@ -9,6 +9,7 @@
 #include "Engine/WindowManager.h"
 #include "EntityManager.h"
 #include "Templates.h"
+#include "Ethnicity.h"
 
 #include "Devices.h"
 #include "Entities.h"
@@ -31,6 +32,7 @@
 #include "RenderHelpers.cpp"
 #include "Weather.cpp"
 #include "Templates.cpp"
+#include "Ethnicity.cpp"
 
 #include "glad/glad.h"
 

@@ -141,6 +141,7 @@
     <ClInclude Include="Game\source\Game\Devices.h" />
     <ClInclude Include="Game\source\Game\Entities.h" />
     <ClInclude Include="Game\source\Game\EntityManager.h" />
+    <ClInclude Include="Game\source\Game\Ethnicity.h" />
     <ClInclude Include="Game\source\Game\Fight.h" />
     <ClInclude Include="Game\source\Game\Game.h" />
     <ClInclude Include="Game\source\Game\GameState.h" />

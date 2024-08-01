@@ -8,6 +8,7 @@
 #include "Fight.h"
 #include "Weather.h"
 #include "Modifiers.h"
+#include "Ethnicity.h"
 
 #include "Engine/Camera.h"
 #include "Engine/GLM.h"
@@ -89,6 +90,7 @@ struct GameState {
     Modifier ru_modifier = Modifier(0.8, 1.0);
 
     Armory armory;
+    EthnicityManager ethnicity_manager;
 
     std::vector<Commander> commanders;
 

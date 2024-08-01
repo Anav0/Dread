@@ -30,6 +30,7 @@ struct Modifier {
 
 typedef std::map<WeaponSystemGeneralType, Modifier> WeaponTypeModifierMap;
 
+//Speed:
 class ModifiersManager {
 private:
     std::map<Weather, WeaponTypeModifierMap>         weather_modifiers;
