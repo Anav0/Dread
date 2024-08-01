@@ -51,9 +51,12 @@ class EthnicityManager {
     std::unordered_map<Faith, std::vector<u32>> by_faith;
 
     f32 GetProperAttitudValue(Ethnicity&, CurrentRole);
+    f32 ChangeProperAttitudeValue(Ethnicity&, CurrentRole, f32 by);
 
 public:
     void Load(char* file_path, u64 offset);
+    f32 ChangeAttitudeById(char* id, CurrentRole, f32 by);
+    f32 ChangeAttitudeByName(char* name, CurrentRole, f32 by);
     f32 GetAttitudeById(char* id, CurrentRole);
     f32 GetAttitudeByName(char* name, CurrentRole);
     Ethnicity* GetById(char* name);
