@@ -58,7 +58,7 @@ void Fight::DissolveBattleGroups(std::vector<BattleGroup>& groups, Deployment& d
             if (UnitDestroyed(w))
                 continue;
 
-            unit.weapons_counter.at(w.index_of_weapon_in_parent_unit)++;
+            unit.weapons.at(w.index_of_weapon_in_parent_unit).n++;
         }
     }
 }
@@ -192,17 +192,17 @@ static BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& 
     assert(unit.weapons.size());
 
     u32 index = 0;
-    for (u32 weapon_index : unit.weapons) {
-        if (unit.weapons_counter[index] < 0) {
+    for (auto& weapon : unit.weapons) {
+        if (weapon.n < 0) {
             assert(false);
             continue;
         }
 
-        WeaponSystem* weapon_ref = &armory->weapons[weapon_index];
+        WeaponSystem* weapon_ref = &armory->weapons[weapon.index_in_armory];
 
         auto& unit_template_n = TEMPLATES.at(unit.type);
         auto desired_size = unit_template_n.at(weapon_ref->type);
-        auto total = unit.weapons_counter[index];
+        auto total = weapon.n;
 
         u32 n = 0;
         if (total < desired_size)
@@ -210,7 +210,7 @@ static BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& 
         else
             n = desired_size;
 
-        unit.weapons_counter[index] -= n;
+        weapon.n -= n;
 
         for (u32 i = 0; i < n; i++) {
             group.weapons[group.real_size] = WeaponSystemInGroup();

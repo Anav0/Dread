@@ -158,6 +158,41 @@ struct Commander {
     char* name;
 };
 
+enum class Faith : u16 {
+    Catholic   = FLAG(1),
+    Protestant = FLAG(2),
+    Orthodox   = FLAG(3),
+    Sunni      = FLAG(4),
+    Shia       = FLAG(5),
+    Buddist    = FLAG(6),
+    Judaism    = FLAG(7),
+};
+
+struct Ethnicity {
+    char* name;
+    Faith faith;
+};
+
+struct EthnicityInfo {
+    Ethnicity ethnicity;
+    f32 percent;
+};
+
+struct WeaponInfo {
+    u32 index_in_armory;
+    f32 morale;
+    u16 initial_n;
+    u16 n;
+
+WeaponInfo(const u32& index_in_armory, const u16& initial_n, const u16& n, const f32& morale)
+        : index_in_armory(index_in_armory)
+        , morale(morale)
+        , initial_n(initial_n)
+        , n(n)
+    {
+    }
+};
+
 struct Unit {
     std::string id;
     std::string name;
@@ -168,10 +203,8 @@ struct Unit {
     UnitType type;
     u32 commander_index;
 
-    std::vector<u32> weapons;
-    std::vector<f32> morale;
-    std::vector<u16> weapons_counter;
-    std::vector<u16> weapons_toe;
+    std::vector<WeaponInfo> weapons;
+    std::vector<EthnicityInfo> ethnic_info;
 };
 
 enum WeaponSystemStatus : u32 {

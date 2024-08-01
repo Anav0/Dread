@@ -366,9 +366,12 @@ void LoadUnitOOB(Armory* armory, Deployment* deployment, const std::string& oob_
         auto unit         = deployment->GetUnitById(parts[0]);
         auto weapon_index = armory->GetWeaponIndexById(parts[1]).value();
 
-        unit->weapons.push_back(weapon_index);
-        unit->weapons_counter.push_back(std::stoi(parts[2]));
-        unit->morale.push_back(1.0);
+        unit->weapons.push_back(WeaponInfo(
+            weapon_index,
+            std::stoi(parts[2]),
+            std::stoi(parts[2]),
+            1.0
+        ));
     }
 }
 

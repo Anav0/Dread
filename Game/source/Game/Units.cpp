@@ -30,11 +30,11 @@ void PrintUnit(Armory& armory, Unit& unit)
     std::cout << "Side: " << static_cast<int>(unit.side) << " ";
 
     u32 index = 0;
-    for (u32 weapon_index : unit.weapons) {
+    for (auto& weapon : unit.weapons) {
         std::cout << "\n\t";
-        std::cout << armory.weapons[weapon_index].name << ", ";
-        std::cout << unit.weapons_counter[index] << " out of ";
-        std::cout << unit.weapons_toe[index];
+        std::cout << armory.weapons[weapon.index_in_armory].name << ", ";
+        std::cout << weapon.n << " out of ";
+        std::cout << weapon.initial_n;
         index++;
     }
 }
