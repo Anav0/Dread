@@ -14,12 +14,12 @@ std::string DomainToStr(WeaponDomain domain)
 
 inline WeaponSystemGeneralType StrToWeaponType(std::string& str)
 {
-    return WEAPON_TYPE_STRING_MAP.GetKey(str);
+    return WEAPON_SYSTEM_GENERAL_TYPE_MAP.GetKey(str);
 }
 
 inline std::string WeaponTypeToStr(WeaponSystemGeneralType type)
 {
-    return WEAPON_TYPE_STRING_MAP.GetValue(type);
+    return WEAPON_SYSTEM_GENERAL_TYPE_MAP.GetValue(type);
 }
 
 void PrintUnit(Armory& armory, Unit& unit)

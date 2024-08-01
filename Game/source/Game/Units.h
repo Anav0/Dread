@@ -184,42 +184,42 @@ enum WeaponSystemStatus : u32 {
     TurretJammed = FLAG(6),
 };
 
-static const BiMap<std::string, UnitType> STR_TO_UNIT_TYPE = {
-    { "Panzer", UnitType::Panzer },
-    { "Infantry", UnitType::Infantry },
-    { "Mech", UnitType::Mech },
-    { "Airborn", UnitType::Airborn },
-    { "Static", UnitType::Static },
+static const BiMap<UnitType, std::string> UNIT_TYPE_MAP = {
+    { UnitType::Panzer, "Panzer" },
+    { UnitType::Infantry, "Infantry" },
+    { UnitType::Mech, "Mech" },
+    { UnitType::Airborn, "Airborn" },
+    { UnitType::Static, "Static" },
 };
 
-static const std::map<std::string, UnitSize> STR_TO_SIZE = {
-    { "Division", UnitSize::Division },
-    { "Brigade", UnitSize::Brigade },
-    { "Regiment", UnitSize::Regiment },
-    { "Battalion", UnitSize::Battalion },
-    { "Company", UnitSize::Company },
-    { "Platoon", UnitSize::Platoon },
-    { "Squad", UnitSize::Squad },
+static const BiMap<UnitSize, std::string> UNIT_SIZE_MAP = {
+    { UnitSize::Division, "Division" },
+    { UnitSize::Brigade, "Brigade" },
+    { UnitSize::Regiment, "Regiment" },
+    { UnitSize::Battalion, "Battalion" },
+    { UnitSize::Company, "Company" },
+    { UnitSize::Platoon, "Platoon" },
+    { UnitSize::Squad, "Squad" },
 };
 
-static const BiMap<std::string, UnitStance> STR_TO_UNIT_STANCE = {
-    { "Commited", UnitStance::Commited },
-    { "Defending", UnitStance::Defending },
-    { "None", UnitStance::None },
-    { "Redeploying", UnitStance::Redeploying },
-    { "Reserve", UnitStance::Reserve },
-    { "Resting", UnitStance::Resting },
-    { "Routing", UnitStance::Routing },
+static const BiMap<UnitStance, std::string> UNIT_STANCE_MAP = {
+    { UnitStance::Commited, "Commited" },
+    { UnitStance::Defending, "Defending" },
+    { UnitStance::None, "None" },
+    { UnitStance::Redeploying, "Redeploying" },
+    { UnitStance::Reserve, "Reserve" },
+    { UnitStance::Resting, "Resting" },
+    { UnitStance::Routing, "Routing" },
 };
 
-static const BiMap<std::string, DamageType> STR_TO_DAMAGE_TYPE = {
-    { "HE", DamageType::HE },
-    { "HEAT", DamageType::HEAT },
-    { "Kinetic", DamageType::Kinetic },
-    { "Tandem", DamageType::Tandem },
+static const BiMap<DamageType, std::string> DAMAGE_TYPE_MAP = {
+    { DamageType::HE, "HE" },
+    { DamageType::HEAT, "HEAT" },
+    { DamageType::Kinetic, "Kinetic" },
+    { DamageType::Tandem, "Tandem" },
 };
 
-static const BiMap<WeaponSystemStatus, std::string> STR_TO_UNIT_STATUS = {
+static const BiMap<WeaponSystemStatus, std::string> WEAPON_SYSTEM_STATUS_MAP = {
     { WeaponSystemStatus::OnFire, "OnFire" },
     { WeaponSystemStatus::Immobilized, "Immobilized" },
     { WeaponSystemStatus::DriverKilled, "DriverKilled" },
@@ -229,7 +229,7 @@ static const BiMap<WeaponSystemStatus, std::string> STR_TO_UNIT_STATUS = {
     { WeaponSystemStatus::TurretJammed, "TurretJammed" },
 };
 
-static const BiMap<WeaponSystemGeneralType, std::string> WEAPON_TYPE_STRING_MAP = {
+static const BiMap<WeaponSystemGeneralType, std::string> WEAPON_SYSTEM_GENERAL_TYPE_MAP = {
     { WeaponSystemGeneralType::Drone, "Drone" },
     { WeaponSystemGeneralType::Infantry, "Infantry" },
     { WeaponSystemGeneralType::APC, "APC" },

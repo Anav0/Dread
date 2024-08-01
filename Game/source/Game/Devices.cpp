@@ -104,7 +104,7 @@ void PrintArmory(Armory& armory)
 
             for (u32 a : armory.devices[d].ammunition) {
                 auto& ammo = armory.ammo[a];
-                printf("\t\tAmmo: %s Damage Type: %s Damage: %i UA Qty: %i RU Qty: %i\n", ammo.name.c_str(), STR_TO_DAMAGE_TYPE.GetKey(ammo.damage_type), ammo.penetration, armory.ua_ammo_quantity[a], armory.ru_ammo_quantity[a]);
+                printf("\t\tAmmo: %s Damage Type: %s Damage: %i UA Qty: %i RU Qty: %i\n", ammo.name.c_str(), DAMAGE_TYPE_MAP.GetValue(ammo.damage_type), ammo.penetration, armory.ua_ammo_quantity[a], armory.ru_ammo_quantity[a]);
                 for (auto& acc : ammo.accuracy) {
                     printf("\t\t\t %f at %im\n", acc.change_to_hit, acc.range_in_meters);
                 }
@@ -175,7 +175,7 @@ void LoadAmmo(Armory* armory, const char* path)
         a.id = parts[0][0] == USE_NAME_AS_ID_CHAR ? parts[1] : parts[0];
         a.name = parts[1];
         a.domain = WEAPON_DOMAIN_MAP.GetKey(parts[2]);
-        a.damage_type = STR_TO_DAMAGE_TYPE.GetValue(parts[3]);
+        a.damage_type = DAMAGE_TYPE_MAP.GetKey(parts[3]);
         a.penetration = std::stoi(parts[4]);
         a.fragmentation = std::stoi(parts[5]);
         a.accuracy = StrToAccuracy(parts[6]);
@@ -397,9 +397,9 @@ void LoadUnitGeneralInfo(Deployment* deployment, const std::string& general_info
         unit.nickname = parts[2];
         unit.side = StrToSide(parts[3]);
         unit.commander_index = std::stoi(parts[4]);
-        unit.size   = STR_TO_SIZE.at(parts[6]);
-        unit.type   = STR_TO_UNIT_TYPE.GetValue(parts[7]);
-        unit.stance = STR_TO_UNIT_STANCE.GetValue(parts[8]);
+        unit.size   = UNIT_SIZE_MAP.GetKey(parts[6]);
+        unit.type   = UNIT_TYPE_MAP.GetKey(parts[7]);
+        unit.stance = UNIT_STANCE_MAP.GetKey(parts[8]);
 
         deployment->Insert(unit, OBLASTS.GetKey(parts[5]));
 
