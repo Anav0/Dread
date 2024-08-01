@@ -23,22 +23,6 @@ std::vector<std::string> split(const std::string& s, char delimiter)
     return tokens;
 }
 
-WeaponDomain DomainStrToEnum(std::string& text)
-{
-    if (text == "Ground")
-        return WeaponDomain::Ground;
-    if (text == "Air")
-        return WeaponDomain::Air;
-    if (text == "Sea")
-        return WeaponDomain::Sea;
-    if (text == "Cyber")
-        return WeaponDomain::Cyber;
-
-    assert(false);
-
-    return WeaponDomain::Cyber;
-}
-
 std::vector<Accuracy> StrToAccuracy(std::string& text)
 {
     std::vector<Accuracy> ratings;
@@ -143,16 +127,6 @@ static void fill(std::vector<u32>& v, u32 value)
     }
 }
 
-WeaponSystemGeneralType StrToWeaponType(std::string& str)
-{
-    return WEAPON_TYPE_STRING_MAP.GetKey(str);
-}
-
-std::string WeaponTypeToStr(WeaponSystemGeneralType type)
-{
-    return WEAPON_TYPE_STRING_MAP.GetValue(type);
-}
-
 std::set<u32> ParseAmmo(Armory* armory, std::string& ammo_str)
 {
     auto ids = split(ammo_str, ',');
@@ -200,7 +174,7 @@ void LoadAmmo(Armory* armory, const char* path)
         Ammo a;
         a.id = parts[0][0] == USE_NAME_AS_ID_CHAR ? parts[1] : parts[0];
         a.name = parts[1];
-        a.domain = DomainStrToEnum(parts[2]);
+        a.domain = WEAPON_DOMAIN_MAP.GetKey(parts[2]);
         a.damage_type = STR_TO_DAMAGE_TYPE.GetValue(parts[3]);
         a.penetration = std::stoi(parts[4]);
         a.fragmentation = std::stoi(parts[5]);
@@ -271,7 +245,7 @@ void LoadWeapons(Armory* armory, const char* path)
         w.armor.turret_rear = std::stoi(parts[7]);
         w.armor.turret_side = std::stoi(parts[8]);
 
-        w.domain = DomainStrToEnum(parts[23]);
+        w.domain = WEAPON_DOMAIN_MAP.GetKey(parts[23]);
         w.type = StrToWeaponType(parts[24]);
         // NOTE: We ignore image id
         w.cost_in_dollars = std::stoi(parts[26]);

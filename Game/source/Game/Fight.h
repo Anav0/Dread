@@ -17,203 +17,11 @@
 
 #include "Entities.h"
 #include "Modifiers.h"
+#include "Units.h"
 
 class WeatherManager;
-// class Modifier;
-// class ModifiersManager;
-enum class HitDirection {
-    Top,
-
-    HullFront,
-    HullSide,
-    HullRear,
-
-    TurretFront,
-    TurretSide,
-    TurretRear,
-};
-
-enum class UnitStance {
-    None,
-    Commited,
-    Defending,
-    Reserve,
-    Redeploying,
-    Retreating,
-    Routing,
-    Resting,
-};
-
-enum class UnitSize {
-    Division,
-    Brigade,
-    Regiment,
-    Battalion,
-    Company,
-    Platoon,
-    Squad,
-};
-
-enum class DamageType {
-    Kinetic,
-    HEAT,
-    Tandem,
-    HE
-};
-
-enum class UnitType {
-    Panzer,
-    Infantry,
-    Mech,
-    Airborn,
-    Static,
-};
-
-const BiMap<std::string, UnitType> STR_TO_UNIT_TYPE = {
-    { "Panzer", UnitType::Panzer },
-    { "Infantry", UnitType::Infantry },
-    { "Mech", UnitType::Mech },
-    { "Airborn", UnitType::Airborn },
-    { "Static", UnitType::Static },
-};
-
-const std::map<std::string, UnitSize> STR_TO_SIZE = {
-    { "Division", UnitSize::Division },
-    { "Brigade", UnitSize::Brigade },
-    { "Regiment", UnitSize::Regiment },
-    { "Battalion", UnitSize::Battalion },
-    { "Company", UnitSize::Company },
-    { "Platoon", UnitSize::Platoon },
-    { "Squad", UnitSize::Squad },
-};
-
-const BiMap<std::string, UnitStance> STR_TO_UNIT_STANCE = {
-    { "Commited", UnitStance::Commited },
-    { "Defending", UnitStance::Defending },
-    { "None", UnitStance::None },
-    { "Redeploying", UnitStance::Redeploying },
-    { "Reserve", UnitStance::Reserve },
-    { "Resting", UnitStance::Resting },
-    { "Routing", UnitStance::Routing },
-};
-
-const BiMap<std::string, DamageType> STR_TO_DAMAGE_TYPE = {
-    { "HE", DamageType::HE },
-    { "HEAT", DamageType::HEAT },
-    { "Kinetic", DamageType::Kinetic },
-    { "Tandem", DamageType::Tandem },
-};
-
-enum class WeaponDomain {
-    Cyber,
-    Ground,
-    Air,
-    Sea,
-};
-
-enum class WeaponSystemGeneralType {
-    Infantry,
-    APC,
-    IFV,
-    Artillery,
-    Mortar,
-    MLRS,
-    Vehicle,
-    Drone,
-    Tank,
-    MANPADS,
-    ATGM,
-};
-
-struct Accuracy {
-    u32 range_in_meters;
-    f32 change_to_hit;
-};
-
-struct Ammo {
-    std::string id;
-    std::string name;
-    WeaponDomain domain; // Domain of the potential target
-    DamageType damage_type;
-    u16 penetration;
-    u16 fragmentation;
-    std::vector<Accuracy> accuracy;
-};
-
-struct Armor {
-    u32 top;
-
-    u32 hull_front;
-    u32 hull_rear;
-    u32 hull_side;
-
-    u32 turret_front;
-    u32 turret_rear;
-    u32 turret_side;
-};
-
-struct Device {
-    std::string id;
-    std::string name;
-    std::set<u32> ammunition;
-};
 
 class Armory;
-class WeaponSystem {
-public:
-    std::string id;
-    Armor armor;
-    WeaponDomain domain;
-    WeaponSystemGeneralType type;
-
-    std::string name;
-
-    u16 image_pos_on_atlas = 0;
-    u32 cost_in_dollars    = 0;
-
-    // Computed in Init()
-    u32 max_distance      = 0;
-    u32 max_penetration   = 0;
-    u32 max_fragmentation = 0;
-
-    std::set<u32> devices;
-
-    void Precompute(Armory*);
-
-    bool CanBePenetrated(Ammo*, HitDirection) const;
-    bool CanPenetrate(WeaponSystem*, HitDirection) const;
-    std::pair<Device*, Ammo*> PickRightDevice(Armory*, const WeaponSystem*, u32 distance) const;
-    constexpr u32 GetArmorAt(HitDirection);
-    bool CanReach(u32 distance_m) const;
-    bool IsArmored() const;
-    bool IsArtillery() const;
-    bool IsAA() const;
-};
-
-enum class Side {
-    UA,
-    RU
-};
-
-struct Commander {
-    char* name;
-};
-
-struct Unit {
-    std::string id;
-    std::string name;
-    std::string nickname;
-    UnitSize size;
-    Side side;
-    UnitStance stance;
-    UnitType type;
-    u32 commander_index;
-
-    std::vector<u32> weapons;
-    std::vector<f32> morale;
-    std::vector<u16> weapons_counter;
-    std::vector<u16> weapons_toe;
-};
 
 struct Armory {
     std::vector<WeaponSystem> weapons;
@@ -246,9 +54,6 @@ struct Armory {
     }
 };
 
-using UnitId = std::string;
-using UnitIndex = u32;
-
 struct Deployment {
     std::vector<Unit> units;
     std::vector<OblastCode> assigned;
@@ -264,8 +69,6 @@ struct Deployment {
     Unit* GetUnitById(const std::string& id);
     u32 Insert(Unit, OblastCode);
 };
-
-void PrintUnit(Armory& armory, Unit& unit);
 
 struct RoundInfo {
     // Armory* armory;
@@ -291,30 +94,6 @@ struct RoundInfo {
     }
 };
 
-std::string DomainToStr(WeaponDomain domain);
-
-std::string WeaponTypeToStr(WeaponSystemGeneralType type);
-
-enum WeaponSystemStatus : u32 {
-    OnFire       = FLAG(0),
-    Immobilized  = FLAG(1),
-    DriverKilled = FLAG(2),
-    GunnerKilled = FLAG(3),
-    CmdrKilled   = FLAG(4),
-    Abondoned    = FLAG(5),
-    TurretJammed = FLAG(6),
-};
-
-const BiMap<WeaponSystemStatus, std::string> STR_TO_UNIT_STATUS = {
-    { WeaponSystemStatus::OnFire, "OnFire" },
-    { WeaponSystemStatus::Immobilized, "Immobilized" },
-    { WeaponSystemStatus::DriverKilled, "DriverKilled" },
-    { WeaponSystemStatus::GunnerKilled, "GunnerKilled" },
-    { WeaponSystemStatus::CmdrKilled, "CmdrKilled" },
-    { WeaponSystemStatus::Abondoned, "Abondoned" },
-    { WeaponSystemStatus::TurretJammed, "TurretJammed" },
-};
-
 struct WeaponSystemInGroup {
     u32 index_of_weapon_in_parent_unit;
     WeaponSystem* weapon;
@@ -322,35 +101,6 @@ struct WeaponSystemInGroup {
     u32 statuses;
 };
 
-inline bool UnitDestroyed(const WeaponSystemInGroup& weapon)
-{
-    bool is_crew_dead = HAS_FLAG(weapon.statuses, WeaponSystemStatus::DriverKilled) && HAS_FLAG(weapon.statuses, WeaponSystemStatus::GunnerKilled) && HAS_FLAG(weapon.statuses, WeaponSystemStatus::CmdrKilled);
-
-    return HAS_FLAG(weapon.statuses, WeaponSystemStatus::OnFire)
-        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::Abondoned)
-        || is_crew_dead;
-}
-
-inline bool UnitCanFire(const WeaponSystemInGroup& weapon)
-{
-    return !UnitDestroyed(weapon) && 
-        HAS_NO_FLAG(weapon.statuses, WeaponSystemStatus::TurretJammed) && 
-        HAS_NO_FLAG(weapon.statuses, WeaponSystemStatus::GunnerKilled);
-}
-
-inline bool UnitDamaged(const WeaponSystemInGroup& weapon)
-{
-    return HAS_FLAG(weapon.statuses, WeaponSystemStatus::Immobilized)
-        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::TurretJammed)
-        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::DriverKilled)
-        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::GunnerKilled)
-        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::CmdrKilled);
-}
-
-inline std::string StatusesToStr(u32 statuses)
-{
-    return "TMP";
-}
 
 struct Priority {
     u32 index;
@@ -433,14 +183,6 @@ enum class SideStatus {
 
 constexpr u8 MAX_UNITS = 24;
 constexpr u8 SUPPORT_ASSETS = 8;
-
-WeaponSystemGeneralType StrToWeaponType(std::string& str);
-
-struct Loss {
-    u32 index_in_armory;
-    u32 number_lost;
-    f32 percent_lost_from_bg;
-};
 
 enum class AttackResultStatus {
     AttackerWon,
@@ -670,6 +412,30 @@ struct Fight {
     }
 };
 
+inline bool UnitDestroyed(const WeaponSystemInGroup& weapon)
+{
+    bool is_crew_dead = HAS_FLAG(weapon.statuses, WeaponSystemStatus::DriverKilled) && HAS_FLAG(weapon.statuses, WeaponSystemStatus::GunnerKilled) && HAS_FLAG(weapon.statuses, WeaponSystemStatus::CmdrKilled);
+
+    return HAS_FLAG(weapon.statuses, WeaponSystemStatus::OnFire)
+        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::Abondoned)
+        || is_crew_dead;
+}
+
+inline bool UnitCanFire(const WeaponSystemInGroup& weapon)
+{
+    return !UnitDestroyed(weapon) && 
+        HAS_NO_FLAG(weapon.statuses, WeaponSystemStatus::TurretJammed) && 
+        HAS_NO_FLAG(weapon.statuses, WeaponSystemStatus::GunnerKilled);
+}
+
+inline bool UnitDamaged(const WeaponSystemInGroup& weapon)
+{
+    return HAS_FLAG(weapon.statuses, WeaponSystemStatus::Immobilized)
+        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::TurretJammed)
+        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::DriverKilled)
+        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::GunnerKilled)
+        || HAS_FLAG(weapon.statuses, WeaponSystemStatus::CmdrKilled);
+}
 BattleGroup FormBattleGroup(Armory* armory, u32 parent_unit_index, Unit& unit);
 
 std::vector<f32> GetModifiers(SimulationParams& params, WeaponSystemGeneralType type, SideStatus status);
@@ -678,10 +444,6 @@ bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 thresho
 PriorityQueue ConstructPriorityQueue(Armory*, const std::vector<BattleGroup>&);
 TargetingInfo TryTargeting(Armory*, const WeaponSystemInGroup& firing_weapon, std::vector<BattleGroup>& enemy_groups, PriorityQueue, u32 distance);
 std::tuple<bool, f32> TryToHitTarget(TargetingInfo&, std::mt19937&, u32 distance);
-
-bool IsAP(Ammo*);
-
-bool IsHE(Ammo*);
 
 std::vector<FireResult> Fire(
     Side firing_side,

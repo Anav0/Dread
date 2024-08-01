@@ -134,6 +134,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Game\source\Game\Units.h" />
     <ClInclude Include="source\Misc\Allocators.h" />
     <ClInclude Include="source\Misc\Constants.h" />
     <ClInclude Include="source\Misc\CsvSaver.h" />

@@ -6,6 +6,7 @@
 #include <string_view>
 
 #include "Fight.h"
+#include "Units.h"
 
 constexpr char USE_NAME_AS_ID_CHAR = '-';
 constexpr char COMMON_SPLIT_CHAR   = ';';
@@ -24,29 +25,11 @@ Deployment LoadDeployment(Armory* armory, const std::string& path);
 std::set<u32> ParseDevices(Armory* armory, std::string& devices_str);
 std::set<u32> ParseAmmo(Armory* armory, std::string& ammo_str);
 
-
-WeaponSystemGeneralType StrToWeaponType(std::string& str);
-std::string WeaponTypeToStr(WeaponSystemGeneralType type);
-
 //----
 std::vector<std::string> split(const std::string& s, char delimiter);
-WeaponDomain DomainStrToEnum(std::string& text);
 std::vector<Accuracy> StrToAccuracy(std::string& text);
 static void remove(std::string& str, char c);
 static void fill(std::vector<u32>& v, u32 value);
 Side StrToSide(const std::string& str);
 std::string SideToStr(Side side);
 
-static const BiMap<WeaponSystemGeneralType, std::string> WEAPON_TYPE_STRING_MAP = {
-    { WeaponSystemGeneralType::Drone, "Drone" },
-    { WeaponSystemGeneralType::Infantry, "Infantry" },
-    { WeaponSystemGeneralType::APC, "APC" },
-    { WeaponSystemGeneralType::Artillery, "Artillery" },
-    { WeaponSystemGeneralType::Vehicle, "Vehicle" },
-    { WeaponSystemGeneralType::IFV, "IFV" },
-    { WeaponSystemGeneralType::Tank, "Tank" },
-    { WeaponSystemGeneralType::MLRS, "MLRS" },
-    { WeaponSystemGeneralType::MANPADS, "MANPADS" },
-    { WeaponSystemGeneralType::ATGM, "ATGM" },
-    { WeaponSystemGeneralType::Mortar, "Mortar" },
-};

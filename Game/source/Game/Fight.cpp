@@ -23,6 +23,7 @@ Unit* Deployment::GetUnitById(const std::string& id)
 
 std::vector<BattleGroup> Fight::FormBattleGroups(OblastCode oblast, Side side, Armory* armory, UnitStance stance, Deployment& deployment)
 {
+
     UnitStance* stances;
     std::vector<Unit>* units;
 
@@ -425,34 +426,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams&
     return results;
 }
 
-void PrintUnit(Armory& armory, Unit& unit)
-{
-    std::cout << "\nName: " << unit.name << " ";
-    std::cout << "Nickname: " << unit.nickname << " ";
-    std::cout << "Size: " << static_cast<int>(unit.size) << " ";
-    std::cout << "Side: " << static_cast<int>(unit.side) << " ";
 
-    u32 index = 0;
-    for (u32 weapon_index : unit.weapons) {
-        std::cout << "\n\t";
-        std::cout << armory.weapons[weapon_index].name << ", ";
-        std::cout << unit.weapons_counter[index] << " out of ";
-        std::cout << unit.weapons_toe[index];
-        index++;
-    }
-}
-
-std::string DomainToStr(WeaponDomain domain)
-{
-    const static std::map<WeaponDomain, std::string> map = {
-        { WeaponDomain::Cyber, "Cyber" },
-        { WeaponDomain::Ground, "Ground" },
-        { WeaponDomain::Air, "Air" },
-        { WeaponDomain::Sea, "Sea" },
-    };
-
-    return map.at(domain);
-}
 
 inline bool WeaponSystem::CanReach(u32 distance_m) const
 {

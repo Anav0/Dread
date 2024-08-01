@@ -147,6 +147,7 @@
     <ClInclude Include="Game\source\Game\Modifiers.h" />
     <ClInclude Include="Game\source\Game\RenderHelpers.h" />
     <ClInclude Include="Game\source\Game\Templates.h" />
+    <ClInclude Include="Game\source\Game\Units.h" />
     <ClInclude Include="Game\source\Game\Weather.h" />
   </ItemGroup>
   <ItemGroup>

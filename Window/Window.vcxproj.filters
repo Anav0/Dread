@@ -10,4 +10,7 @@
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Game\source\Game\Units.h" />
+  </ItemGroup>
 </Project>
