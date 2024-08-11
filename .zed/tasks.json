@@ -1,0 +1,46 @@
+[
+  {
+    "label": "Update premake",
+    "type": "shell",
+    "command": "premake5",
+    "args": ["vs2022"],
+    "presentation": {
+      "echo": true,
+      "reveal": "always",
+      "focus": false,
+      "panel": "shared"
+    }
+  },
+  {
+    "label": "Build Analysis (Debug)",
+    "type": "shell",
+    "command": "msbuild",
+    "args": ["Dread.sln", "/property:Configuration=Analysis", "/m"],
+    "group": {
+      "kind": "build",
+      "isDefault": true
+    },
+    "presentation": {
+      "echo": true,
+      "reveal": "always",
+      "focus": false,
+      "panel": "shared"
+    }
+  },
+  {
+    "label": "Build Window (Debug)",
+    "type": "shell",
+    "command": "msbuild",
+    "args": ["Dread.sln", "/property:Configuration=Debug", "/m"],
+    "group": {
+      "kind": "build",
+      "isDefault": false
+    },
+    "presentation": {
+      "echo": true,
+      "reveal": "always",
+      "focus": false,
+      "panel": "shared"
+    }
+  }
+]
