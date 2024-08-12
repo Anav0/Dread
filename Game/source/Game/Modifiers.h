@@ -23,12 +23,17 @@ class SimulationParams;
 class WeaponSystem;
 class Armory;
 class WeatherManager;
+class WeaponSystemInGroup;
+class TryToHitParams;
 
-using ConditionFn = std::function<bool(Armory*, WeaponSystem& weapon_used)>;
+struct AffectedParams {
+	SimulationParams& sim_params;
+	TryToHitParams& hit_params;
+};
+
+using ConditionFn = std::function<void(Armory*, const WeaponSystemInGroup&, AffectedParams&)>;
 
 class Modifier {
-private:
-
 public:
     Side side;
     std::string name;
@@ -43,7 +48,6 @@ public:
     std::vector<Modifier> modifiers;
 
     void AddModifier(Side side, std::string name, ConditionFn fn);
-    void Test();
 };
 
 class TargetingInfo;

@@ -293,6 +293,42 @@ std::map<OblastCode, std::tuple<Weather, GroundCondition>> GetInitialConditions(
     return conditions;
 }
 
+void AddModifiers(ModifiersManager& manager) {
+    manager.AddModifier(Side::RU, "Weather", [] (Armory*, const WeaponSystemInGroup&, AffectedParams& affected) {
+				auto weather = affected.sim_params.weather_manager.GetWeatherForOblast(affected.sim_params.oblast_code);
+				//TODO: use table constructed from csv file to get modifiers per unit
+				//type
+				switch(weather) {
+					case Weather::Clear:
+					case Weather::Cold:
+					case Weather::Rain:
+					case Weather::HeavyRain:
+					case Weather::Snowfall:
+						break;
+				};
+				
+    });
+
+    manager.AddModifier(Side::RU, "RU default", [] (Armory*, const WeaponSystemInGroup&, AffectedParams& affected) {
+				if(affected.sim_params.attacking_side == Side::RU) {
+					result.attack *= 0.6;
+				}
+				if(affected.sim_params.defending_side == Side::RU) {
+					result.defense *= 0.8;
+				}
+    });
+
+		manager.AddModifier(Side::UA, "UA default", [] (Armory*, const WeaponSystemInGroup&, AffectedParams& affected) {
+				if(affected.sim_params.attacking_side == Side::UA) {
+					result.attack *= 1.0;
+				}
+				if(affected.sim_params.defending_side == Side::UA) {
+					result.defense *= 1.0;
+				}
+    });
+
+}
+
 GameState* GameInit(WindowManager* window)
 {
     const char* base            = "D:/Projects/Dread/Game/data";
@@ -311,6 +347,8 @@ GameState* GameInit(WindowManager* window)
     STATE.weather_manager = WeatherManager();
     STATE.weather_manager.Init(GetInitialConditions());
     STATE.modifiers_manager = ModifiersManager();
+
+    AddModifiers(STATE.modifiers_manager);
 
     gladLoadGL();
 

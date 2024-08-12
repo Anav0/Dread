@@ -21,8 +21,6 @@
 
 class WeatherManager;
 
-class Armory;
-
 struct Armory {
     std::vector<WeaponSystem> weapons;
     std::vector<Device> devices;
@@ -99,7 +97,7 @@ struct WeaponSystemInGroup {
     u32 index_of_weapon_in_parent_unit;
     WeaponSystem* weapon;
     f32 morale;
-    u32 statuses;
+    u32 statuses; //WeaponSystemStatus flag
 };
 
 
@@ -199,6 +197,11 @@ const BiMap<AttackResultStatus, std::string> STR_TO_ATTACK_RESULT_STATUS = {
 
 struct AttackResult {
     AttackResultStatus status;
+};
+
+struct TryToHitParams {
+	std::mt19937 engine;
+  std::uniform_real_distribution<f32> distribution;
 };
 
 struct TargetingInfo {
@@ -444,7 +447,7 @@ bool MoralBroke(std::vector<BattleGroup>& groups, f32 threshold);
 bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 threshold);
 PriorityQueue ConstructPriorityQueue(Armory*, const std::vector<BattleGroup>&);
 TargetingInfo TryTargeting(Armory*, const WeaponSystemInGroup& firing_weapon, std::vector<BattleGroup>& enemy_groups, PriorityQueue, u32 distance);
-std::tuple<bool, f32> TryToHitTarget(TargetingInfo&, std::mt19937&, u32 distance);
+std::tuple<bool, f32> TryToHitTarget(TargetingInfo&, TryToHitParams&, u32 distance);
 
 std::vector<FireResult> Fire(
     Side firing_side,

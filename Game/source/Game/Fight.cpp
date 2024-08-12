@@ -1,5 +1,6 @@
 #include "Fight.h"
 #include "GameState.h"
+#include "Modifiers.h"
 #include "Templates.h"
 
 #include <algorithm>
@@ -249,7 +250,7 @@ bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 thresho
     return v > threshold;
 };
 
-std::tuple<bool, f32> TryToHitTarget(TargetingInfo& info, std::mt19937& engine, u32 distance)
+std::tuple<bool, f32> TryToHitTarget(TargetingInfo& info, TryToHitParams& params, u32 distance)
 {
     assert(info.can_fire);
 
@@ -273,9 +274,7 @@ std::tuple<bool, f32> TryToHitTarget(TargetingInfo& info, std::mt19937& engine, 
     if (acc.range_in_meters < distance)
         return { false, 0.0 };
 
-    std::uniform_real_distribution<f32> distribution(0.0, 1.0);
-
-    auto value = distribution(engine);
+    auto value = params.distribution(params.engine);
 
     return { value < acc.change_to_hit, acc.change_to_hit };
 }
@@ -337,10 +336,7 @@ TargetingInfo TryTargeting(Armory* armory, const WeaponSystemInGroup& firing_wea
         for (auto& priority : priority_list) {
             auto& potential_target_weapon = targeted_group.weapons.at(priority.index);
 
-            if (UnitDestroyed(potential_target_weapon))
-                continue;
-
-            if (potential_target_weapon.morale <= 0.0)
+            if (UnitDestroyed(potential_target_weapon) || potential_target_weapon.morale <= 0.0)
                 continue;
 
             if (!firing_weapon.weapon->CanPenetrate(potential_target_weapon.weapon, HitDirection::HullSide))
@@ -363,6 +359,12 @@ TargetingInfo TryTargeting(Armory* armory, const WeaponSystemInGroup& firing_wea
     return ti;
 }
 
+void ApplyModifiers(Armory* armory, const WeaponSystemInGroup& weapon_in_group, AffectedParams& params) {
+	for(auto& mod : params.sim_params.modifiers_manager.modifiers) {
+		mod.condition(armory, weapon_in_group, params);
+	}
+}
+
 std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams& params, u16 distance_in_m, const std::vector<BattleGroup>& attacking_battlegroups, std::vector<BattleGroup>& targeted_battlegroups)
 {
     std::vector<FireResult> results;
@@ -372,8 +374,18 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams&
 
     auto queue = ConstructPriorityQueue(armory, targeted_battlegroups);
 
+		TryToHitParams hit_params {
+			params.rnd_engine,
+		};
+
+		AffectedParams affected {
+			params,
+			hit_params
+		};
+
     for (const BattleGroup& attacking_group : attacking_battlegroups) {
         for (u32 i = 0; i < attacking_group.real_size; i++) {
+						
             auto& attacking_weapon_ref = attacking_group.weapons[i];
 
             if (!UnitCanFire(attacking_weapon_ref))
@@ -385,8 +397,10 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams&
 
             FireResult fire_result = FireResult(targeting_info);
 
+						ApplyModifiers(armory, attacking_weapon_ref, affected);
+
             // Hit
-            auto [target_was_hit, acc] = TryToHitTarget(targeting_info, params.rnd_engine, distance_in_m);
+            auto [target_was_hit, acc] = TryToHitTarget(targeting_info, hit_params, distance_in_m);
             if (target_was_hit) {
                 fire_result.hit_or_miss = "HIT";
                 if (ArmorWasPenetrated(targeting_info)) {
