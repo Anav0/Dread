@@ -133,30 +133,29 @@ struct MeshBufferElement {
 
 class InstancedMeshBuffer {
     u32 VBO = 0;
-
-		std::vector<MeshBufferElement> elements;
+	std::vector<MeshBufferElement> elements;
 
 public:
     Mesh mesh;
     InstancedMeshBuffer(Mesh mesh);
 
-		void Draw(Shader* shader, v2 screen_size, m4& projection, m4& view, Texture* atlas);
-		void Flush();
+	void Draw(Shader* shader, v2 screen_size, m4& projection, m4& view, Texture* atlas);
+	void Flush();
     void Allocate(u32 size, BufferLayout);
 
-		void ScaleAll(f32 scale) {
-			for(u32 i = 0; i < elements.size(); i++) {
-				//elements.at(i).matrice = glm::scale(m4(1.0), v3(scale));
-			}
+	void ScaleAll(f32 scale) {
+		for(u32 i = 0; i < elements.size(); i++) {
+			//elements.at(i).matrice = glm::scale(m4(1.0), v3(scale));
 		}
+	}
 
-		m4 GetMatrix(const u32 index) {
-			return elements.at(index).matrice;
-		}
+	m4 GetMatrix(const u32 index) {
+		return elements.at(index).matrice;
+	}
 
-		void UpdateColor(const u32 index, v4 color) {
-			elements.at(index).color = color;
-		}
+	void UpdateColor(const u32 index, v4 color) {
+		elements.at(index).color = color;
+	}
 
     MeshInBuffer AddMesh(v3 position, v3 size, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, i32 entity_id = -1, f32 rotation = 0.0f, f32 scale = 1.0f);
     MeshInBuffer AddMesh(v3 position, v4 color = { 1.0f, 1.0f, 1.0f, 1.0f }, i32 entity_id = -1, f32 rotation = 0.0f, f32 scale = 1.0f);
@@ -199,7 +198,7 @@ public:
 	void Flush();
 	void Draw(v2 screen_size, Shader* shader, m4& projection);
 	void Reset();
-	
+
 	u32 AddGradient(const v2 pos, const v2 size, const Gradient gradient);
 };
 
@@ -227,7 +226,7 @@ public:
 	void Flush();
 	void Draw(m4& projection);
 	void Reset();
-	
+
   u32 AddQuad(const v2 position, const v2 size, const v4 color, float rotation = 0);
   u32 AddTexturedQuad(const AtlasTextureInfo* texture_info, const Texture* atlas, const v2 pos, const v2 size = { 0, 0 }, const float rotation = 0, v4 color = WHITE);
 

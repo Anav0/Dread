@@ -1,51 +1,54 @@
 #ifndef MODIFIER_H
 #define MODIFIER_H
 
+#include <functional>
 #pragma once
 
-//#include "Devices.h"
-//#include "Weather.h"
+#include "Misc/Constants.h"
 
-#include <map>
+#include <memory>
 #include <string>
+#include <array>
+#include <vector>
+#include <map>
 
 enum class WeaponSystemGeneralType;
 enum class SideStatus;
 enum class Side;
 enum class Weather;
 enum class GroundCondition;
+enum class OblastCode;
 
 class SimulationParams;
+class WeaponSystem;
+class Armory;
+class WeatherManager;
 
-struct Modifier {
-    f32 defense_modifier = 1.0;
-    f32 attack_modifier = 1.0;
+using ConditionFn = std::function<bool(Armory*, WeaponSystem& weapon_used)>;
 
-    Modifier(f32 attack_modifier, f32 defense_modifier)
-        : defense_modifier(defense_modifier)
-        , attack_modifier(attack_modifier)
-    {
-    }
-};
-
-typedef std::map<WeaponSystemGeneralType, Modifier> WeaponTypeModifierMap;
-
-//Speed:
-class ModifiersManager {
+class Modifier {
 private:
-    std::map<Weather, WeaponTypeModifierMap>         weather_modifiers;
-    std::map<GroundCondition, WeaponTypeModifierMap> ground_condition_modifiers;
 
 public:
-    Modifier ru_modifier = Modifier(1.0, 1.0);
-    Modifier ua_modifier = Modifier(1.0, 1.0);
+    Side side;
+    std::string name;
+    ConditionFn condition;
 
-    void LoadWeatherModifiers(const char* path);
-
-    f32 GetWeatherModifier(Weather, WeaponSystemGeneralType, SideStatus) const;
-    f32 GetGroundConditionModifier(GroundCondition, WeaponSystemGeneralType, SideStatus) const;
+    Modifier() = default;
+    Modifier(Side side, std::string name, ConditionFn condition) : side(side), name(name), condition(condition) { }
 };
+
+class ModifiersManager {
+public:
+    std::vector<Modifier> modifiers;
+
+    void AddModifier(Side side, std::string name, ConditionFn fn);
+    void Test();
+};
+
 class TargetingInfo;
+
+//TODO: move from here
 bool ArmorWasPenetrated(TargetingInfo&);
 
 #endif

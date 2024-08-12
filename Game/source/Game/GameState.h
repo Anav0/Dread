@@ -86,8 +86,6 @@ struct GameState {
     std::vector<SupportPackage> promised_support;
     std::vector<Delivery> weapons_in_reserve;
 
-    Modifier ua_modifier = Modifier(1.05, 1.5);
-    Modifier ru_modifier = Modifier(0.8, 1.0);
 
     Armory armory;
     EthnicityManager ethnicity_manager;

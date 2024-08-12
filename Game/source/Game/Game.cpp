@@ -311,7 +311,6 @@ GameState* GameInit(WindowManager* window)
     STATE.weather_manager = WeatherManager();
     STATE.weather_manager.Init(GetInitialConditions());
     STATE.modifiers_manager = ModifiersManager();
-    STATE.modifiers_manager.LoadWeatherModifiers(conditions_path);
 
     gladLoadGL();
 

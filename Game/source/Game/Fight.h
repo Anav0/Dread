@@ -70,6 +70,7 @@ struct Deployment {
     u32 Insert(Unit, OblastCode);
 };
 
+
 struct RoundInfo {
     // Armory* armory;
     u32 round;
@@ -423,8 +424,8 @@ inline bool UnitDestroyed(const WeaponSystemInGroup& weapon)
 
 inline bool UnitCanFire(const WeaponSystemInGroup& weapon)
 {
-    return !UnitDestroyed(weapon) && 
-        HAS_NO_FLAG(weapon.statuses, WeaponSystemStatus::TurretJammed) && 
+    return !UnitDestroyed(weapon) &&
+        HAS_NO_FLAG(weapon.statuses, WeaponSystemStatus::TurretJammed) &&
         HAS_NO_FLAG(weapon.statuses, WeaponSystemStatus::GunnerKilled);
 }
 

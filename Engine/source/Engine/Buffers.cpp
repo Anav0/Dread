@@ -35,8 +35,6 @@ void InstancedMeshBuffer::Flush()
 
     assert(size > 0);
 
-    //elements.at(0).matrice = GetTransformMatrix({ 2, 2, 2 }, 0.0, { 2.0, 2.0, 2.0 });
-
     glBufferSubData(GL_ARRAY_BUFFER, 0, size, &elements[0]);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);

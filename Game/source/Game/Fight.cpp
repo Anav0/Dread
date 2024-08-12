@@ -63,27 +63,6 @@ void Fight::DissolveBattleGroups(std::vector<BattleGroup>& groups, Deployment& d
     }
 }
 
-std::vector<f32> GetModifiers(SimulationParams& params, WeaponSystemGeneralType type, SideStatus status)
-{
-    std::vector<f32> mods;
-    Modifier modifier = params.modifiers_manager.ua_modifier;
-    if (status == SideStatus::Attacking) {
-        if (params.attacking_side == Side::RU) {
-            modifier = params.modifiers_manager.ru_modifier;
-        }
-    }
-
-    mods.push_back(status == SideStatus::Defending ? modifier.defense_modifier : modifier.attack_modifier);
-
-    auto current_weather = params.weather_manager.GetWeatherForOblast(params.oblast_code);
-    mods.push_back(params.modifiers_manager.GetWeatherModifier(current_weather, type, status));
-
-    auto current_graound_condition = params.weather_manager.GetGroundCondition(params.oblast_code);
-    mods.push_back(params.modifiers_manager.GetGroundConditionModifier(current_graound_condition, type, status));
-
-    return mods;
-}
-
 AttackResult Fight::SimulateAttack(SimulationParams& params, Armory* armory, Deployment& deployment, SimulationSession* simulation_session = nullptr)
 {
     AttackResult result {};
@@ -166,16 +145,15 @@ AttackResult Fight::SimulateAttack(SimulationParams& params, Armory* armory, Dep
 
     assert(defender_won || attacker_won || draw);
 
-
     DissolveBattleGroups(attacker_battle_grup, deployment);
     DissolveBattleGroups(defender_battle_grup, deployment);
 
-     result.status = AttackResultStatus::Draw;
+    result.status = AttackResultStatus::Draw;
     if (defender_won)
         result.status = AttackResultStatus::DefenderWon;
     else
         result.status = AttackResultStatus::AttackerWon;
-    
+
     if (simulation_session != nullptr)
         simulation_session->AddResult(result.status);
 
@@ -390,7 +368,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams&
     std::vector<FireResult> results;
     results.reserve(256);
 
-    const std::uniform_int_distribution<u32> d6(0, 6);
+    static const std::uniform_int_distribution<u32> d6(0, 6);
 
     auto queue = ConstructPriorityQueue(armory, targeted_battlegroups);
 
@@ -483,11 +461,11 @@ std::pair<Device*, Ammo*> WeaponSystem::PickRightDevice(Armory* armory, const We
 
              if (target->IsArmored() && IsAP(ammo) && target->CanBePenetrated(ammo, HitDirection::HullFront)) {
                  return { device, ammo };
-             } 
+             }
 
              if (in_range && ammo->fragmentation > 0)
                  return { device, ammo };
-             
+
          }
     }
 
