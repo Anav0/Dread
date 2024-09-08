@@ -2,6 +2,7 @@
 #include <Game/Fight.h>
 #include <Game/Modifiers.h>
 #include <Game/Weather.h>
+#include <Game/Modifiers.h>
 
 // #include "Misc/CsvSaver.h"
 
@@ -42,15 +43,63 @@ std::map<OblastCode, std::tuple<Weather, GroundCondition>> GetInitialConditions2
     return conditions;
 }
 
+#ifdef ANALYSIS_MODE
+
+void AddModifiers(ModifiersManager& manager) {
+    manager.AddModifier(Side::RU, "Weather", [] (Armory*, const WeaponSystemInGroup&, CombatParams& affected) {
+		auto weather = affected.sim_params.weather_manager.GetWeatherForOblast(affected.sim_params.oblast_code);
+		//TODO: use table constructed from csv file to get modifiers per unit
+		//type
+		switch(weather) {
+			case Weather::Clear:
+			case Weather::Cold:
+			case Weather::Rain:
+			case Weather::HeavyRain:
+			case Weather::Snowfall:
+				break;
+		};
+    });
+
+    manager.AddModifier(Side::RU, "RU default", [] (Armory*, const WeaponSystemInGroup&, CombatParams& affected) {
+		if(affected.sim_params.attacking_side == Side::RU) {
+		}
+		if(affected.sim_params.defending_side == Side::RU) {
+		}
+    });
+
+    manager.AddModifier(Side::UA, "UA default", [] (Armory*, const WeaponSystemInGroup&, CombatParams& affected) {
+        if(affected.sim_params.attacking_side == Side::UA) {
+        }
+        if(affected.sim_params.defending_side == Side::UA) {
+        }
+    });
+
+}
+
+#endif
+
 int main(int argc, char* argv[])
 {
-#if DEBUG
+#ifdef DEBUG
     RunTests();
 #endif
+    #ifdef ANALYSIS
+        printf("ANALYSIS!\n");
+    #endif
+    #ifdef DEBUG
+        printf("DEBUG!\n");
+    #endif
+    #ifdef RELEASE
+        printf("RELEASE!\n");
+    #endif
+    #ifdef ANALYSIS_MODE
+        printf("ANALYSIS_MODE!\n");
+    #endif
+        printf("CONTROL!\n");
 
     assert(argc == 2);
 
-    auto save_only_this_arr = split2(argv[1], ';');
+    auto save_only_this_arr = split2(argv[1], ':');
     auto save_only_this = std::set<std::string>(save_only_this_arr.begin(), save_only_this_arr.end());
 
     Armory armory         = LoadArmory(weapons_path, ammo_path, devices_path, storage_path);
@@ -61,6 +110,8 @@ int main(int argc, char* argv[])
     WeatherManager weather_manager = WeatherManager();
     weather_manager.Init(GetInitialConditions2());
     ModifiersManager modifiers_manager = ModifiersManager();
+
+    AddModifiers(modifiers_manager);
 
     SimulationParams params = SimulationParams(OblastCode::Donetsk, Side::RU, weather_manager, modifiers_manager);
 

@@ -55,4 +55,7 @@ class TargetingInfo;
 //TODO: move from here
 bool ArmorWasPenetrated(TargetingInfo&);
 
+//NOTE: To be implemented by Game.cpp (Game) or main.cpp (Analysis)
+void AddModifiers(ModifiersManager& manager);
+
 #endif

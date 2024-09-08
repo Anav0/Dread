@@ -121,6 +121,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>ANALYSIS_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>Engine\source;Engine\includes;Misc\source;Game\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -145,6 +146,7 @@
     <ClInclude Include="Game\source\Game\Fight.h" />
     <ClInclude Include="Game\source\Game\Game.h" />
     <ClInclude Include="Game\source\Game\GameState.h" />
+    <ClInclude Include="Game\source\Game\Loader.h" />
     <ClInclude Include="Game\source\Game\Modifiers.h" />
     <ClInclude Include="Game\source\Game\RenderHelpers.h" />
     <ClInclude Include="Game\source\Game\Templates.h" />
