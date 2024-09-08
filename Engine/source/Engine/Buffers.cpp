@@ -176,6 +176,9 @@ GLenum BufferElementTypeToOpenGLType(BufferElementType type)
     case BufferElementType::VInt4:
         return GL_INT;
     case BufferElementType::Bool:
+    case BufferElementType::VBool2:
+    case BufferElementType::VBool3:
+    case BufferElementType::VBool4:
         return GL_BOOL;
     }
     return 0;
@@ -195,6 +198,7 @@ u8 GetBufferElementSize(BufferElementType type)
 
     case BufferElementType::Float:
     case BufferElementType::Int:
+    case BufferElementType::UInt:
         return 4;
 
     case BufferElementType::VFloat2:

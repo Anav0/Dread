@@ -4,6 +4,8 @@
 
 #include "Tests.h"
 
+#include "Game/Fight.h"
+
 Armor NoArmor() {
     Armor armor;
     armor.top = 0;
@@ -99,7 +101,6 @@ std::vector<BattleGroup> Fixture_TestGroup(Armory* armory)
     const auto oblast = OblastCode::Kharkiv;
     const auto attacker = Side::UA;
     const auto modifiers_manager = ModifiersManager();
-    const auto weather_manager = WeatherManager();
 
     std::vector<BattleGroup> test_groups;
 
@@ -161,11 +162,18 @@ void TryToHitTarget_CannotHitSomethingOutOfRange()
     std::random_device rd;
     auto rnd_engine = std::mt19937(rd());
 
+    TryToHitParams hit_params
+    {
+        rnd_engine,
+        std::uniform_real_distribution<f32>(0.0,1.0),
+        1.0,
+    };
+
     TargetingInfo info;
     info.ammo_to_use = &ammo;
     info.can_fire = true;
 
-    auto [hit, _] = TryToHitTarget(info, rnd_engine, 6000);
+    auto [hit, _] = TryToHitTarget(info, hit_params, 6000);
 
     hit ? PRINT_FAILED : PRINT_PASS;
 }
@@ -175,6 +183,12 @@ void TryToHitTarget_UsesCorrectAccuracyRating()
     std::random_device rd;
     auto rnd_engine = std::mt19937(rd());
 
+    TryToHitParams hit_params
+    {
+        rnd_engine,
+        std::uniform_real_distribution<f32>(0.0,1.0),
+        1.0,
+    };
     Ammo ammo;
     ammo.accuracy.push_back({ 4500, 0.5 });
     ammo.accuracy.push_back({ 3500, 0.6 });
@@ -184,9 +198,9 @@ void TryToHitTarget_UsesCorrectAccuracyRating()
     info.ammo_to_use = &ammo;
     info.can_fire = true;
 
-    auto [hit1, acc1] = TryToHitTarget(info, rnd_engine, 4000); // Should use 0.5 acc
-    auto [hit2, acc2] = TryToHitTarget(info, rnd_engine, 2500); // Should use 0.7 acc
-    auto [hit3, acc3] = TryToHitTarget(info, rnd_engine, 1000); // Should use 0.7 acc
+    auto [hit1, acc1] = TryToHitTarget(info, hit_params, 4000); // Should use 0.5 acc
+    auto [hit2, acc2] = TryToHitTarget(info, hit_params, 2500); // Should use 0.7 acc
+    auto [hit3, acc3] = TryToHitTarget(info, hit_params, 1000); // Should use 0.7 acc
 
     auto x = acc1 == 0.5;
     auto y = acc2 == 0.7;

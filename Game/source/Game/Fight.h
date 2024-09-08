@@ -201,7 +201,8 @@ struct AttackResult {
 
 struct TryToHitParams {
 	std::mt19937 engine;
-  std::uniform_real_distribution<f32> distribution;
+    std::uniform_real_distribution<f32> distribution;
+	f32 modifier_to_hit_change = 1.0;
 };
 
 struct TargetingInfo {

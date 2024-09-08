@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.h"
+
 #include <vector>
 #include <random>
 
@@ -13,7 +14,7 @@ class Distribution {
 class RandomDist : public Distribution {
 	u64 n;
 	u64 from; u64 to;
-  std::random_device rd;  // a seed source for the random number engine
+    std::random_device rd;  // a seed source for the random number engine
 
 	public:
 		RandomDist(u64 n, u64 from, u64 to) : n(n), from(from), to(to) {};

@@ -1,8 +1,13 @@
 #ifndef TESTS_H
 #define TESTS_H
 
+#include <vector>
+
 #define PRINT_PASS std::cout << std::format("{:85} {:->1}\n", __func__, " PASS")
 #define PRINT_FAILED std::cout << std::format("{:85} {:->1}", __func__, " FAIL")
+
+class Armory;
+class BattleGroup;
 
  Armory Fixture_Armory();
  std::vector<BattleGroup> Fixture_TestGroup(Armory* armory);

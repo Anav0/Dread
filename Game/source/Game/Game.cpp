@@ -67,10 +67,10 @@ PickingBuffer picking_buffer;
 
 RandomDist placement_x = RandomDist(0, 0, 0);
 RandomDist placement_y = RandomDist(0, 0, 0);
-RandomDist direction = RandomDist(0, 0, 0);
-RandomDist velocity = RandomDist(0, 0, 0);
-RandomDist ttl = RandomDist(0, 0, 0);
-RandomDist rgb = RandomDist(0, 0, 0);
+RandomDist direction   = RandomDist(0, 0, 0);
+RandomDist velocity    = RandomDist(0, 0, 0);
+RandomDist ttl         = RandomDist(0, 0, 0);
+RandomDist rgb         = RandomDist(0, 0, 0);
 
 std::vector<Particle> particles;
 BufferLayout emitter_layout {
