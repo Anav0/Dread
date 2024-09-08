@@ -12,6 +12,15 @@
     }
   },
   {
+    "label": "Run Analysis",
+    "type": "shell",
+    "command": "./bin/Analysis/Analysis.exe",
+    "args": ["result:groups"],
+    "group": {
+      "kind": "run"
+    }
+  },
+  {
     "label": "Build Analysis (Debug)",
     "type": "shell",
     "command": "msbuild",
