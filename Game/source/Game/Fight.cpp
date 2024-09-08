@@ -359,7 +359,7 @@ TargetingInfo TryTargeting(Armory* armory, const WeaponSystemInGroup& firing_wea
     return ti;
 }
 
-void ApplyModifiers(Armory* armory, const WeaponSystemInGroup& weapon_in_group, AffectedParams& params) {
+void ApplyModifiers(Armory* armory, const WeaponSystemInGroup& weapon_in_group, CombatParams& params) {
 	for(auto& mod : params.sim_params.modifiers_manager.modifiers) {
 		mod.condition(armory, weapon_in_group, params);
 	}
@@ -378,7 +378,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams&
 			params.rnd_engine,
 		};
 
-		AffectedParams affected {
+		CombatParams affected {
 			params,
 			hit_params
 		};

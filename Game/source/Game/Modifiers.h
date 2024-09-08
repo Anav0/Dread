@@ -26,12 +26,12 @@ class WeatherManager;
 class WeaponSystemInGroup;
 class TryToHitParams;
 
-struct AffectedParams {
+struct CombatParams {
 	SimulationParams& sim_params;
 	TryToHitParams& hit_params;
 };
 
-using ConditionFn = std::function<void(Armory*, const WeaponSystemInGroup&, AffectedParams&)>;
+using ConditionFn = std::function<void(Armory*, const WeaponSystemInGroup&, CombatParams&)>;
 
 class Modifier {
 public:

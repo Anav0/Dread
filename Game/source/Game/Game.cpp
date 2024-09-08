@@ -294,7 +294,7 @@ std::map<OblastCode, std::tuple<Weather, GroundCondition>> GetInitialConditions(
 }
 
 void AddModifiers(ModifiersManager& manager) {
-  //  manager.AddModifier(Side::RU, "Weather", [] (Armory*, const WeaponSystemInGroup&, AffectedParams& affected) {
+  //  manager.AddModifier(Side::RU, "Weather", [] (Armory*, const WeaponSystemInGroup&, CombatParams& affected) {
 		//		auto weather = affected.sim_params.weather_manager.GetWeatherForOblast(affected.sim_params.oblast_code);
 		//		//TODO: use table constructed from csv file to get modifiers per unit
 		//		//type
@@ -309,7 +309,7 @@ void AddModifiers(ModifiersManager& manager) {
 		//		
   //  });
 
-  //  manager.AddModifier(Side::RU, "RU default", [] (Armory*, const WeaponSystemInGroup&, AffectedParams& affected) {
+  //  manager.AddModifier(Side::RU, "RU default", [] (Armory*, const WeaponSystemInGroup&, CombatParams& affected) {
 		//		if(affected.sim_params.attacking_side == Side::RU) {
 		//			result.attack *= 0.6;
 		//		}
@@ -318,7 +318,7 @@ void AddModifiers(ModifiersManager& manager) {
 		//		}
   //  });
 
-		//manager.AddModifier(Side::UA, "UA default", [] (Armory*, const WeaponSystemInGroup&, AffectedParams& affected) {
+		//manager.AddModifier(Side::UA, "UA default", [] (Armory*, const WeaponSystemInGroup&, CombatParams& affected) {
 		//		if(affected.sim_params.attacking_side == Side::UA) {
 		//			result.attack *= 1.0;
 		//		}
