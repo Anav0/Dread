@@ -12,12 +12,6 @@
 
 #include "Engine/bimap.h"
 
-enum CurrentRole : u32 {
-    Frontline = FLAG(1),
-    Support   = FLAG(2),
-    Rear      = FLAG(3),
-};
-
 enum class Faith : u16 {
     Catholic   = FLAG(1),
     Protestant = FLAG(2),
