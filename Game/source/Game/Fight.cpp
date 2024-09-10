@@ -361,7 +361,7 @@ TargetingInfo TryTargeting(Armory* armory, const WeaponSystemInGroup& firing_wea
 
 void ApplyModifiers(Armory* armory, const WeaponSystemInGroup& weapon_in_group, CombatParams& params) {
 	for(auto& mod : params.sim_params.modifiers_manager.modifiers) {
-		mod.condition(armory, weapon_in_group, params);
+		mod.fn(armory, weapon_in_group, params);
 	}
 }
 
@@ -378,7 +378,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams&
 			params.rnd_engine,
 		};
 
-		CombatParams affected {
+		CombatParams combat_params {
 			params,
 			hit_params
 		};
@@ -397,7 +397,7 @@ std::vector<FireResult> Fire(Side firing_side, Armory* armory, SimulationParams&
 
             FireResult fire_result = FireResult(targeting_info);
 
-						ApplyModifiers(armory, attacking_weapon_ref, affected);
+    		ApplyModifiers(armory, attacking_weapon_ref, combat_params);
 
             // Hit
             auto [target_was_hit, acc] = TryToHitTarget(targeting_info, hit_params, distance_in_m);

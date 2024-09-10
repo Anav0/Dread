@@ -31,23 +31,23 @@ struct CombatParams {
 	TryToHitParams& hit_params;
 };
 
-using ConditionFn = std::function<void(Armory*, const WeaponSystemInGroup&, CombatParams&)>;
+using ModifierFn = std::function<void(Armory*, const WeaponSystemInGroup&, CombatParams&)>;
 
 class Modifier {
 public:
     Side side;
     std::string name;
-    ConditionFn condition;
+    ModifierFn fn;
 
     Modifier() = default;
-    Modifier(Side side, std::string name, ConditionFn condition) : side(side), name(name), condition(condition) { }
+    Modifier(Side side, std::string name, ModifierFn fn) : side(side), name(name), fn(fn) { }
 };
 
 class ModifiersManager {
 public:
     std::vector<Modifier> modifiers;
 
-    void AddModifier(Side side, std::string name, ConditionFn fn);
+    void AddModifier(Side side, std::string name, ModifierFn fn);
 };
 
 class TargetingInfo;

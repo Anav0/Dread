@@ -60,17 +60,18 @@ void AddModifiers(ModifiersManager& manager) {
 		};
     });
 
-    manager.AddModifier(Side::RU, "RU default", [] (Armory*, const WeaponSystemInGroup&, CombatParams& affected) {
-		if(affected.sim_params.attacking_side == Side::RU) {
+    manager.AddModifier(Side::RU, "RU default", [] (Armory*, const WeaponSystemInGroup&, CombatParams& params) {
+		if(params.sim_params.attacking_side == Side::RU) {
+            params.hit_params.distribution = 
 		}
-		if(affected.sim_params.defending_side == Side::RU) {
+		if(params.sim_params.defending_side == Side::RU) {
 		}
     });
 
-    manager.AddModifier(Side::UA, "UA default", [] (Armory*, const WeaponSystemInGroup&, CombatParams& affected) {
-        if(affected.sim_params.attacking_side == Side::UA) {
+    manager.AddModifier(Side::UA, "UA default", [] (Armory*, const WeaponSystemInGroup&, CombatParams& params) {
+        if(params.sim_params.attacking_side == Side::UA) {
         }
-        if(affected.sim_params.defending_side == Side::UA) {
+        if(params.sim_params.defending_side == Side::UA) {
         }
     });
 

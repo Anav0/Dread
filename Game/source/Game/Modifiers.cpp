@@ -13,6 +13,6 @@ bool ArmorWasPenetrated(TargetingInfo& targeting_info)
     return armor_value < targeting_info.ammo_to_use->penetration;
 }
 
-void ModifiersManager::AddModifier(Side side, std::string name, ConditionFn fn) {
+void ModifiersManager::AddModifier(Side side, std::string name, ModifierFn fn) {
     modifiers.push_back(Modifier(side, name, fn));
 }
