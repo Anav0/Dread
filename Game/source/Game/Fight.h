@@ -402,6 +402,8 @@ struct Fight {
     UnitStance ua_stance[MAX_UNITS];
     UnitStance ru_stance[MAX_UNITS];
 
+    void PrepareBattleGroups(std::vector<BattleGroup>& groups, Side side, u8 attacking);
+
     AttackResult SimulateAttack(SimulationParams&, Armory*, Deployment&, SimulationSession*);
 
     std::vector<BattleGroup> FormBattleGroups(OblastCode oblast, Side side, Armory* armory, UnitStance stance, Deployment& deployment);
@@ -447,7 +449,7 @@ std::vector<f32> GetModifiers(SimulationParams& params, WeaponSystemGeneralType 
 bool MoralBroke(std::vector<BattleGroup>& groups, f32 threshold);
 bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 threshold);
 PriorityQueue ConstructPriorityQueue(Armory*, const std::vector<BattleGroup>&);
-TargetingInfo TryTargeting(Armory*, const WeaponSystemInGroup& firing_weapon, std::vector<BattleGroup>& enemy_groups, PriorityQueue, u32 distance);
+TargetingInfo TryTargeting(Armory*, const WeaponSystemInGroup& firing_weapon, std::vector<BattleGroup>& enemy_groups, PriorityQueue&, u32 distance);
 std::tuple<bool, f32> TryToHitTarget(TargetingInfo&, TryToHitParams&, u32 distance);
 
 std::vector<FireResult> Fire(

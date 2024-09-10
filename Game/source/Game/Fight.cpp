@@ -64,6 +64,18 @@ void Fight::DissolveBattleGroups(std::vector<BattleGroup>& groups, Deployment& d
     }
 }
 
+void PrepareBattleGroups(std::vector<BattleGroup>& groups, Side side, u8 attacking) {
+    u32 group_index = 0;
+    for (auto& group : groups) {
+        assert(group.weapons.size() > 0);
+        group.Attacking = attacking;
+        group.Side = SideToStr(side);
+        group.Domain = "Ground";
+        group.GroupIndex = group_index;
+        group_index++;
+    }
+}
+
 AttackResult Fight::SimulateAttack(SimulationParams& params, Armory* armory, Deployment& deployment, SimulationSession* simulation_session = nullptr)
 {
     AttackResult result {};
@@ -71,27 +83,8 @@ AttackResult Fight::SimulateAttack(SimulationParams& params, Armory* armory, Dep
     std::vector<BattleGroup> attacker_battle_grup = FormBattleGroups(params.oblast_code, params.attacking_side, armory, UnitStance::Commited, deployment);
     std::vector<BattleGroup> defender_battle_grup = FormBattleGroups(params.oblast_code, params.defending_side, armory, UnitStance::Defending, deployment);
 
-    u32 group_index = 0;
-    for (auto& group : attacker_battle_grup) {
-        assert(group.weapons.size() > 0);
-        group.Attacking = 1;
-        group.Side = SideToStr(params.attacking_side);
-        group.Domain = "Ground";
-        group.GroupIndex = group_index;
-        group_index++;
-    }
-
-    group_index = 0;
-    for (auto& group : defender_battle_grup) {
-        assert(group.weapons.size() > 0);
-        group.Attacking = 0;
-        group.Side = SideToStr(params.defending_side);
-        group.Domain = "Ground";
-        group.GroupIndex = group_index;
-        group_index++;
-    }
-
-    u32 round = 0;
+    PrepareBattleGroups(attacker_battle_grup, params.attacking_side, 1);
+    PrepareBattleGroups(defender_battle_grup, params.defending_side, 0);
 
     bool attacker_moral_broke = false;
     bool defender_moral_broke = false;
@@ -101,7 +94,8 @@ AttackResult Fight::SimulateAttack(SimulationParams& params, Armory* armory, Dep
     f32 damage_threshold = 0.6;
     f32 moral_threshold = 0.6;
 
-    u16 cqb_rounds = 0;
+    u32 cqb_rounds = 0;
+    u32 round = 0;
     while (!defender_moral_broke && !attacker_moral_broke && !attacker_was_mauled && !defender_was_mauled) {
 
         // Attacking groups go forward!
@@ -318,8 +312,7 @@ PriorityQueue ConstructPriorityQueue(Armory* armory, const std::vector<BattleGro
     return queue;
 }
 
-// TODO: Pick targets by priority
-TargetingInfo TryTargeting(Armory* armory, const WeaponSystemInGroup& firing_weapon, std::vector<BattleGroup>& enemy_groups, PriorityQueue queue, u32 distance)
+TargetingInfo TryTargeting(Armory* armory, const WeaponSystemInGroup& firing_weapon, std::vector<BattleGroup>& enemy_groups, PriorityQueue& queue, u32 distance)
 {
     TargetingInfo ti {};
 
