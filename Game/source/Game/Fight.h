@@ -199,11 +199,6 @@ struct AttackResult {
     AttackResultStatus status;
 };
 
-struct TryToHitParams {
-	std::mt19937 engine;
-    std::uniform_real_distribution<f32> distribution;
-	f32 modifier_to_hit_change = 1.0;
-};
 
 struct TargetingInfo {
     bool can_fire;
@@ -373,6 +368,11 @@ struct SimulationParams {
 
     std::mt19937 rnd_engine;
 
+    //Modifiers
+    std::uniform_real_distribution<f32> hit_distribution;
+    std::mt19937 try_to_hit_engine;
+
+
     SimulationParams(
         const OblastCode oblast_code,
         const Side attackingSide,
@@ -449,8 +449,8 @@ std::vector<f32> GetModifiers(SimulationParams& params, WeaponSystemGeneralType 
 bool MoralBroke(std::vector<BattleGroup>& groups, f32 threshold);
 bool AverageDamageExceedsThreshold(std::vector<BattleGroup>& groups, f32 threshold);
 PriorityQueue ConstructPriorityQueue(Armory*, const std::vector<BattleGroup>&);
-TargetingInfo TryTargeting(Armory*, const WeaponSystemInGroup& firing_weapon, std::vector<BattleGroup>& enemy_groups, PriorityQueue&, u32 distance);
-std::tuple<bool, f32> TryToHitTarget(TargetingInfo&, TryToHitParams&, u32 distance);
+TargetingInfo TryTargeting(Armory*, const WeaponSystemInGroup& firing_weapon, std::vector<BattleGroup>& enemy_groups, PriorityQueue&, SimulationParams&, u32 distance);
+std::tuple<bool, f32> TryToHitTarget(TargetingInfo&, SimulationParams&, u32 distance);
 
 std::vector<FireResult> Fire(
     Side firing_side,

@@ -26,12 +26,7 @@ class WeatherManager;
 class WeaponSystemInGroup;
 class TryToHitParams;
 
-struct CombatParams {
-	SimulationParams& sim_params;
-	TryToHitParams& hit_params;
-};
-
-using ModifierFn = std::function<void(Armory*, const WeaponSystemInGroup&, CombatParams&)>;
+using ModifierFn = std::function<void(Armory*, const WeaponSystemInGroup&, SimulationParams&)>;
 
 class Modifier {
 public:
